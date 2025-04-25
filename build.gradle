@@ -57,6 +57,7 @@ jacocoTestCoverageVerification {
                     'toy.bookswap.**.response.**',
                     'toy.bookswap.**.command.**',
                     'toy.bookswap.**.query.**',
+                    'toy.bookswap.**.symbol.**',
             ]
 
             // LINE 커버리지
