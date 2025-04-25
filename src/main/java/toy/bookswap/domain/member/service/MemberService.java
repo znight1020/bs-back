@@ -1,7 +1,6 @@
 package toy.bookswap.domain.member.service;
 
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +20,7 @@ public class MemberService {
   private final StringRedisTemplate redisTemplate;
 
   public void signupProcess(CreateMemberCommand command) {
-    verifyEmail((command.email()));
+    verifyEmail(command.email());
     Member newMember = Member.builder()
         .email(command.email())
         .password(encoder.encode(command.password()))

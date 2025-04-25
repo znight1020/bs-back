@@ -17,8 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import toy.bookswap.domain.member.command.CreateMemberCommand;
 import toy.bookswap.domain.member.service.MemberService;
-import toy.bookswap.web.member.request.SignupRequest;
 
+@DisplayName("회원 API 테스트")
 @ExtendWith(MockitoExtension.class)
 class MemberControllerTest {
 
@@ -42,23 +42,10 @@ class MemberControllerTest {
         """;
 
     mvc.perform(post("/members")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json)
-        ).andExpect(status().isOk());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json)
+    ).andExpect(status().isCreated());
 
-    verify(memberService, times(1)).signupProcess(any(CreateMemberCommand.class));
-  }
-
-  @Test
-  @DisplayName("회원가입 서비스 호출 테스트")
-  void callSignupProcessTest() {
-    // given
-    SignupRequest request = new SignupRequest("test@email.com", "1234", "테스터");
-
-    // when
-    memberController.singup(request);
-
-    // then
     verify(memberService, times(1)).signupProcess(any(CreateMemberCommand.class));
   }
 }
