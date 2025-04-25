@@ -4,6 +4,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ResponseSymbol {
-  OK, FAILED, CREATED, UPDATED, DELETED;
+  OK, FAILED, CREATED, UPDATED, DELETED, SENT, VERIFIED;
 }
 
