@@ -3,7 +3,7 @@ package toy.bookswap.domain.member.service;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.bookswap.domain.member.command.CreateMemberCommand;
@@ -15,7 +15,7 @@ import toy.bookswap.domain.member.repository.MemberRepository;
 @Service
 public class MemberService {
 
-  private final BCryptPasswordEncoder encoder;
+  private final PasswordEncoder encoder;
   private final MemberRepository memberRepository;
   private final StringRedisTemplate redisTemplate;
 
@@ -31,7 +31,7 @@ public class MemberService {
 
   private void verifyEmail(String email) {
     // TODO - 공통 Exception 처리
-    if(!Objects.equals(redisTemplate.opsForValue().get("email-verified:" + email), "true")) {
+    if (!Objects.equals(redisTemplate.opsForValue().get("email-verified:" + email), "true")) {
       throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
     }
     redisTemplate.delete("email-verified:" + email);
