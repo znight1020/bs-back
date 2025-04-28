@@ -7,3 +7,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+  mail:
+    username: "test"
+    password: "test"

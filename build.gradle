@@ -28,6 +28,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // SMTP
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -57,6 +61,7 @@ jacocoTestCoverageVerification {
                     'toy.bookswap.**.response.**',
                     'toy.bookswap.**.command.**',
                     'toy.bookswap.**.query.**',
+                    'toy.bookswap.**.symbol.**',
             ]
 
             // LINE 커버리지
