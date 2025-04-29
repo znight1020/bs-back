@@ -21,6 +21,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 @ExtendWith(MockitoExtension.class)
 class GoogleMailServiceTest {
 
+  @InjectMocks
+  private GoogleMailService googleMailService;
+
   @Mock
   private JavaMailSender mailSender;
 
@@ -33,9 +36,6 @@ class GoogleMailServiceTest {
   @Mock
   private ValueOperations<String, String> valueOperations;
 
-  @InjectMocks
-  private GoogleMailService googleMailService;
-
   @BeforeEach
   void setUp() {
     given(redisTemplate.opsForValue()).willReturn(valueOperations);
@@ -43,7 +43,7 @@ class GoogleMailServiceTest {
 
   @Test
   @DisplayName("이메일 전송 - 성공 테스트")
-  void sendMailProcessTest() {
+  void 이메일_인증_코드를_전송할_수_있다() {
     // given
     String email = "test@email.com";
 
@@ -57,7 +57,7 @@ class GoogleMailServiceTest {
 
   @Test
   @DisplayName("이메일 인증 코드 검증 - 성공 테스트")
-  void verifyMailProcessTest() {
+  void 이메일_인증_코드를_검증할_수_있다() {
     // given
     String email = "test@email.com";
     String code = "ABC123";
@@ -75,7 +75,7 @@ class GoogleMailServiceTest {
 
   @Test
   @DisplayName("인증 코드 검증 - 실패 테스트(인증 코드 불일치)")
-  void verifyMailProcessMismatchTest() {
+  void 인증_코드가_일치하지_않으면_예외를_발생시킨다() {
     // given
     String email = "test@email.com";
     String storedCode = "XYZ789";
@@ -91,7 +91,7 @@ class GoogleMailServiceTest {
 
   @Test
   @DisplayName("인증 코드 만료 - 실패 테스트(인증 코드 만료)")
-  void verifyMailProcessExpiredTest() {
+  void 인증_코드가_만료되었으면_예외를_발생시킨다() {
     // given
     String email = "test@email.com";
     given(redisTemplate.opsForValue().get(email)).willReturn(null);

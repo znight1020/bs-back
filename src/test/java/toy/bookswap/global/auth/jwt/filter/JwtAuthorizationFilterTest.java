@@ -39,7 +39,7 @@ class JwtAuthorizationFilterTests {
   private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
   @Mock
-  JwtProvider jwtProvider;
+  private JwtProvider jwtProvider;
 
   @Mock
   private HttpServletRequest request;

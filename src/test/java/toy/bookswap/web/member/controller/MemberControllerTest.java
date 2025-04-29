@@ -22,15 +22,16 @@ import toy.bookswap.domain.member.service.MemberService;
 @ExtendWith(MockitoExtension.class)
 class MemberControllerTest {
 
-  @Mock
-  private MemberService memberService;
-
   @InjectMocks
   private MemberController memberController;
 
+  @Mock
+  private MemberService memberService;
+
   @Test
   @DisplayName("회원가입 API 호출 테스트")
-  void callSignupAPITest() throws Exception {
+  void 회원가입_API를_호출할_수_있다() throws Exception {
+    // given
     MockMvc mvc = standaloneSetup(memberController).build();
 
     String json = """
@@ -41,11 +42,13 @@ class MemberControllerTest {
         }
         """;
 
-    mvc.perform(post("/members")
+    // when
+    mvc.perform(post("/members/signup")
         .contentType(MediaType.APPLICATION_JSON)
         .content(json)
     ).andExpect(status().isCreated());
 
+    // then
     verify(memberService, times(1)).signupProcess(any(CreateMemberCommand.class));
   }
 }

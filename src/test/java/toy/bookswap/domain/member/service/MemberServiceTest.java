@@ -22,7 +22,10 @@ import toy.bookswap.domain.member.repository.MemberRepository;
 
 @DisplayName("사용자 회원가입 테스트")
 @ExtendWith(MockitoExtension.class)
-class MemberSingupServiceTest {
+class MemberSignupServiceTest {
+
+  @InjectMocks
+  private MemberService memberService;
 
   @Mock
   private MemberRepository memberRepository;
@@ -36,12 +39,9 @@ class MemberSingupServiceTest {
   @Mock
   private ValueOperations<String, String> valueOperations;
 
-  @InjectMocks
-  private MemberService memberService;
-
   @Test
   @DisplayName("회원가입 - 성공 테스트")
-  void signupProcessTest() {
+  void 회원가입을_진행할_수_있다() {
     // given
     String rawPassword = "password";
     String encodedPassword = "$2a$10";
@@ -60,6 +60,7 @@ class MemberSingupServiceTest {
     // then
     then(valueOperations).should().get("email-verified:" + email);
     then(memberRepository).should(times(1)).save(captor.capture());
+
     Member saved = captor.getValue();
     assertThat(saved.getEmail()).isEqualTo("test@email.com");
     assertThat(saved.getNickname()).isEqualTo("tester");
@@ -69,18 +70,16 @@ class MemberSingupServiceTest {
 
   @Test
   @DisplayName("회원가입 - 실패 테스트(이메일 인증 X)")
-  void signupProcessFailNotVerifiedTest() {
+  void 이메일_인증이_되지_않으면_회원가입에_실패한다() {
     // given
     String email = "test@email.com";
     CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
 
     given(redisTemplate.opsForValue()).willReturn(valueOperations);
-    given(valueOperations.get("email-verified:" + email)).willReturn(null);
 
     // when & then
     assertThatThrownBy(() -> memberService.signupProcess(command))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("이메일 인증이 완료되지 않았습니다.");
   }
-
 }
