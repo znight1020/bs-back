@@ -35,8 +35,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String authorizationCookieValue = CookieUtils.getCookie(request, "Authorization");
-    System.out.println(authorizationCookieValue);
     if(authorizationCookieValue == null || !authorizationCookieValue.startsWith(TOKEN_PREFIX)) {
+      jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(IS_NOT_EXIST_TOKEN));
       filterChain.doFilter(request, response);
       return;
     }
