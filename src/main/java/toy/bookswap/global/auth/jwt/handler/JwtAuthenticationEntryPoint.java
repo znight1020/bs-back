@@ -16,12 +16,12 @@ import toy.bookswap.global.auth.exception.AuthenticationError;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  private final ObjectMapper mapper;
+  private final ObjectMapper objectMapper;
 
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
     setHeader(response);
-    String responseData = mapper.writeValueAsString(setBody(exception));
+    String responseData = objectMapper.writeValueAsString(setBody(exception));
     response.getWriter().print(responseData);
   }
 
@@ -37,8 +37,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     return createDefaultErrorResponse();
   }
 
-  private Map<String, Object> createCustomErrorResponse(
-      ApplicationAuthenticationException authException) {
+  private Map<String, Object> createCustomErrorResponse(ApplicationAuthenticationException authException) {
     AuthenticationError error = authException.getError();
     return Map.of(
         "code", error.getCode(),
