@@ -10,3 +10,9 @@ spring:
   mail:
     username: "test"
     password: "test"
+
+jwt:
+  token-prefix: PRIFIX
+  secret-key: secret
+  access-token-expire-time: 1
+  refresh-token-expire-time: 1

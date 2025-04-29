@@ -20,15 +20,15 @@ import toy.bookswap.global.infra.mail.MailService;
 @ExtendWith(MockitoExtension.class)
 class MailControllerTest {
 
-  @Mock
-  private MailService mailService;
-
   @InjectMocks
   private MailController mailController;
 
+  @Mock
+  private MailService mailService;
+
   @Test
   @DisplayName("이메일 인증 코드 전송 요청 테스트")
-  void callSendCodeTest() throws Exception {
+  void 이메일_인증_코드_전송_API를_호출할_수_있다() throws Exception {
     MockMvc mvc = standaloneSetup(mailController).build();
 
     mvc.perform(post("/auth/email")
@@ -41,7 +41,7 @@ class MailControllerTest {
 
   @Test
   @DisplayName("이메일 인증 코드 검증 요청 테스트")
-  void callVerifyCodeTest() throws Exception {
+  void 이메일_인증_코드_검증_API를_호출할_수_있다() throws Exception {
     MockMvc mvc = standaloneSetup(mailController).build();
 
     mvc.perform(post("/auth/email/confirm")

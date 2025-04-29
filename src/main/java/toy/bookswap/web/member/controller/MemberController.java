@@ -19,7 +19,7 @@ public class MemberController {
 
   private final MemberService memberService;
 
-  @PostMapping
+  @PostMapping("/signup")
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<ResponseSymbol> singup(@RequestBody SignupRequest request) {
     memberService.signupProcess(request.toCommand());
