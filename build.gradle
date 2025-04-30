@@ -25,10 +25,15 @@ repositories {
 }
 
 dependencies {
+    // WEB
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // PERSIST
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
 
     // SMTP
     implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -38,21 +43,77 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // TEST
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // TEST CONTAINER
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+    testImplementation 'org.testcontainers:mysql:1.19.3'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
     finalizedBy 'jacocoTestReport', 'jacocoTestCoverageVerification'
 }
+
+configurations {
+    unitTestImplementation.extendsFrom testImplementation, implementation
+    unitTestAnnotationProcessor.extendsFrom annotationProcessor
+    integrationTestImplementation.extendsFrom testImplementation, implementation
+    integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+}
+
+sourceSets {
+    test {
+        java.srcDirs = ['src/test/unit/java', 'src/test/intg/java']
+        resources {
+            srcDirs = ['src/test/unit/resources', 'src/test/intg/resources']
+        }
+    }
+
+    unitTest {
+        java.srcDirs = ['src/test/unit']
+        resources {
+            srcDir 'src/test/unit/resources'
+        }
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+
+    integrationTest {
+        java.srcDirs = ['src/test/intg']
+        resources {
+            srcDir 'src/test/intg/resources'
+        }
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+tasks.register('unitTest', Test) {
+    description = "Runs unit tests"
+    group = "verification"
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+    useJUnitPlatform()
+}
+unitTest.finalizedBy(clean)
+
+tasks.register('integrationTest', Test) {
+    description = "Runs integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+}
+integrationTest.finalizedBy(clean)
 
 jacocoTestCoverageVerification {
     violationRules {
