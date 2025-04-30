@@ -54,6 +54,58 @@ tasks.named('test') {
     finalizedBy 'jacocoTestReport', 'jacocoTestCoverageVerification'
 }
 
+configurations {
+    unitTestImplementation.extendsFrom testImplementation, implementation
+    unitTestAnnotationProcessor.extendsFrom annotationProcessor
+    integrationTestImplementation.extendsFrom testImplementation, implementation
+    integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+}
+
+sourceSets {
+    test {
+        java.srcDirs = ['src/test/unit/java', 'src/test/intg/java']
+        resources {
+            srcDirs = ['src/test/unit/resources', 'src/test/intg/resources']
+        }
+    }
+
+    unitTest {
+        java.srcDirs = ['src/test/unit/java']
+        resources {
+            srcDir 'src/test/unit/resources'
+        }
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+
+    integrationTest {
+        java.srcDirs = ['src/test/intg/java']
+        resources {
+            srcDir 'src/test/intg/resources'
+        }
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+tasks.register('unitTest', Test) {
+    description = "Runs unit tests"
+    group = "verification"
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+    useJUnitPlatform()
+}
+unitTest.finalizedBy(clean)
+
+tasks.register('integrationTest', Test) {
+    description = "Runs integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+}
+integrationTest.finalizedBy(clean)
+
 jacocoTestCoverageVerification {
     violationRules {
         rule {
