@@ -1,5 +1,8 @@
 package toy.bookswap.global.infra.mail;
 
+import static toy.bookswap.global.exception.response.ApplicationError.MAIL_CODE_EXPIRED;
+import static toy.bookswap.global.exception.response.ApplicationError.MAIL_CODE_INVALIDATE;
+
 import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import toy.bookswap.global.exception.exceptions.ApplicationException;
 
 @RequiredArgsConstructor
 @Service
@@ -27,13 +31,13 @@ public class GoogleMailService implements MailService {
 
   @Override
   public void verifyMailProcess(String email, String code) {
-    // TODO - 공통 Exception 처리
     String storedCode = getStoredCode(email)
-        .orElseThrow(() -> new RuntimeException("인증 코드가 만료되었습니다."));
+        .orElseThrow(() -> new ApplicationException(MAIL_CODE_EXPIRED));
 
     if (!storedCode.equals(code)) {
-      throw new RuntimeException("인증 코드가 유효하지 않습니다.");
+      throw new ApplicationException(MAIL_CODE_INVALIDATE);
     }
+
     saveEmailData("email-verified:" + email, "true", 10);
     deleteEmailData(email);
   }

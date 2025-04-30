@@ -86,7 +86,7 @@ class GoogleMailServiceTest {
     // when, then
     assertThatThrownBy(() -> googleMailService.verifyMailProcess(email, inputCode))
         .isInstanceOf(RuntimeException.class)
-        .hasMessage("인증 코드가 유효하지 않습니다.");
+        .hasMessage("입력하신 인증 코드가 일치하지 않습니다.");
   }
 
   @Test

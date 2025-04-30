@@ -1,4 +1,4 @@
-package toy.bookswap.global.auth.exception;
+package toy.bookswap.global.exception.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

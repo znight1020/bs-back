@@ -1,7 +1,8 @@
-package toy.bookswap.global.auth.exception;
+package toy.bookswap.global.exception.exceptions;
 
 import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
+import toy.bookswap.global.exception.response.AuthenticationError;
 
 @Getter
 public class ApplicationAuthenticationException extends AuthenticationException {

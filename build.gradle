@@ -87,7 +87,6 @@ jacocoTestCoverageVerification {
     }
 }
 
-
 jacocoTestReport {
     dependsOn test
     reports {

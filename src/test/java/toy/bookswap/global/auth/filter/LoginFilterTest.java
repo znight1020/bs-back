@@ -10,7 +10,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static toy.bookswap.global.auth.exception.AuthenticationError.FAILED_AUTHENTICATION;
+import static toy.bookswap.global.exception.response.AuthenticationError.FAILED_AUTHENTICATION;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -32,7 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.util.ReflectionTestUtils;
-import toy.bookswap.global.auth.exception.ApplicationAuthenticationException;
+import toy.bookswap.global.exception.exceptions.ApplicationAuthenticationException;
 import toy.bookswap.global.auth.filter.request.LoginRequest;
 import toy.bookswap.global.auth.jwt.JwtProvider;
 import toy.bookswap.global.auth.response.MemberDetails;
