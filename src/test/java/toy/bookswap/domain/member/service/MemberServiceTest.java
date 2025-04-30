@@ -82,4 +82,19 @@ class MemberSignupServiceTest {
         .isInstanceOf(RuntimeException.class)
         .hasMessage("이메일 인증이 완료되지 않았습니다.");
   }
+
+  @Test
+  @DisplayName("회원가입 - 실패 테스트(이미 존재하는 이메일 계정)")
+  void 이메일_계정이_존재하면_회원가입에_실패한다() {
+    // given
+    String email = "test@email.com";
+    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
+
+    given(memberRepository.existsByEmail(email)).willReturn(true);
+
+    // when & then
+    assertThatThrownBy(() -> memberService.signupProcess(command))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessage("해당 이메일로 가입된 계정이 존재합니다.");
+  }
 }
