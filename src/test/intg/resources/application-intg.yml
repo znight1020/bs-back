@@ -1,15 +1,22 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  main:
+    allow-bean-definition-overriding: true
+
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
   mail:
     username: "test"
     password: "test"
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
 
 jwt:
   token-prefix: PRIFIX
