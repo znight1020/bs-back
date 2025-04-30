@@ -3,7 +3,6 @@ package toy.bookswap.global.auth.jwt.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,13 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.util.ReflectionTestUtils;
-import toy.bookswap.global.auth.exception.ApplicationAuthenticationException;
-import toy.bookswap.global.auth.exception.AuthenticationError;
+import toy.bookswap.global.exception.exceptions.ApplicationAuthenticationException;
+import toy.bookswap.global.exception.response.AuthenticationError;
 
 @DisplayName("JWT 예외 핸들러 테스트")
 @ExtendWith(MockitoExtension.class)

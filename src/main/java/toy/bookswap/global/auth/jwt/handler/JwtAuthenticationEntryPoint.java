@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import toy.bookswap.global.auth.exception.ApplicationAuthenticationException;
-import toy.bookswap.global.auth.exception.AuthenticationError;
+import toy.bookswap.global.exception.exceptions.ApplicationAuthenticationException;
+import toy.bookswap.global.exception.response.AuthenticationError;
 
 @RequiredArgsConstructor
 @Component

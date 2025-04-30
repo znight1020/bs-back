@@ -1,8 +1,8 @@
 package toy.bookswap.global.auth.jwt.filter;
 
-import static toy.bookswap.global.auth.exception.AuthenticationError.FAILED_VERIFY_TOKEN;
-import static toy.bookswap.global.auth.exception.AuthenticationError.IS_EXPIRED_TOKEN;
-import static toy.bookswap.global.auth.exception.AuthenticationError.IS_NOT_EXIST_TOKEN;
+import static toy.bookswap.global.exception.response.AuthenticationError.FAILED_VERIFY_TOKEN;
+import static toy.bookswap.global.exception.response.AuthenticationError.IS_EXPIRED_TOKEN;
+import static toy.bookswap.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import toy.bookswap.global.auth.exception.ApplicationAuthenticationException;
+import toy.bookswap.global.exception.exceptions.ApplicationAuthenticationException;
 import toy.bookswap.global.auth.jwt.JwtProvider;
 import toy.bookswap.global.auth.jwt.handler.JwtAuthenticationEntryPoint;
 import toy.bookswap.global.auth.response.MemberDetails;
