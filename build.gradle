@@ -72,9 +72,9 @@ configurations {
 
 sourceSets {
     test {
-        java.srcDirs = ['src/test/unit/java', 'src/test/intg/java']
+        java.srcDirs = ['src/test/unit/java']
         resources {
-            srcDirs = ['src/test/unit/resources', 'src/test/intg/resources']
+            srcDirs = ['src/test/unit/resources']
         }
     }
 
