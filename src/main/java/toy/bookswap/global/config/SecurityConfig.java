@@ -1,10 +1,12 @@
 package toy.bookswap.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +17,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import toy.bookswap.global.auth.filter.LoginFilter;
 import toy.bookswap.global.auth.jwt.JwtProvider;
 import toy.bookswap.global.auth.jwt.filter.JwtAuthorizationFilter;
@@ -42,6 +47,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain configure(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     return http
+        .cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
@@ -70,6 +76,22 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of(
+        "http://localhost:3000",
+        "https://leehs.store"
+    ));
+    config.setAllowCredentials(true);
+    config.addAllowedMethod("*");
+    config.addAllowedHeader("*");
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
   }
 
   private LoginFilter loginFilter(AuthenticationManager authenticationManager) {
