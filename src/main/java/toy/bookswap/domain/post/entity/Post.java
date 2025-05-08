@@ -1,5 +1,6 @@
 package toy.bookswap.domain.post.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 import toy.bookswap.domain.book.entity.Book;
 import toy.bookswap.domain.category.entity.Category;
 import toy.bookswap.domain.member.entity.Member;
+import toy.bookswap.domain.post.entity.status.BookStatus;
+import toy.bookswap.domain.post.entity.status.PostStatus;
 import toy.bookswap.global.audit.BaseTime;
 
 @Getter
@@ -34,24 +36,39 @@ public class Post extends BaseTime {
   private Long id;
 
   @Enumerated(EnumType.STRING)
-  private PostStatus status;
+  @Column(nullable = false)
+  private PostStatus postStatus;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
-  private Member member;
+  @JoinColumn(name = "seller_id", nullable = false)
+  private Member seller;
+
+  @Column(nullable = false)
+  private String thumbnailUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "book_id", nullable = false)
   private Book book;
 
-  @Lob
-  private String content;
-  private Integer price;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private BookStatus bookStatus;
 
+  @Column(nullable = false)
+  private Integer sellPrice;
+
+  @Column(length = 200)
+  private String description;
+
+  @Column(nullable = false)
   @Builder.Default
   private Integer viewCount = 0;
+
+  @Column(nullable = false)
+  @Builder.Default
+  private Integer scrapCount = 0;
 }

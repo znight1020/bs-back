@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,17 +25,21 @@ public class Book {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 13, nullable = false)
-  private String isbn;
+  @Column(unique = true, length = 13, nullable = false)
+  private String isbn13;
 
-  @Column(nullable = false)
+  @Column(length = 50, nullable = false)
   private String title;
 
-  private String thumbnailURL;
+  @Column
+  private String description;
 
-  private String summary;
+  @Column
+  private Integer priceStandard;
 
-  private Integer price;
+  @Column
+  private String cover;
 
-  private LocalDateTime publishedAt;
+  @Column
+  private LocalDate pubDate;
 }

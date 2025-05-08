@@ -1,9 +1,8 @@
-package toy.bookswap.domain.notification.entity;
+package com.bob.domain.chat.entity;
 
+import com.bob.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,38 +10,38 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import toy.bookswap.domain.member.entity.Member;
-import toy.bookswap.global.audit.BaseTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Entity
-@Table(name = "notifications")
-public class Notification extends BaseTime {
+@Table(name = "chat_room_members")
+public class ChatRoomMember {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "receiver_id", nullable = false)
-  private Member receiver;
+  @JoinColumn(name = "chat_room_id", nullable = false)
+  private ChatRoom chatRoom;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
 
   @Column(nullable = false)
-  private String message;
+  private Boolean isExited;
+
+  private LocalDateTime exitedAt;
 
   @Column(nullable = false)
-  @Builder.Default
-  private Boolean isRead = false;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private NotificationType type;
+  private Boolean status;
 }

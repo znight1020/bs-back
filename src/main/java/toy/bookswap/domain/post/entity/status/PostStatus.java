@@ -1,4 +1,4 @@
-package toy.bookswap.domain.post.entity;
+package toy.bookswap.domain.post.entity.status;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PostStatus {
-  NEW("new"),
-  RESERVED("reserved"),
-  SOLDOUT("soldout");
+  READY("거래 대기"),
+  IN_PROGRESS("거래 진행"),
+  COMPLETED("거래 완료");
 
   private final String status;
 }
