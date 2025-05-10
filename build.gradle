@@ -121,14 +121,14 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
 
             excludes = [
-                    'toy.bookswap.BookSwapApplication',
-                    'toy.bookswap.global.audit.BaseTime',
-                    'toy.bookswap.**.config.**',
-                    'toy.bookswap.**.request.**',
-                    'toy.bookswap.**.response.**',
-                    'toy.bookswap.**.command.**',
-                    'toy.bookswap.**.query.**',
-                    'toy.bookswap.**.symbol.**',
+                    'com.bob.BookSwapApplication',
+                    'com.bob.global.audit.BaseTime',
+                    'com.bob.**.config.**',
+                    'com.bob.**.request.**',
+                    'com.bob.**.response.**',
+                    'com.bob.**.command.**',
+                    'com.bob.**.query.**',
+                    'com.bob.**.symbol.**',
             ]
 
             // LINE 커버리지
@@ -158,8 +158,8 @@ jacocoTestReport {
     classDirectories.setFrom(
             files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
-                        'toy.bookswap.global.audit.BaseTime',
-                        'toy/bookswap/BookSwapApplication.class'
+                        'com.bob.global.audit.BaseTime',
+                        'com/bob/BookSwapApplication.class'
                 ])
             })
     )

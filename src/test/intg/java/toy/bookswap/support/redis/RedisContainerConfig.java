@@ -1,4 +1,4 @@
-package toy.bookswap.support.redis;
+package com.bob.support.redis;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

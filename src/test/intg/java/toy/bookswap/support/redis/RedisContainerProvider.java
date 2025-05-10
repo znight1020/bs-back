@@ -1,4 +1,4 @@
-package toy.bookswap.support.redis;
+package com.bob.support.redis;
 
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;

@@ -1,9 +1,9 @@
-package toy.bookswap.domain.member.service;
+package com.bob.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.willDoNothing;
-import static toy.bookswap.support.mysql.MySQLContainerProvider.MYSQL_CONTAINER;
+import static com.bob.support.mysql.MySQLContainerProvider.MYSQL_CONTAINER;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,12 +18,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import toy.bookswap.domain.member.command.CreateMemberCommand;
-import toy.bookswap.domain.member.entity.Member;
-import toy.bookswap.domain.member.repository.MemberRepository;
-import toy.bookswap.global.exception.exceptions.ApplicationException;
-import toy.bookswap.global.infra.mail.MailService;
-import toy.bookswap.support.redis.RedisContainerConfig;
+import com.bob.domain.member.command.CreateMemberCommand;
+import com.bob.domain.member.entity.Member;
+import com.bob.domain.member.repository.MemberRepository;
+import com.bob.global.exception.exceptions.ApplicationException;
+import com.bob.global.infra.mail.MailService;
+import com.bob.support.redis.RedisContainerConfig;
 
 @DisplayName("사용자 회원가입 통합 테스트")
 @Import(RedisContainerConfig.class)

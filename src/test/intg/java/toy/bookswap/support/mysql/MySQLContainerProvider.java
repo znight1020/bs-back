@@ -1,4 +1,4 @@
-package toy.bookswap.support.mysql;
+package com.bob.support.mysql;
 
 import org.testcontainers.containers.MySQLContainer;
 
