@@ -307,7 +307,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('37', '3', '700
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('38', '3', '710', '청파동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('39', '3', '730', '한강로동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('40', '3', '740', '한남동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('41', '4', '520', '왕십리');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('41', '4', '520', '왕십리동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('42', '4', '540', '마장동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('43', '4', '550', '사근동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('44', '4', '560', '행당동');
@@ -331,7 +331,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('61', '6', '800
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('62', '6', '810', '용신동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('63', '6', '820', '제기동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('64', '6', '830', '전농동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('65', '6', '860', '답십리');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('65', '6', '860', '답십리동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('66', '6', '870', '장안동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('67', '6', '890', '이문동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('68', '7', '520', '면목동');
@@ -440,7 +440,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('170', '19', '7
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('171', '19', '750', '도림동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('172', '19', '760', '문래동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('173', '20', '520', '노량진동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('174', '20', '530', '상도');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('174', '20', '530', '상도동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('175', '20', '630', '사당동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('176', '20', '680', '대방동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('177', '20', '690', '신대방동');
@@ -636,7 +636,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('366', '43', '7
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('367', '43', '780', '혁신동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('368', '44', '510', '내당동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('369', '44', '540', '비산동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('370', '44', '600', '평리');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('370', '44', '600', '평리동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('371', '44', '660', '상중이동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('372', '44', '680', '원대동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('373', '45', '510', '이천동');
@@ -723,7 +723,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('453', '53', '5
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('454', '53', '530', '연수동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('455', '53', '560', '청학동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('456', '53', '570', '동춘동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('457', '53', '640', '송도');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('457', '53', '640', '송도동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('458', '54', '510', '구월동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('459', '54', '550', '간석동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('460', '54', '590', '만수동');
@@ -854,7 +854,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('584', '65', '6
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('585', '65', '660', '평동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('586', '65', '670', '삼도동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('587', '65', '710', '운남동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('588', '65', '740', '신동');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('588', '65', '740', '신가동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('589', '66', '530', '효동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('590', '66', '550', '판암동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('591', '66', '570', '용운동');
@@ -1267,7 +1267,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('997', '106', '
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('998', '106', '530', '유림동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('999', '106', '540', '동부동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1000', '106', '550', '역북동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1001', '106', '560', '삼동');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1001', '106', '560', '삼가동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1002', '107', '520', '구갈동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1003', '107', '540', '기흥동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('1004', '107', '550', '서농동');
@@ -2961,7 +2961,7 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2691', '240', 
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2692', '240', '610', '덕산동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2693', '240', '620', '풍호동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2694', '240', '630', '웅천동');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2695', '240', '640', '웅동');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2695', '240', '640', '웅동동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2696', '240', '660', '충무동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2697', '241', '110', '의령읍');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2698', '241', '310', '가례면');
@@ -3095,9 +3095,9 @@ INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2825', '251', 
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2826', '251', '310', '한경면');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2827', '251', '320', '추자면');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2828', '251', '330', '우도면');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2829', '251', '510', '일도');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2830', '251', '530', '이도');
-INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2831', '251', '550', '삼도');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2829', '251', '510', '일도동');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2830', '251', '530', '이도동');
+INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2831', '251', '550', '삼도동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2832', '251', '570', '용담동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2833', '251', '590', '건입동');
 INSERT INTO emd_areas (id, sigg_area_id, adm_code, name) VALUES ('2834', '251', '600', '화북동');

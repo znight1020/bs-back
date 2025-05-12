@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Geometry;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,4 +34,7 @@ public class EmdArea {
 
   @Column(length = 50, nullable = false)
   private String name;
+
+  @Column(columnDefinition = "geometry SRID 4326")
+  private Geometry geom;
 }
