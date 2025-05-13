@@ -32,7 +32,7 @@ public class Member extends BaseTime {
   @Column(unique = true, length = 50, nullable = false)
   private String email;
 
-  @Column(length = 20, nullable = false)
+  @Column(nullable = false)
   private String password;
 
   @Column(length = 20, nullable = false)

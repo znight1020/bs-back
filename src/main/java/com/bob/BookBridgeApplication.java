@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class BookSwapApplication {
+public class BookBridgeApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(BookSwapApplication.class, args);
+    SpringApplication.run(BookBridgeApplication.class, args);
   }
 }

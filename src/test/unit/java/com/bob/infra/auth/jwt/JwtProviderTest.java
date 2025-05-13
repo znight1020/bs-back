@@ -2,7 +2,6 @@ package com.bob.infra.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bob.infra.auth.jwt.JwtProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;

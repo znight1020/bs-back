@@ -3,8 +3,8 @@ package com.bob.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.willDoNothing;
-import static com.bob.support.mysql.MySQLContainerProvider.MYSQL_CONTAINER;
 
+import com.bob.support.TestContainerSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
@@ -27,29 +24,15 @@ import com.bob.support.redis.RedisContainerConfig;
 
 @DisplayName("사용자 회원가입 통합 테스트")
 @Import(RedisContainerConfig.class)
-@ActiveProfiles("intg")
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class MemberSignupServiceIntgTest {
+class MemberServiceIntgTest extends TestContainerSupport {
 
   @Autowired private MemberService memberService;
   @Autowired private MemberRepository memberRepository;
   @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private RedisTemplate<String, String> redisTemplate;
   @Mock private MailService mailService;
-
-  @DynamicPropertySource
-  static void registerDynamicProps(DynamicPropertyRegistry registry) {
-    // MySQL
-    registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
-    registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
-    registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-    registry.add("spring.datasource.driver-class-name", MYSQL_CONTAINER::getDriverClassName);
-
-    // REDIS
-    registry.add("spring.data.redis.host", () -> "localhost");
-    registry.add("spring.data.redis.port", () -> 6380);
-  }
 
   @BeforeEach
   void init() {

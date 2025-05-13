@@ -1,12 +1,11 @@
 package com.bob;
 
+import com.bob.support.TestContainerSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("intg")
 @SpringBootTest
-public class BookswapApplicationTests {
+class BookBridgeApplicationTest extends TestContainerSupport {
 
   @Test
   void contextLoads() {

@@ -125,7 +125,7 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
 
             excludes = [
-                    'com.bob.BookSwapApplication',
+                    'com.bob.BookBridgeApplication',
                     'com.bob.global.audit.BaseTime',
                     'com.bob.**.config.**',
                     'com.bob.**.request.**',
@@ -163,7 +163,7 @@ jacocoTestReport {
             files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
                         'com.bob.global.audit.BaseTime',
-                        'com/bob/BookSwapApplication.class'
+                        'com.bob.BookBridgeApplication.class'
                 ])
             })
     )

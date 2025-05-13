@@ -2,12 +2,16 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  datasource:
+    url: jdbc:tc:mysql:8://tc_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
 
   mail:
     username: "test"
@@ -15,7 +19,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: never
       schema-locations: classpath:sql/schema.sql
 
 jwt:
