@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.bob.global.infra.mail.MailService;
+import com.bob.domain.member.service.port.MailService;
 
 @DisplayName("이메일 API 테스트")
 @ExtendWith(MockitoExtension.class)

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.bob.global.infra.mail.MailService;
+import com.bob.domain.member.service.port.MailService;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
 

@@ -38,12 +38,13 @@ class MemberControllerTest {
         {
             "email": "test@email.com",
             "password": "1234",
-            "nickname": "테스터"
+            "nickname": "테스터",
+            "emdId": 1
         }
         """;
 
     // when
-    mvc.perform(post("/members/signup")
+    mvc.perform(post("/members")
         .contentType(MediaType.APPLICATION_JSON)
         .content(json)
     ).andExpect(status().isCreated());

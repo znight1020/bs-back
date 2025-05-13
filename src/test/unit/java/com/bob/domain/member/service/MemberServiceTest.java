@@ -46,7 +46,7 @@ class MemberSignupServiceTest {
     String rawPassword = "password";
     String encodedPassword = "$2a$10";
     String email = "test@email.com";
-    CreateMemberCommand command = new CreateMemberCommand(email, rawPassword, "tester");
+    CreateMemberCommand command = new CreateMemberCommand(email, rawPassword, "tester", 1);
 
     ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
 
@@ -73,7 +73,7 @@ class MemberSignupServiceTest {
   void 이메일_인증이_되지_않으면_회원가입에_실패한다() {
     // given
     String email = "test@email.com";
-    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
+    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester", 1);
 
     given(redisTemplate.opsForValue()).willReturn(valueOperations);
 
@@ -88,7 +88,7 @@ class MemberSignupServiceTest {
   void 이메일_계정이_존재하면_회원가입에_실패한다() {
     // given
     String email = "test@email.com";
-    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
+    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester", 1);
 
     given(memberRepository.existsByEmail(email)).willReturn(true);
 

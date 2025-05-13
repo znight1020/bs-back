@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Cookie 유틸 테스트")
-class CookieUtilsTests {
+class CookieUtilsTest {
 
   @Test
   @DisplayName("Cookie 조회 - 성공 테스트")

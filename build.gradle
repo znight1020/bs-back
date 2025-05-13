@@ -83,7 +83,7 @@ sourceSets {
     }
 
     unitTest {
-        java.srcDirs = ['src/test/unit']
+        java.srcDirs = ['src/test/unit/java']
         resources {
             srcDir 'src/test/unit/resources'
         }
@@ -92,7 +92,7 @@ sourceSets {
     }
 
     integrationTest {
-        java.srcDirs = ['src/test/intg']
+        java.srcDirs = ['src/test/intg/java']
         resources {
             srcDir 'src/test/intg/resources'
         }
