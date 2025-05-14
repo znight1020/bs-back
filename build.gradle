@@ -43,6 +43,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+    // GEO
+    implementation 'org.hibernate.orm:hibernate-spatial'
+    implementation 'org.locationtech.jts:jts-core:1.18.2'
+
     // TEST
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -79,7 +83,7 @@ sourceSets {
     }
 
     unitTest {
-        java.srcDirs = ['src/test/unit']
+        java.srcDirs = ['src/test/unit/java']
         resources {
             srcDir 'src/test/unit/resources'
         }
@@ -88,7 +92,7 @@ sourceSets {
     }
 
     integrationTest {
-        java.srcDirs = ['src/test/intg']
+        java.srcDirs = ['src/test/intg/java']
         resources {
             srcDir 'src/test/intg/resources'
         }
@@ -121,14 +125,14 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
 
             excludes = [
-                    'toy.bookswap.BookSwapApplication',
-                    'toy.bookswap.global.audit.BaseTime',
-                    'toy.bookswap.**.config.**',
-                    'toy.bookswap.**.request.**',
-                    'toy.bookswap.**.response.**',
-                    'toy.bookswap.**.command.**',
-                    'toy.bookswap.**.query.**',
-                    'toy.bookswap.**.symbol.**',
+                    'com.bob.BookBridgeApplication',
+                    'com.bob.global.audit.BaseTime',
+                    'com.bob.**.config.**',
+                    'com.bob.**.request.**',
+                    'com.bob.**.response.**',
+                    'com.bob.**.command.**',
+                    'com.bob.**.query.**',
+                    'com.bob.**.symbol.**',
             ]
 
             // LINE 커버리지
@@ -158,8 +162,8 @@ jacocoTestReport {
     classDirectories.setFrom(
             files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
-                        'toy.bookswap.global.audit.BaseTime',
-                        'toy/bookswap/BookSwapApplication.class'
+                        'com.bob.global.audit.BaseTime',
+                        'com.bob.BookBridgeApplication.class'
                 ])
             })
     )
