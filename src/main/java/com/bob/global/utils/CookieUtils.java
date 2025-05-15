@@ -6,9 +6,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.Setter;
 import org.springframework.http.ResponseCookie;
 
 public class CookieUtils {
+
+  @Setter
+  private static String sameSite = "LAX";
 
   public static String getCookie(HttpServletRequest request, String name) {
     return Optional.ofNullable(request.getCookies())
@@ -21,7 +25,7 @@ public class CookieUtils {
   public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
     ResponseCookie cookie = ResponseCookie.from(name, value)
         .path("/")
-        .sameSite("LAX")
+        .sameSite(sameSite)
         .httpOnly(true)
         .secure(true)
         .maxAge(maxAge)

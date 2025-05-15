@@ -3,20 +3,22 @@ pipeline {
 
     environment {
         TARGET_HOST = "ubuntu@13.125.29.139"
-        RESOURCE_PATH = "/home/ubuntu/jenkins/workspace/bs-back/src/main/resources"
+        RESOURCE_PATH = "/home/ubuntu/jenkins/workspace/bob-back/src/main/resources"
     }
 
     stages {
-
         stage('Get Secret File') {
             steps {
                 sshagent (credentials: ['ec2-ssh-key']) {
                     script {
-                        // 비밀 파일을 작업 공간으로 가져오기
-                        withCredentials([file(credentialsId: 'application-prod', variable: 'PROD_YML'), file(credentialsId: 'application-secret', variable: 'SECRET_YML')]) {
-                            // 비밀 파일을 대상 서버로 전송
+                        withCredentials([
+                            file(credentialsId: 'application-prod', variable: 'PROD_YML'),
+                            file(credentialsId: 'application-secret', variable: 'SECRET_YML'),
+                            file(credentialsId: 'application-dev', variable: 'DEV_YML')
+                        ]) {
                             sh 'scp -o StrictHostKeyChecking=no $PROD_YML ${TARGET_HOST}:${RESOURCE_PATH}'
                             sh 'scp -o StrictHostKeyChecking=no $SECRET_YML ${TARGET_HOST}:${RESOURCE_PATH}'
+                            sh 'scp -o StrictHostKeyChecking=no $DEV_YML ${TARGET_HOST}:${RESOURCE_PATH}'
                         }
                     }
                 }
@@ -37,8 +39,7 @@ pipeline {
                 sshagent (credentials: ['ec2-ssh-key']) {
                     script {
                         def host = "${TARGET_HOST}"
-                        sh """#!/bin/bash
-                        # EC2 서버에서 deploy.sh 실행
+                        sh """
                         ssh -o StrictHostKeyChecking=no '${host}' '
                           cd /home/ubuntu &&
                           ./deploy.sh
@@ -49,40 +50,24 @@ pipeline {
             }
         }
 
-        stage('Deploy bserver-1') {
+        stage('Deploy Services') {
             steps {
-                sshagent (credentials: ['ec2-ssh-key']) {
-                    script {
-                        def host = "${TARGET_HOST}"
-                        sh """#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no '${host}' '
-                          cd /home/ubuntu &&
-                          docker-compose stop bserver-1 || true &&
-                          docker-compose rm -f bserver-1 || true &&
-                          docker-compose up -d bserver-1
-                        '
-                        """
-                    }
-                }
-            }
-        }
+                script {
+                    def services = ['bserver-1', 'bserver-2', 'bserver-dev']
 
-        stage('Deploy bserver-2') {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
-            steps {
-                sshagent (credentials: ['ec2-ssh-key']) {
-                    script {
-                        def host = "${TARGET_HOST}"
-                        sh """#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no '${host}' '
-                          cd /home/ubuntu &&
-                          docker-compose stop bserver-2 || true &&
-                          docker-compose rm -f bserver-2 || true &&
-                          docker-compose up -d bserver-2
-                        '
-                        """
+                    sshagent (credentials: ['ec2-ssh-key']) {
+                        for (svc in services) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no ${TARGET_HOST} '
+                              cd /home/ubuntu &&
+                              docker-compose stop ${svc} || true &&
+                              docker-compose rm -f ${svc} || true &&
+                              docker rmi -f ubuntu_${svc} || true &&
+                              docker-compose build --no-cache ${svc} &&
+                              docker-compose up -d ${svc}
+                            '
+                            """
+                        }
                     }
                 }
             }

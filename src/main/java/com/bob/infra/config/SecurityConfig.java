@@ -83,7 +83,7 @@ public class SecurityConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(List.of(
         "http://localhost:3000",
-        "https://leehs.store"
+        "https://bookbridge.kr"
     ));
     config.setAllowCredentials(true);
     config.addAllowedMethod("*");
