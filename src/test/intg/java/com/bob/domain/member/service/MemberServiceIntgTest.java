@@ -49,7 +49,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
     willDoNothing().given(mailService).verifyMailProcess(email, code);
 
     redisTemplate.opsForValue().set("email-verified:" + email, "true");
-    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
+    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester", 1);
 
     // when
     memberService.signupProcess(command);
@@ -66,7 +66,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
   void 이메일_인증을_하지않은_사용자는_회원가입을_할_수_없다() {
     // given
     String email = "unverified@bookswap.com";
-    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester");
+    CreateMemberCommand command = new CreateMemberCommand(email, "password", "tester", 1);
 
     // when & then
     assertThatThrownBy(() -> memberService.signupProcess(command))
@@ -88,7 +88,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
         .build();
     memberRepository.save(existing);
 
-    CreateMemberCommand command = new CreateMemberCommand(email, "password2", "tester2");
+    CreateMemberCommand command = new CreateMemberCommand(email, "password2", "tester2", 1);
 
     // when & then
     assertThatThrownBy(() -> memberService.signupProcess(command))
