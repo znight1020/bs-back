@@ -1,0 +1,62 @@
+package com.bob.domain.area.reader;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
+import com.bob.domain.area.entity.EmdArea;
+import com.bob.domain.area.repository.AreaRepository;
+import com.bob.global.exception.exceptions.ApplicationException;
+import com.bob.global.exception.response.ApplicationError;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class AreaReaderTest {
+
+  @Mock
+  private AreaRepository areaRepository;
+
+  @InjectMocks
+  private AreaReader areaReader;
+
+  @Test
+  @DisplayName("EmdArea 조회 - 성공 테스트")
+  void emdId로_정상적으로_조회된다() {
+    // given
+    Integer emdId = 1;
+    EmdArea emdArea = createValidMockedEmdArea(emdId);
+    given(areaRepository.findById(any())).willReturn(Optional.of(emdArea));
+
+    // when
+    EmdArea result = areaReader.readEmdArea(emdId);
+
+    // then
+    assertThat(result).isEqualTo(emdArea);
+  }
+
+  @Test
+  @DisplayName("EmdArea 조회 - 실패 테스트 (존재 X)")
+  void 존재하지_않는_emdId인_경우_예외가_발생한다() {
+    // given
+    given(areaRepository.findById(any())).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> areaReader.readEmdArea(any()))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.NOT_EXISTS_AREA.getMessage());
+  }
+
+  EmdArea createValidMockedEmdArea(Integer id) {
+    return EmdArea.builder()
+        .id(id)
+        .name("테스트동")
+        .build();
+  }
+}
