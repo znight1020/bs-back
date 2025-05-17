@@ -1,7 +1,7 @@
 package com.bob.infra.mail.adapter;
 
-import static com.bob.global.exception.response.ApplicationError.MAIL_CODE_EXPIRED;
-import static com.bob.global.exception.response.ApplicationError.MAIL_CODE_INVALIDATE;
+import static com.bob.global.exception.response.ApplicationError.EXPIRED_MAIL_CODE;
+import static com.bob.global.exception.response.ApplicationError.INVALID_MAIL_CODE;
 
 import com.bob.domain.member.service.port.MailService;
 import java.time.Duration;
@@ -33,10 +33,10 @@ public class GoogleMailService implements MailService {
   @Override
   public void verifyMailProcess(String email, String code) {
     String storedCode = getStoredCode(email)
-        .orElseThrow(() -> new ApplicationException(MAIL_CODE_EXPIRED));
+        .orElseThrow(() -> new ApplicationException(EXPIRED_MAIL_CODE));
 
     if (!storedCode.equals(code)) {
-      throw new ApplicationException(MAIL_CODE_INVALIDATE);
+      throw new ApplicationException(INVALID_MAIL_CODE);
     }
 
     saveEmailData("email-verified:" + email, "true", 10);

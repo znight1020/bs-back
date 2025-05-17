@@ -1,7 +1,7 @@
 package com.bob.domain.member.service;
 
-import static com.bob.global.exception.response.ApplicationError.EMAIL_ALREADY_EXISTS;
-import static com.bob.global.exception.response.ApplicationError.EMAIL_IS_NOT_VERIFIED;
+import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
+import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +36,13 @@ public class MemberService {
 
   private void verifyAlreadyExistEmail(String email) {
     if (memberRepository.existsByEmail(email)) {
-      throw new ApplicationException(EMAIL_ALREADY_EXISTS);
+      throw new ApplicationException(ALREADY_EXISTS_EMAIL);
     }
   }
 
   private void verifyEmail(String email) {
     if (!Objects.equals(redisTemplate.opsForValue().get("email-verified:" + email), "true")) {
-      throw new ApplicationException(EMAIL_IS_NOT_VERIFIED);
+      throw new ApplicationException(UNVERIFIED_EMAIL);
     }
     redisTemplate.delete("email-verified:" + email);
   }
