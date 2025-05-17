@@ -8,10 +8,9 @@ import com.bob.domain.area.reader.AreaReader;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
+import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.global.exception.exceptions.ApplicationException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +22,8 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final AreaReader areaReader;
-
   private final PasswordEncoder encoder;
-  private final StringRedisTemplate redisTemplate;
+  private final MailVerificationStore mailVerificationStore;
 
   public void signupProcess(CreateMemberCommand command) {
     verifyAlreadyExistEmail(command.email());
@@ -33,8 +31,8 @@ public class MemberService {
 
     EmdArea memberEmdArea = areaReader.readEmdArea(command.emdId());
     String encodedPassword = encoder.encode(command.password());
-    Member member = command.toMember(memberEmdArea, encodedPassword);
 
+    Member member = command.toMember(memberEmdArea, encodedPassword);
     memberRepository.save(member);
   }
 
@@ -45,9 +43,14 @@ public class MemberService {
   }
 
   private void verifyEmail(String email) {
-    if (!Objects.equals(redisTemplate.opsForValue().get("email-verified:" + email), "true")) {
+    boolean isVerified = mailVerificationStore.getVerified(email)
+        .map("true"::equals)
+        .orElse(false);
+
+    if (!isVerified) {
       throw new ApplicationException(UNVERIFIED_EMAIL);
     }
-    redisTemplate.delete("email-verified:" + email);
+
+    mailVerificationStore.deleteVerified(email);
   }
 }
