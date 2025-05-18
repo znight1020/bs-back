@@ -39,7 +39,7 @@ public class SecurityConfig {
   private final ObjectMapper objectMapper;
 
   private static final String[] AUTH_WHITELIST = {
-      "/auth/**", "/ai/**",
+      "/auth/**", "/ai/**", "/areas/**",
       "/h2-console/**",
       "/error/**",
   };
