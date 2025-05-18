@@ -4,7 +4,6 @@ import static com.bob.global.exception.response.AuthenticationError.FAILED_VERIF
 import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_TOKEN;
 import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 import static com.bob.support.fixture.auth.CookieFixture.ACCESS_VALUE;
-import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_ACCESS_VALUE;
 import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_NAME;
 import static com.bob.support.fixture.auth.CookieFixture.TOKEN_PREFIX;
 import static com.bob.support.fixture.auth.CookieFixture.defaultAuthCookie;
@@ -73,7 +72,6 @@ class JwtAuthorizationFilterTest {
     ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", TOKEN_PREFIX);
     ReflectionTestUtils.setField(jwtAuthorizationFilter, "COOKIE_NAME", AUTH_COOKIE_NAME);
     given(permitAllRegistry.isWhiteList(any(HttpServletRequest.class))).willReturn(false);
-    given(optionalRegistry.isOptionalAuth(any(HttpServletRequest.class))).willReturn(false);
   }
 
   @AfterEach
@@ -158,5 +156,32 @@ class JwtAuthorizationFilterTest {
                 e -> ((ApplicationAuthenticationException) e).getError() == IS_EXPIRED_TOKEN
             )
         );
+  }
+
+  @Test
+  @DisplayName("화이트리스트 요청 테스트")
+  void 화이트리스트_요청은_필터를_통과시킨다() throws Exception {
+    // given
+    given(permitAllRegistry.isWhiteList(request)).willReturn(true);
+
+    // when
+    jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+
+    // then
+    then(filterChain).should().doFilter(request, response);
+  }
+
+  @Test
+  @DisplayName("선택적 인증 요청 테스트")
+  void 선택적_인증이고_쿠키가_없으면_필터를_우회한다() throws Exception {
+    // given
+    given(optionalRegistry.isOptionalAuth(request)).willReturn(true);
+    given(request.getCookies()).willReturn(null);
+
+    // when
+    jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+
+    // then
+    then(filterChain).should().doFilter(request, response);
   }
 }
