@@ -4,6 +4,9 @@ import static com.bob.global.exception.response.AuthenticationError.FAILED_VERIF
 import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_TOKEN;
 import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 import static com.bob.support.fixture.auth.CookieFixture.ACCESS_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_ACCESS_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_NAME;
+import static com.bob.support.fixture.auth.CookieFixture.TOKEN_PREFIX;
 import static com.bob.support.fixture.auth.CookieFixture.defaultAuthCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +20,7 @@ import com.bob.global.utils.CookieUtils;
 import com.bob.infra.auth.jwt.JwtProvider;
 import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
 import com.bob.infra.auth.response.MemberDetails;
+import com.bob.infra.config.registry.OptionalRegistry;
 import com.bob.infra.config.registry.PermitAllRegistry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -61,10 +65,15 @@ class JwtAuthorizationFilterTest {
   @Mock
   private PermitAllRegistry permitAllRegistry;
 
+  @Mock
+  private OptionalRegistry optionalRegistry;
+
   @BeforeEach
   void setUp() {
-    ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", "CTOKEN");
+    ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", TOKEN_PREFIX);
+    ReflectionTestUtils.setField(jwtAuthorizationFilter, "COOKIE_NAME", AUTH_COOKIE_NAME);
     given(permitAllRegistry.isWhiteList(any(HttpServletRequest.class))).willReturn(false);
+    given(optionalRegistry.isOptionalAuth(any(HttpServletRequest.class))).willReturn(false);
   }
 
   @AfterEach

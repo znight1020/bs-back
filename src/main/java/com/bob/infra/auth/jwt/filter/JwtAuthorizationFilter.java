@@ -5,6 +5,7 @@ import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_T
 import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 
 import com.bob.infra.auth.response.MemberDetails;
+import com.bob.infra.config.registry.OptionalRegistry;
 import com.bob.infra.config.registry.PermitAllRegistry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,8 +31,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   @Value("${jwt.token-prefix}")
   private String TOKEN_PREFIX;
 
+  @Value("${jwt.cookie-name}")
+  private String COOKIE_NAME;
+
   private final JwtAuthenticationEntryPoint jwtAuthEntryPoint;
   private final PermitAllRegistry registry;
+  private final OptionalRegistry optionalRegistry;
   private final JwtProvider jwtProvider;
 
   @Override
@@ -41,13 +46,21 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       return;
     }
 
-    String authorizationCookieValue = CookieUtils.getCookie(request, "Authorization");
+    if (optionalRegistry.isOptionalAuth(request) && CookieUtils.getCookie(request, COOKIE_NAME) == null) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    String authorizationCookieValue = CookieUtils.getCookie(request, COOKIE_NAME);
+    System.out.println(authorizationCookieValue);
     if (authorizationCookieValue == null || !authorizationCookieValue.startsWith(TOKEN_PREFIX)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(IS_NOT_EXIST_TOKEN));
       return;
     }
 
-    String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length() + 1);
+    String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length());
+    System.out.println(accessToken);
+    System.out.println(accessToken);
     if (!jwtProvider.isVerified(accessToken)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(FAILED_VERIFY_TOKEN));
       return;

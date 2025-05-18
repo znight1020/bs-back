@@ -1,9 +1,13 @@
 package com.bob.infra.auth.filter;
 
+import static com.bob.support.fixture.auth.CookieFixture.ACCESS_VALUE;
 import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE;
 import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_ACCESS_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_NAME;
 import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_REFRESH_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.REFRESH_VALUE;
 import static com.bob.support.fixture.auth.CookieFixture.SET_COOKIE_HEADER;
+import static com.bob.support.fixture.auth.CookieFixture.TOKEN_PREFIX;
 import static com.bob.support.fixture.request.LoginRequestFixture.defaultLoginRequest;
 import static com.bob.global.exception.response.AuthenticationError.FAILED_AUTHENTICATION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,11 +71,13 @@ class LoginFilterTest {
   @Mock
   private JwtProvider jwtProvider;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(loginFilter, "objectMapper", objectMapper);
+    ReflectionTestUtils.setField(loginFilter, "TOKEN_PREFIX", TOKEN_PREFIX);
+    ReflectionTestUtils.setField(loginFilter, "COOKIE_NAME", AUTH_COOKIE_NAME);
   }
 
   @Test
@@ -103,8 +109,8 @@ class LoginFilterTest {
     Authentication authentication = new UsernamePasswordAuthenticationToken(
         memberDetails, null, memberDetails.getAuthorities()
     );
-    given(jwtProvider.generateAccessToken(1L)).willReturn(AUTH_COOKIE_ACCESS_VALUE);
-    given(jwtProvider.generateRefreshToken(1L)).willReturn(AUTH_COOKIE_REFRESH_VALUE);
+    given(jwtProvider.generateAccessToken(1L)).willReturn(ACCESS_VALUE);
+    given(jwtProvider.generateRefreshToken(1L)).willReturn(REFRESH_VALUE);
 
     // when
     loginFilter.successfulAuthentication(request, response, filterChain, authentication);
