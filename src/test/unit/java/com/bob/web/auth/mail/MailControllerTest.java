@@ -1,5 +1,7 @@
 package com.bob.web.auth.mail;
 
+import static com.bob.support.fixture.request.MailRequestFixture.MAIL_SEND_REQUEST;
+import static com.bob.support.fixture.request.MailRequestFixture.MAIL_VERIFY_REQUEST;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,6 +10,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import com.bob.domain.member.service.port.MailService;
 import com.bob.web.auth.mail.controller.MailController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +24,9 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(MockitoExtension.class)
 class MailControllerTest {
 
+  private final ObjectMapper objectMapper = new ObjectMapper();
   @InjectMocks
   private MailController mailController;
-
   @Mock
   private MailService mailService;
 
@@ -33,11 +36,11 @@ class MailControllerTest {
     MockMvc mvc = standaloneSetup(mailController).build();
 
     mvc.perform(post("/auth/email")
-        .param("email", "test@email.com")
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-    ).andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(MAIL_SEND_REQUEST)))
+        .andExpect(status().isOk());
 
-    verify(mailService, times(1)).sendMailProcess("test@email.com");
+    verify(mailService, times(1)).sendMailProcess(MAIL_SEND_REQUEST.email());
   }
 
   @Test
@@ -46,11 +49,10 @@ class MailControllerTest {
     MockMvc mvc = standaloneSetup(mailController).build();
 
     mvc.perform(post("/auth/email/confirm")
-        .param("email", "test@email.com")
-        .param("code", "ABC123")
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-    ).andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(MAIL_VERIFY_REQUEST)))
+        .andExpect(status().isOk());
 
-    verify(mailService, times(1)).verifyMailProcess("test@email.com", "ABC123");
+    verify(mailService, times(1)).verifyMailProcess(MAIL_VERIFY_REQUEST.email(), MAIL_VERIFY_REQUEST.code());
   }
 }

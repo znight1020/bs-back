@@ -24,6 +24,7 @@ class JwtAuthenticationEntryPointTest {
   @InjectMocks
   private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+  private final String CONTENT_TYPE = "application/json; charset=UTF-8";
   private final ObjectMapper objectMapper = new ObjectMapper();
   private MockHttpServletResponse response;
 
@@ -45,9 +46,9 @@ class JwtAuthenticationEntryPointTest {
     // then
     String content = response.getContentAsString();
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-    assertThat(response.getContentType()).isEqualTo("application/json; charset=UTF-8");
-    assertThat(content).contains("E001");
-    assertThat(content).contains("인증에 실패하였습니다.");
+    assertThat(response.getContentType()).isEqualTo(CONTENT_TYPE);
+    assertThat(content).contains(AuthenticationError.FAILED_AUTHENTICATION.getCode());
+    assertThat(content).contains(AuthenticationError.FAILED_AUTHENTICATION.getMessage());
   }
 
   @Test
@@ -62,8 +63,8 @@ class JwtAuthenticationEntryPointTest {
     // then
     String content = response.getContentAsString();
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-    assertThat(response.getContentType()).isEqualTo("application/json; charset=UTF-8");
-    assertThat(content).contains("E003");
-    assertThat(content).contains("만료된 토큰입니다.");
+    assertThat(response.getContentType()).isEqualTo(CONTENT_TYPE);
+    assertThat(content).contains(AuthenticationError.IS_EXPIRED_TOKEN.getCode());
+    assertThat(content).contains(AuthenticationError.IS_EXPIRED_TOKEN.getMessage());
   }
 }

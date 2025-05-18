@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ChatMessageType {
   MESSAGE("메시지"),
-  IMAGE("사진");
+  IMAGE("사진"),
+  SYSTEM("시스템");
 
   private final String messageType;
 }

@@ -1,5 +1,6 @@
 package com.bob.domain.area.reader;
 
+import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@DisplayName("읍/면/동 조회 테스트")
 @ExtendWith(MockitoExtension.class)
 class AreaReaderTest {
 
@@ -30,12 +32,11 @@ class AreaReaderTest {
   @DisplayName("EmdArea 조회 - 성공 테스트")
   void emdId로_정상적으로_조회된다() {
     // given
-    Integer emdId = 1;
-    EmdArea emdArea = createValidMockedEmdArea(emdId);
-    given(areaRepository.findById(any())).willReturn(Optional.of(emdArea));
+    EmdArea emdArea = defaultEmdArea();
+    given(areaRepository.findById(emdArea.getId())).willReturn(Optional.of(emdArea));
 
     // when
-    EmdArea result = areaReader.readEmdArea(emdId);
+    EmdArea result = areaReader.readEmdArea(emdArea.getId());
 
     // then
     assertThat(result).isEqualTo(emdArea);
@@ -48,15 +49,8 @@ class AreaReaderTest {
     given(areaRepository.findById(any())).willReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> areaReader.readEmdArea(any()))
+    assertThatThrownBy(() -> areaReader.readEmdArea(-1))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(ApplicationError.NOT_EXISTS_AREA.getMessage());
-  }
-
-  EmdArea createValidMockedEmdArea(Integer id) {
-    return EmdArea.builder()
-        .id(id)
-        .name("테스트동")
-        .build();
   }
 }

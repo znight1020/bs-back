@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+@DisplayName("REDIS 메일 인증 테스트")
 @ExtendWith(MockitoExtension.class)
 class RedisVerificationStoreTest {
 

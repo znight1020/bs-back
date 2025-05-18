@@ -1,5 +1,11 @@
 package com.bob.infra.auth.filter;
 
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_ACCESS_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_REFRESH_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.SET_COOKIE_HEADER;
+import static com.bob.support.fixture.request.LoginRequestFixture.defaultLoginRequest;
+import static com.bob.global.exception.response.AuthenticationError.FAILED_AUTHENTICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.any;
@@ -10,8 +16,11 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static com.bob.global.exception.response.AuthenticationError.FAILED_AUTHENTICATION;
 
+import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
+import com.bob.infra.auth.filter.request.LoginRequest;
+import com.bob.infra.auth.jwt.JwtProvider;
+import com.bob.infra.auth.response.MemberDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,10 +41,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.bob.infra.auth.filter.request.LoginRequest;
-import com.bob.infra.auth.jwt.JwtProvider;
-import com.bob.infra.auth.response.MemberDetails;
-import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
 
 @DisplayName("로그인 필터 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -73,10 +78,11 @@ class LoginFilterTest {
   @DisplayName("로그인 요청 - 성공 테스트")
   void 로그인_요청을_시도할_수_있다() throws Exception {
     // given
-    LoginRequest loginRequest = new LoginRequest("test@email.com", "1234");
+    LoginRequest loginRequest = defaultLoginRequest();
     byte[] loginRequestBytes = objectMapper.writeValueAsBytes(loginRequest);
 
-    given(request.getInputStream()).willReturn(new DelegatingServletInputStream(new ByteArrayInputStream(loginRequestBytes)));
+    given(request.getInputStream()).willReturn(
+        new DelegatingServletInputStream(new ByteArrayInputStream(loginRequestBytes)));
     given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).willReturn(authentication);
 
     // when
@@ -95,17 +101,16 @@ class LoginFilterTest {
 
     MemberDetails memberDetails = new MemberDetails(1L);
     Authentication authentication = new UsernamePasswordAuthenticationToken(
-        memberDetails, null,
-        memberDetails.getAuthorities()
+        memberDetails, null, memberDetails.getAuthorities()
     );
-    given(jwtProvider.generateAccessToken(1L)).willReturn("access-token");
-    given(jwtProvider.generateRefreshToken(1L)).willReturn("refresh-token");
+    given(jwtProvider.generateAccessToken(1L)).willReturn(AUTH_COOKIE_ACCESS_VALUE);
+    given(jwtProvider.generateRefreshToken(1L)).willReturn(AUTH_COOKIE_REFRESH_VALUE);
 
     // when
     loginFilter.successfulAuthentication(request, response, filterChain, authentication);
 
     // then
-    verify(response, times(1)).addHeader(eq("Set-Cookie"), contains("Authorization=access-token"));
+    verify(response, times(1)).addHeader(eq(SET_COOKIE_HEADER), contains(AUTH_COOKIE));
     verify(response).setStatus(HttpStatus.OK.value());
     assertThat(authentication.getPrincipal()).isInstanceOf(MemberDetails.class);
   }
