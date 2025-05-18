@@ -1,4 +1,4 @@
-package com.bob.domain.area.reader;
+package com.bob.domain.area.service.reader;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.repository.AreaRepository;
@@ -15,8 +15,8 @@ public class AreaReader {
 
   private final AreaRepository areaRepository;
 
-  public EmdArea readEmdArea(Integer emdId) {
-    return areaRepository.findById(emdId)
+  public EmdArea readEmdArea(Integer id) {
+    return areaRepository.findById(id)
         .orElseThrow(() -> new ApplicationException(ApplicationError.NOT_EXISTS_AREA));
   }
 }

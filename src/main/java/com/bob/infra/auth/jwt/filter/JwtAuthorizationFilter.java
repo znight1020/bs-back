@@ -52,15 +52,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     String authorizationCookieValue = CookieUtils.getCookie(request, COOKIE_NAME);
-    System.out.println(authorizationCookieValue);
     if (authorizationCookieValue == null || !authorizationCookieValue.startsWith(TOKEN_PREFIX)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(IS_NOT_EXIST_TOKEN));
       return;
     }
 
     String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length());
-    System.out.println(accessToken);
-    System.out.println(accessToken);
     if (!jwtProvider.isVerified(accessToken)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(FAILED_VERIFY_TOKEN));
       return;

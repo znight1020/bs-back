@@ -1,9 +1,10 @@
 package com.bob.domain.member.command;
 
 import com.bob.domain.area.entity.EmdArea;
+import com.bob.domain.area.entity.activity.ActivityArea;
+import com.bob.domain.area.entity.activity.ActivityAreaId;
 import com.bob.domain.member.entity.Member;
-import com.bob.domain.member.entity.activity.ActivityArea;
-import com.bob.domain.member.entity.activity.ActivityAreaId;
+import java.time.LocalDate;
 
 public record CreateMemberCommand(
     String email,
@@ -23,6 +24,7 @@ public record CreateMemberCommand(
         .id(new ActivityAreaId(null, emdArea.getId()))
         .member(member)
         .emdArea(emdArea)
+        .authenticationAt(LocalDate.now())
         .build();
 
     member.updateActivityArea(activityArea);

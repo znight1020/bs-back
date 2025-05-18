@@ -1,4 +1,4 @@
-package com.bob.domain.member.entity.activity;
+package com.bob.domain.area.entity.activity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

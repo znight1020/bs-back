@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.repository.AreaRepository;
+import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import java.util.Optional;

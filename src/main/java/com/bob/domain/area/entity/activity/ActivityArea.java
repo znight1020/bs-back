@@ -1,5 +1,6 @@
-package com.bob.domain.member.entity.activity;
+package com.bob.domain.area.entity.activity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,4 +38,19 @@ public class ActivityArea {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "emd_area_id")
   private EmdArea emdArea;
+
+  @Column(nullable = false)
+  private LocalDate authenticationAt;
+
+  public static ActivityArea create(ActivityAreaId id, Member member, EmdArea emdArea) {
+    return new ActivityArea(id, member, emdArea, LocalDate.now());
+  }
+
+  public static ActivityAreaId createId(Long memberId, Integer emdAreaId) {
+    return new ActivityAreaId(memberId, emdAreaId);
+  }
+
+  public void updateAuthenticationAt(LocalDate newDate) {
+    authenticationAt = newDate;
+  }
 }

@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS emd_areas (
 CREATE TABLE IF NOT EXISTS activity_areas (
     member_id BIGINT NOT NULL,
     emd_area_id INT NOT NULL,
+    authentication_at DATE NOT NULL,
     PRIMARY KEY (member_id, emd_area_id),
     FOREIGN KEY (member_id) REFERENCES members(id),
     FOREIGN KEY (emd_area_id) REFERENCES emd_areas(id)
