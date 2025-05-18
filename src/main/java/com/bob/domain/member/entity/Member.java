@@ -1,6 +1,6 @@
 package com.bob.domain.member.entity;
 
-import com.bob.domain.member.entity.activity.ActivityArea;
+import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.global.audit.BaseTime;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
-import com.bob.domain.area.reader.AreaReader;
+import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
