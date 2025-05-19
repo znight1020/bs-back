@@ -50,6 +50,10 @@ public class ActivityArea {
     return new ActivityAreaId(memberId, emdAreaId);
   }
 
+  public boolean isExpired() {
+    return authenticationAt.isBefore(LocalDate.now());
+  }
+
   public void updateAuthenticationAt(LocalDate newDate) {
     authenticationAt = newDate;
   }

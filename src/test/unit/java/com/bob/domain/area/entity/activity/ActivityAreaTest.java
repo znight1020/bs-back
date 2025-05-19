@@ -62,4 +62,47 @@ class ActivityAreaTest {
     // then
     assertThat(activityArea.getAuthenticationAt()).isEqualTo(newDate);
   }
+
+  @Test
+  @DisplayName("인증날짜 - 유효")
+  void 인증날짜가_유효하면_false를_반환한다() {
+    // given
+    Member member = defaultIdMember();
+    EmdArea emdArea = defaultEmdArea();
+    ActivityAreaId id = ActivityArea.createId(member.getId(), emdArea.getId());
+    ActivityArea activityArea = ActivityArea.builder()
+        .id(id)
+        .member(member)
+        .emdArea(emdArea)
+        .authenticationAt(LocalDate.now())
+        .build();
+
+    // when
+    boolean isExpired = activityArea.isExpired();
+
+    // then
+    assertThat(isExpired).isFalse();
+  }
+
+  @Test
+  @DisplayName("인증날짜 - 만료")
+  void 인증날짜가_유효하면_true를_반환한다() {
+    // given
+    Member member = defaultIdMember();
+    EmdArea emdArea = defaultEmdArea();
+    ActivityAreaId id = ActivityArea.createId(member.getId(), emdArea.getId());
+    ActivityArea activityArea = ActivityArea.builder()
+        .id(id)
+        .member(member)
+        .emdArea(emdArea)
+        .authenticationAt(LocalDate.now().minusDays(1))
+        .build();
+
+    // when
+    boolean isExpired = activityArea.isExpired();
+
+    // then
+    assertThat(isExpired).isTrue();
+  }
+
 }
