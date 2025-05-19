@@ -69,6 +69,8 @@ class MemberServiceTest {
     assertThat(saved.getEmail()).isEqualTo(command.email());
     assertThat(saved.getNickname()).isEqualTo(command.nickname());
     assertThat(saved.getPassword()).isEqualTo(encodedPassword);
+    assertThat(saved.getActivityArea().getEmdArea().getId()).isEqualTo(command.emdId());
+    assertThat(saved.getActivityArea().getAuthenticationAt()).isNotNull();
   }
 
   @Test

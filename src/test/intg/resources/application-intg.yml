@@ -27,3 +27,4 @@ jwt:
   secret-key: secret
   access-token-expire-time: 1
   refresh-token-expire-time: 1
+  cookie-name: cname

@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 
 public class CookieFixture {
 
+  public static final String TOKEN_PREFIX = "CTOKEN:";
   public static final String SET_COOKIE_HEADER = "Set-Cookie";
   public static final String AUTH_COOKIE_NAME = "Authorization";
   public static final String AUTH_COOKIE_ACCESS_VALUE = "CTOKEN:access-token";

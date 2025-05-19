@@ -59,6 +59,8 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThat(saved.getEmail()).isEqualTo(email);
     assertThat(passwordEncoder.matches(command.password(), saved.getPassword())).isTrue();
     assertThat(saved.getNickname()).isEqualTo(command.nickname());
+    assertThat(saved.getActivityArea().getEmdArea().getId()).isEqualTo(command.emdId());
+    assertThat(saved.getActivityArea().getAuthenticationAt()).isNotNull();
   }
 
   @Test
