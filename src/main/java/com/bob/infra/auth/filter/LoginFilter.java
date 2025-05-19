@@ -21,10 +21,8 @@ import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
 import com.bob.global.exception.response.AuthenticationError;
 import com.bob.infra.auth.jwt.JwtProvider;
 import com.bob.global.utils.CookieUtils;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Component
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
   @Value("${jwt.token-prefix}")
