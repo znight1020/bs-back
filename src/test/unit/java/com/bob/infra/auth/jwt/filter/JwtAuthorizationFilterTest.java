@@ -1,14 +1,26 @@
 package com.bob.infra.auth.jwt.filter;
 
+import static com.bob.global.exception.response.AuthenticationError.FAILED_VERIFY_TOKEN;
+import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_TOKEN;
+import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
+import static com.bob.support.fixture.auth.CookieFixture.ACCESS_VALUE;
+import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_NAME;
+import static com.bob.support.fixture.auth.CookieFixture.TOKEN_PREFIX;
+import static com.bob.support.fixture.auth.CookieFixture.defaultAuthCookie;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.argThat;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static com.bob.global.exception.response.AuthenticationError.FAILED_VERIFY_TOKEN;
-import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_TOKEN;
-import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 
+import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
+import com.bob.global.utils.CookieUtils;
+import com.bob.infra.auth.jwt.JwtProvider;
+import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
+import com.bob.infra.auth.response.MemberDetails;
+import com.bob.infra.config.registry.OptionalRegistry;
+import com.bob.infra.config.registry.PermitAllRegistry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,11 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.bob.infra.auth.jwt.JwtProvider;
-import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
-import com.bob.infra.auth.response.MemberDetails;
-import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
-import com.bob.global.utils.CookieUtils;
 
 @DisplayName("JWT 토큰 인증 필터 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -54,10 +61,17 @@ class JwtAuthorizationFilterTest {
   @Mock
   private CookieUtils cookieUtils;
 
+  @Mock
+  private PermitAllRegistry permitAllRegistry;
+
+  @Mock
+  private OptionalRegistry optionalRegistry;
+
   @BeforeEach
   void setUp() {
-    ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", "TestTK");
-    given(request.getRequestURI()).willReturn("");
+    ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", TOKEN_PREFIX);
+    ReflectionTestUtils.setField(jwtAuthorizationFilter, "COOKIE_NAME", AUTH_COOKIE_NAME);
+    given(permitAllRegistry.isWhiteList(any(HttpServletRequest.class))).willReturn(false);
   }
 
   @AfterEach
@@ -69,12 +83,10 @@ class JwtAuthorizationFilterTest {
   @DisplayName("Token 인증 - 성공 테스트")
   void 토큰이_유효하다면_인증에_성공한다() throws Exception {
     // given
-    given(request.getCookies()).willReturn(new Cookie[]{
-        new Cookie("Authorization", "TestTK valid-token")
-    });
-    given(jwtProvider.isVerified("valid-token")).willReturn(true);
-    given(jwtProvider.isExpired("valid-token")).willReturn(false);
-    given(jwtProvider.getMemberId("valid-token")).willReturn(1L);
+    given(request.getCookies()).willReturn(new Cookie[]{defaultAuthCookie()});
+    given(jwtProvider.isVerified(ACCESS_VALUE)).willReturn(true);
+    given(jwtProvider.isExpired(ACCESS_VALUE)).willReturn(false);
+    given(jwtProvider.getMemberId(ACCESS_VALUE)).willReturn(1L);
 
     // when
     jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
@@ -84,7 +96,6 @@ class JwtAuthorizationFilterTest {
     assertThat(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()).isTrue();
     assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
         .isInstanceOf(MemberDetails.class);
-
     then(filterChain).should().doFilter(request, response);
   }
 
@@ -110,10 +121,9 @@ class JwtAuthorizationFilterTest {
   @DisplayName("Token 인증 - 실패 테스트(Token 검증 실패)")
   void 토큰이_검증되지_않으면_인증에_실패한다() throws Exception {
     // given
-    given(request.getCookies()).willReturn(new Cookie[]{
-        new Cookie("Authorization", "TestTK invalid-token")
-    });
-    given(jwtProvider.isVerified("invalid-token")).willReturn(false);
+    Cookie invalidCookie = defaultAuthCookie();
+    given(request.getCookies()).willReturn(new Cookie[]{invalidCookie});
+    given(jwtProvider.isVerified(ACCESS_VALUE)).willReturn(false);
 
     // when
     jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
@@ -131,11 +141,10 @@ class JwtAuthorizationFilterTest {
   @DisplayName("Token 인증 - 실패 테스트(Token 만료)")
   void 토큰이_만료되면_인증에_실패한다() throws Exception {
     // given
-    given(request.getCookies()).willReturn(new Cookie[]{
-        new Cookie("Authorization", "TestTK expired-token")
-    });
-    given(jwtProvider.isVerified("expired-token")).willReturn(true);
-    given(jwtProvider.isExpired("expired-token")).willReturn(true);
+    Cookie expiredCookie = defaultAuthCookie();
+    given(request.getCookies()).willReturn(new Cookie[]{expiredCookie});
+    given(jwtProvider.isVerified(ACCESS_VALUE)).willReturn(true);
+    given(jwtProvider.isExpired(ACCESS_VALUE)).willReturn(true);
 
     // when
     jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
@@ -150,16 +159,29 @@ class JwtAuthorizationFilterTest {
   }
 
   @Test
-  @DisplayName("JWT 인증 WhiteList 테스트")
-  void expiredToken() throws Exception {
+  @DisplayName("화이트리스트 요청 테스트")
+  void 화이트리스트_요청은_필터를_통과시킨다() throws Exception {
     // given
-    given(request.getRequestURI()).willReturn("/auth");
+    given(permitAllRegistry.isWhiteList(request)).willReturn(true);
 
     // when
     jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
 
     // then
-    then(cookieUtils).shouldHaveNoInteractions();
+    then(filterChain).should().doFilter(request, response);
   }
 
+  @Test
+  @DisplayName("선택적 인증 요청 테스트")
+  void 선택적_인증이고_쿠키가_없으면_필터를_우회한다() throws Exception {
+    // given
+    given(optionalRegistry.isOptionalAuth(request)).willReturn(true);
+    given(request.getCookies()).willReturn(null);
+
+    // when
+    jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+
+    // then
+    then(filterChain).should().doFilter(request, response);
+  }
 }

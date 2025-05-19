@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,8 +39,7 @@ public class SecurityConfig {
   private final ObjectMapper objectMapper;
 
   private static final String[] AUTH_WHITELIST = {
-      "/members/signup",
-      "/auth/**",
+      "/auth/**", "/ai/**", "/areas/**",
       "/h2-console/**",
       "/error/**",
   };
@@ -57,6 +57,10 @@ public class SecurityConfig {
         .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
         .authorizeHttpRequests(request -> request
             .requestMatchers(AUTH_WHITELIST).permitAll()
+            .requestMatchers(HttpMethod.POST, "/members").permitAll()
+            .requestMatchers(HttpMethod.GET, "/posts").permitAll()
+            .requestMatchers(HttpMethod.GET, "/posts/{postId:[\\d]+}").permitAll()
+            .requestMatchers(HttpMethod.GET, "/members/{memberId:\\d+}").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,7 +1,7 @@
 -- ========================
 -- 📚 BOOKS TABLE
 -- ========================
-CREATE TABLE books (
+CREATE TABLE IF NOT EXISTS books (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    isbn13 CHAR(13) NOT NULL UNIQUE,
    title VARCHAR(50) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE books (
 -- ========================
 -- 🧑 MEMBERS TABLE
 -- ========================
-CREATE TABLE members (
+CREATE TABLE IF NOT EXISTS members (
      id BIGINT AUTO_INCREMENT PRIMARY KEY,
      email VARCHAR(50) NOT NULL UNIQUE,
      password VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE members (
 -- ========================
 -- 📂 CATEGORIES TABLE
 -- ========================
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
     parent_id BIGINT,
@@ -36,7 +36,7 @@ CREATE TABLE categories (
 -- ========================
 -- 📝 POSTS TABLE
 -- ========================
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    post_status ENUM('READY', 'IN_PROGRESS', 'COMPLETED') NOT NULL,
    category_id BIGINT NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE posts (
 -- ========================
 -- ⭐ LIKE_POSTS TABLE
 -- ========================
-CREATE TABLE like_posts (
+CREATE TABLE IF NOT EXISTS like_posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id BIGINT NOT NULL,
     post_id BIGINT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE like_posts (
 -- ========================
 -- 📩 NOTIFICATIONS TABLE
 -- ========================
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    receiver_id BIGINT NOT NULL,
    message VARCHAR(255) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE notifications (
 -- ========================
 -- 💬 CHAT_ROOMS TABLE
 -- ========================
-CREATE TABLE chat_rooms (
+CREATE TABLE IF NOT EXISTS chat_rooms (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     trade_id BIGINT NOT NULL,
     title_suffix VARCHAR(100) NOT NULL,
@@ -96,11 +96,11 @@ CREATE TABLE chat_rooms (
 -- ========================
 -- 💬 CHAT_MESSAGES TABLE
 -- ========================
-CREATE TABLE chat_messages (
+CREATE TABLE IF NOT EXISTS chat_messages (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    chat_room_id BIGINT NOT NULL,
    sender_id BIGINT NOT NULL,
-   chat_message_type ENUM('MESSAGE', 'IMAGE') NOT NULL,
+   chat_message_type ENUM('MESSAGE', 'IMAGE', 'SYSTEM') NOT NULL,
    chat_message VARCHAR(500),
    chat_image_url VARCHAR(255),
    is_read BOOLEAN DEFAULT FALSE,
@@ -112,7 +112,7 @@ CREATE TABLE chat_messages (
 -- ========================
 -- 👥 CHAT_ROOM_MEMBERS TABLE
 -- ========================
-CREATE TABLE chat_room_members (
+CREATE TABLE IF NOT EXISTS chat_room_members (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    chat_room_id BIGINT NOT NULL,
    member_id BIGINT NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE chat_room_members (
 -- ========================
 -- 🗺️ SIDO_AREAS TABLE
 -- ========================
-CREATE TABLE sido_areas (
+CREATE TABLE IF NOT EXISTS sido_areas (
     id INT PRIMARY KEY,
     adm_code VARCHAR(2) NOT NULL,
     name VARCHAR(50) NOT NULL
@@ -135,7 +135,7 @@ CREATE TABLE sido_areas (
 -- ========================
 -- 🏞️ SIGG_AREAS TABLE
 -- ========================
-CREATE TABLE sigg_areas (
+CREATE TABLE IF NOT EXISTS sigg_areas (
     id INT PRIMARY KEY,
     sido_area_id INT NOT NULL,
     adm_code VARCHAR(5) NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE sigg_areas (
 -- ========================
 -- 🗺️ EMD_AREAS TABLE
 -- ========================
-CREATE TABLE emd_areas (
+CREATE TABLE IF NOT EXISTS emd_areas (
    id INT PRIMARY KEY,
    sigg_area_id INT NOT NULL,
    adm_code VARCHAR(10) NOT NULL,
@@ -158,9 +158,10 @@ CREATE TABLE emd_areas (
 -- ========================
 -- 📍 ACTIVITY_AREAS TABLE
 -- ========================
-CREATE TABLE activity_areas (
+CREATE TABLE IF NOT EXISTS activity_areas (
     member_id BIGINT NOT NULL,
     emd_area_id INT NOT NULL,
+    authentication_at DATE NOT NULL,
     PRIMARY KEY (member_id, emd_area_id),
     FOREIGN KEY (member_id) REFERENCES members(id),
     FOREIGN KEY (emd_area_id) REFERENCES emd_areas(id)
@@ -169,7 +170,7 @@ CREATE TABLE activity_areas (
 -- ========================
 -- 🤝 TRADES TABLE
 -- ========================
-CREATE TABLE trades (
+CREATE TABLE IF NOT EXISTS trades (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT NOT NULL,
     buyer_id BIGINT NOT NULL,

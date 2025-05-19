@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,12 @@ import com.bob.global.utils.CookieUtils;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+
+  @Value("${jwt.token-prefix}")
+  private String TOKEN_PREFIX;
+
+  @Value("${jwt.cookie-name}")
+  private String COOKIE_NAME;
 
   private final AuthenticationManager authenticationManager;
   private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -42,8 +49,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     Long memberId = principal.getId();
     String accessToken = jwtProvider.generateAccessToken(memberId);
     String refreshToken = jwtProvider.generateRefreshToken(memberId);
-    CookieUtils.addCookie(response, "Authorization", accessToken, 216000);
-    CookieUtils.addCookie(response, "refresh", refreshToken, 216000);
+    CookieUtils.addCookie(response, COOKIE_NAME, TOKEN_PREFIX + accessToken, 216000);
+    CookieUtils.addCookie(response, "refresh", TOKEN_PREFIX + refreshToken, 216000);
     response.setStatus(HttpStatus.OK.value());
   }
 

@@ -5,10 +5,11 @@ import com.bob.domain.member.command.CreateMemberCommand;
 public record SignupRequest(
     String nickname,
     String email,
-    String password
+    String password,
+    Integer emdId
 ) {
 
   public CreateMemberCommand toCommand() {
-    return new CreateMemberCommand(email, password, nickname);
+    return new CreateMemberCommand(email, password, nickname, emdId);
   }
 }

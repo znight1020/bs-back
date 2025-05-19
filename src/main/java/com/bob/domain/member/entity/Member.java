@@ -1,5 +1,7 @@
 package com.bob.domain.member.entity;
 
+import com.bob.domain.area.entity.activity.ActivityArea;
+import com.bob.global.audit.BaseTime;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.bob.domain.member.entity.activity.ActivityArea;
-import com.bob.global.audit.BaseTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,4 +48,8 @@ public class Member extends BaseTime {
       fetch = FetchType.LAZY
   )
   private ActivityArea activityArea;
+
+  public void updateActivityArea(ActivityArea newActivityArea) {
+    activityArea = newActivityArea;
+  }
 }

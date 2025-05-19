@@ -5,6 +5,8 @@ import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_T
 import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 
 import com.bob.infra.auth.response.MemberDetails;
+import com.bob.infra.config.registry.OptionalRegistry;
+import com.bob.infra.config.registry.PermitAllRegistry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,23 +31,33 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   @Value("${jwt.token-prefix}")
   private String TOKEN_PREFIX;
 
+  @Value("${jwt.cookie-name}")
+  private String COOKIE_NAME;
+
   private final JwtAuthenticationEntryPoint jwtAuthEntryPoint;
+  private final PermitAllRegistry registry;
+  private final OptionalRegistry optionalRegistry;
   private final JwtProvider jwtProvider;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    if (isWhiteList(request)) {
+    if (registry.isWhiteList(request)) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    String authorizationCookieValue = CookieUtils.getCookie(request, "Authorization");
+    if (optionalRegistry.isOptionalAuth(request) && CookieUtils.getCookie(request, COOKIE_NAME) == null) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    String authorizationCookieValue = CookieUtils.getCookie(request, COOKIE_NAME);
     if (authorizationCookieValue == null || !authorizationCookieValue.startsWith(TOKEN_PREFIX)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(IS_NOT_EXIST_TOKEN));
       return;
     }
 
-    String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length() + 1);
+    String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length());
     if (!jwtProvider.isVerified(accessToken)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(FAILED_VERIFY_TOKEN));
       return;
@@ -62,10 +74,5 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     );
     SecurityContextHolder.getContext().setAuthentication(authentication);
     filterChain.doFilter(request, response);
-  }
-
-  private boolean isWhiteList(HttpServletRequest request) {
-    String URI = request.getRequestURI();
-    return URI.startsWith("/auth") || URI.startsWith("/members/signup") || URI.startsWith("/h2-console");
   }
 }

@@ -19,7 +19,7 @@ spring:
 
   sql:
     init:
-      mode: never
+      mode: always
       schema-locations: classpath:sql/schema.sql
 
 jwt:
@@ -27,3 +27,4 @@ jwt:
   secret-key: secret
   access-token-expire-time: 1
   refresh-token-expire-time: 1
+  cookie-name: cname
