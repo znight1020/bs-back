@@ -2,10 +2,8 @@ package com.bob.domain.member.service.reader;
 
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
-import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 import com.bob.domain.member.entity.Member;
@@ -37,7 +35,7 @@ class MemberReaderTest {
     given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
     // when
-    Member result = memberReader.readMember(1L);
+    Member result = memberReader.readMemberById(1L);
 
     // then
     assertThat(result).isEqualTo(member);
@@ -50,7 +48,7 @@ class MemberReaderTest {
     given(memberRepository.findById(1L)).willReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> memberReader.readMember(1L))
+    assertThatThrownBy(() -> memberReader.readMemberById(1L))
         .isInstanceOf(ApplicationException.class)
         .hasMessageContaining(NOT_EXISTS_MEMBER.getMessage());
   }

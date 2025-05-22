@@ -5,15 +5,17 @@ import java.util.stream.Collectors;
 
 public interface MailService {
 
-  void sendMailProcess(String email);
+  void sendCodeProcess(String email);
 
-  void verifyMailProcess(String email, String code);
+  void verifyCodeProcess(String email, String code);
 
-  default String generateCode() {
+  String sendTempPasswordProcess(String email);
+
+  default String generateCode(int size) {
     String candidateChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     Random random = new Random();
-    return random.ints(6, 0, candidateChars.length())
+    return random.ints(size, 0, candidateChars.length())
         .mapToObj(candidateChars::charAt)
         .map(String::valueOf)
         .collect(Collectors.joining());

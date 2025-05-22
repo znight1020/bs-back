@@ -14,8 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberReader {
 
   private final MemberRepository memberRepository;
-  public Member readMember(Long id) {
+
+  public Member readMemberById(Long id) {
     return memberRepository.findById(id)
+        .orElseThrow(() -> new ApplicationException(ApplicationError.NOT_EXISTS_MEMBER));
+  }
+
+  public Member readMemberByEmail(String email) {
+    return memberRepository.findByEmail(email)
         .orElseThrow(() -> new ApplicationException(ApplicationError.NOT_EXISTS_MEMBER));
   }
 }

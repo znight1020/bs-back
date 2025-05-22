@@ -97,7 +97,7 @@ class AreaServiceTest {
     given(geometry.contains(any(Point.class))).willReturn(true);
 
     Member member = mock(Member.class);
-    given(memberReader.readMember(command.memberId())).willReturn(member);
+    given(memberReader.readMemberById(command.memberId())).willReturn(member);
 
     // when
     areaService.authenticate(command);

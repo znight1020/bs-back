@@ -1,4 +1,4 @@
-package com.bob.infra.mail.verification;
+package com.bob.infra.redis.adapter;
 
 import com.bob.domain.member.service.port.MailVerificationStore;
 import java.time.Duration;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
-public class RedisVerificationStore implements MailVerificationStore {
+public class RedisMailVerificationStore implements MailVerificationStore {
 
   private final StringRedisTemplate redisTemplate;
 

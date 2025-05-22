@@ -52,4 +52,8 @@ public class Member extends BaseTime {
   public void updateActivityArea(ActivityArea newActivityArea) {
     activityArea = newActivityArea;
   }
+
+  public void updatePassword(String newPassword) {
+    password = newPassword;
+  }
 }

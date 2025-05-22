@@ -1,6 +1,7 @@
 package com.bob.infra.config.registry;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +19,10 @@ public class PermitAllRegistry {
       new AntPathRequestMatcher("/h2-console/**"),
       new AntPathRequestMatcher("/error/**"),
       new AntPathRequestMatcher("/members", POST.name()),
+      new AntPathRequestMatcher("/members/temp/**", PATCH.name()),
+      new AntPathRequestMatcher("/members/{memberId:\\d+}", GET.name()),
       new AntPathRequestMatcher("/posts", GET.name()),
-      new AntPathRequestMatcher("/posts/{postId:\\d+}", GET.name()),
-      new AntPathRequestMatcher("/members/{memberId:\\d+}", GET.name())
+      new AntPathRequestMatcher("/posts/{postId:\\d+}", GET.name())
   );
 
   public boolean isWhiteList(HttpServletRequest request) {

@@ -25,7 +25,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,7 +35,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private static final String[] AUTH_WHITELIST = {
-      "/auth/**", "/ai/**", "/areas/**",
+      "/auth/**", "/ai/**", "/areas/**", "/members/temp/**",
       "/h2-console/**",
       "/error/**",
   };
@@ -65,9 +64,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(request -> request
             .requestMatchers(AUTH_WHITELIST).permitAll()
             .requestMatchers(HttpMethod.POST, "/members").permitAll()
+            .requestMatchers(HttpMethod.GET, "/members/{memberId:\\d+}").permitAll()
             .requestMatchers(HttpMethod.GET, "/posts").permitAll()
             .requestMatchers(HttpMethod.GET, "/posts/{postId:[\\d]+}").permitAll()
-            .requestMatchers(HttpMethod.GET, "/members/{memberId:\\d+}").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -55,7 +55,7 @@ public class AreaService {
     ActivityAreaId id = ActivityArea.createId(command.memberId(), command.emdId());
     activityAreaRepository.deleteById(id);
 
-    Member member = memberReader.readMember(command.memberId());
+    Member member = memberReader.readMemberById(command.memberId());
     ActivityArea newActivityArea = ActivityArea.create(id, member, emdArea);
 
     activityAreaRepository.save(newActivityArea);

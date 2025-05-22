@@ -1,4 +1,4 @@
-package com.bob.infra.mail;
+package com.bob.infra.mail.adapter;
 
 import static com.bob.global.exception.response.ApplicationError.EXPIRED_MAIL_CODE;
 import static com.bob.global.exception.response.ApplicationError.INVALID_MAIL_CODE;
@@ -20,17 +20,14 @@ public class GoogleMailService implements MailService {
   private final MailVerificationStore mailVerificationStore;
 
   @Override
-  public void sendMailProcess(String email) {
-    String verificationCode = generateCode();
+  public void sendCodeProcess(String email) {
+    String verificationCode = generateCode(6);
     mailVerificationStore.saveCode(email, verificationCode, 3);
-
-    message.setText("인증코드 : " + verificationCode);
-    message.setTo(email);
-    mailSender.send(message);
+    sendMail("인증 코드", verificationCode, email);
   }
 
   @Override
-  public void verifyMailProcess(String email, String code) {
+  public void verifyCodeProcess(String email, String code) {
     String storedCode = mailVerificationStore.getCode(email)
         .orElseThrow(() -> new ApplicationException(EXPIRED_MAIL_CODE));
 
@@ -40,5 +37,19 @@ public class GoogleMailService implements MailService {
 
     mailVerificationStore.saveVerified(email, "true", 10);
     mailVerificationStore.deleteCode(email);
+  }
+
+  @Override
+  public String sendTempPasswordProcess(String email) {
+    String tempPassword = generateCode(12);
+    sendMail("임시 비밀번호", tempPassword, email);
+    return tempPassword;
+  }
+
+  private void sendMail(String title, String content, String email) {
+    message.setSubject("[Bookswap] " + title + " 안내");
+    message.setText(title + " : " + content);
+    message.setTo(email);
+    mailSender.send(message);
   }
 }

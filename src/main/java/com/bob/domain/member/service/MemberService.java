@@ -6,9 +6,12 @@ import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAI
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.command.CreateMemberCommand;
+import com.bob.domain.member.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
+import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
+import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +27,8 @@ public class MemberService {
   private final AreaReader areaReader;
   private final PasswordEncoder encoder;
   private final MailVerificationStore mailVerificationStore;
+  private final MailService mailService;
+  private final MemberReader memberReader;
 
   public void signupProcess(CreateMemberCommand command) {
     verifyAlreadyExistEmail(command.email());
@@ -52,5 +57,11 @@ public class MemberService {
     }
 
     mailVerificationStore.deleteVerified(email);
+  }
+
+  public void issueTempPasswordProcess(IssuePasswordCommand command) {
+    Member member = memberReader.readMemberByEmail(command.email());
+    String tempPassword = mailService.sendTempPasswordProcess(command.email());
+    member.updatePassword(encoder.encode(tempPassword));
   }
 }
