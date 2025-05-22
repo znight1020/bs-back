@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+import com.bob.domain.member.command.ChangePasswordCommand;
 import com.bob.domain.member.command.IssuePasswordCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,29 @@ class MemberControllerTest {
 
     // then
     verify(memberService, times(1)).signupProcess(any(CreateMemberCommand.class));
+  }
+
+  @Test
+  @DisplayName("비밀번호 변경 API 호출 테스트")
+  void 비밀번호_변경_API를_호출할_수_있다() throws Exception {
+    // given
+    MockMvc mvc = standaloneSetup(memberController).build();
+
+    String json = """
+        {
+            "oldPassword": "password",
+            "newPassword": "new-password"
+        }
+        """;
+
+    // when
+    mvc.perform(patch("/members/me/password")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json)
+    ).andExpect(status().isOk());
+
+    // then
+    verify(memberService, times(1)).changePasswordProcess(any(ChangePasswordCommand.class));
   }
 
   @Test

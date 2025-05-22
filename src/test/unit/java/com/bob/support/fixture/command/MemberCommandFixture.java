@@ -1,5 +1,9 @@
 package com.bob.support.fixture.command;
 
+import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
+import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
+
+import com.bob.domain.member.command.ChangePasswordCommand;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.command.IssuePasswordCommand;
 
@@ -10,5 +14,17 @@ public class MemberCommandFixture {
 
   public static IssuePasswordCommand defaultIssuePasswordCommand() {
     return new IssuePasswordCommand("test@email.com");
+  }
+
+  public static ChangePasswordCommand defaultChangePasswordCommand(String newPassword) {
+    return new ChangePasswordCommand(defaultIdMember().getId(), defaultMember().getPassword(), newPassword);
+  }
+
+  public static ChangePasswordCommand mismatchChangePasswordCommand(String oldPassword, String newPassword) {
+    return new ChangePasswordCommand(defaultIdMember().getId(), oldPassword, newPassword);
+  }
+
+  public static ChangePasswordCommand customChangePasswordCommand(Long id, String oldPassword, String newPassword) {
+    return new ChangePasswordCommand(id, oldPassword, newPassword);
   }
 }

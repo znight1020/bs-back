@@ -1,20 +1,25 @@
 package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
+import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
+import static com.bob.support.fixture.command.MemberCommandFixture.defaultChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
 import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
+import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
+import com.bob.domain.member.command.ChangePasswordCommand;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
@@ -122,7 +127,7 @@ class MemberServiceTest {
     String rawTempPassword = member.getPassword();
     String encodedTempPassword = "$2a$encodedTemp";
 
-    IssuePasswordCommand command = new IssuePasswordCommand(member.getEmail());
+    IssuePasswordCommand command = defaultIssuePasswordCommand();
 
     given(memberReader.readMemberByEmail(member.getEmail())).willReturn(member);
     given(mailService.sendTempPasswordProcess(member.getEmail())).willReturn(rawTempPassword);
@@ -149,5 +154,47 @@ class MemberServiceTest {
     assertThatThrownBy(() -> memberService.issueTempPasswordProcess(command))
         .isInstanceOf(RuntimeException.class)
         .hasMessage(NOT_EXISTS_MEMBER.getMessage());
+  }
+
+  @Test
+  @DisplayName("비밀번호 변경 - 성공 테스트")
+  void 기존_비밀번호가_일치하면_비밀번호를_변경할_수_있다() {
+    // given
+    Member member = defaultIdMember();
+    String newPassword = "new-password";
+    String encodedNewPassword = "$2a$encodedNew";
+
+    ChangePasswordCommand command = defaultChangePasswordCommand(newPassword);
+
+    given(memberReader.readMemberById(member.getId())).willReturn(member);
+    given(encoder.matches(anyString(), anyString())).willReturn(true);
+    given(encoder.encode(command.newPassword())).willReturn(encodedNewPassword);
+
+    // when
+    memberService.changePasswordProcess(command);
+
+    // then
+    then(memberReader).should().readMemberById(member.getId());
+    then(encoder).should().matches(defaultMember().getPassword(), command.oldPassword());
+    then(encoder).should().encode(newPassword);
+    assertThat(member.getPassword()).isEqualTo(encodedNewPassword);
+  }
+
+  @Test
+  @DisplayName("비밀번호 변경 - 실패 테스트(기존 비밀번호 불일치)")
+  void 기존_비밀번호가_일치하지_않으면_비밀번호_변경에_실패한다() {
+    // given
+    Member member = defaultIdMember();
+    String newPassword = "new-password";
+
+    ChangePasswordCommand command = defaultChangePasswordCommand(newPassword);
+
+    given(memberReader.readMemberById(member.getId())).willReturn(member);
+    given(encoder.matches(command.oldPassword(), member.getPassword())).willReturn(false);
+
+    // when & then
+    assertThatThrownBy(() -> memberService.changePasswordProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(INVALID_OLD_PASSWORD.getMessage());
   }
 }
