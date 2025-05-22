@@ -17,11 +17,6 @@ spring:
     username: "test"
     password: "test"
 
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:sql/schema.sql
-
 jwt:
   token-prefix: PRIFIX
   secret-key: secret
