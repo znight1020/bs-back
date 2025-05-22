@@ -3,10 +3,12 @@ package com.bob.web.member.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+import com.bob.domain.member.command.IssuePasswordCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,5 +53,27 @@ class MemberControllerTest {
 
     // then
     verify(memberService, times(1)).signupProcess(any(CreateMemberCommand.class));
+  }
+
+  @Test
+  @DisplayName("임시 비밀번호 발급 API 호출 테스트")
+  void 임시_비밀번호_발급_API를_호출할_수_있다() throws Exception {
+    // given
+    MockMvc mvc = standaloneSetup(memberController).build();
+
+    String json = """
+        {
+            "email": "test@email.com"
+        }
+        """;
+
+    // when
+    mvc.perform(patch("/members/temp/password")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json)
+    ).andExpect(status().isOk());
+
+    // then
+    verify(memberService, times(1)).issueTempPasswordProcess(any(IssuePasswordCommand.class));
   }
 }
