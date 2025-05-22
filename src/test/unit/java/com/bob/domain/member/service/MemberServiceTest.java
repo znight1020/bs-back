@@ -38,7 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@DisplayName("사용자 회원가입 테스트")
+@DisplayName("사용자 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 

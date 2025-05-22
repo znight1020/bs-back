@@ -4,7 +4,7 @@ import static com.bob.global.exception.response.ApplicationError.INVALID_AREA_AU
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultChangeAreaCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultReAuthenticateCommand;
-import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultSignUpCommand;
+import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultAuthenticationCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.guestCommand;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
@@ -63,7 +63,7 @@ class AreaServiceTest {
   @DisplayName("회원가입 시 행정구역 안에 있는 경우 - 성공 테스트")
   void 회원가입_좌표_인증_성공() {
     // given
-    AuthenticationCommand command = defaultSignUpCommand();
+    AuthenticationCommand command = defaultAuthenticationCommand();
     given(areaReader.readEmdArea(command.emdId())).willReturn(emdArea);
     given(emdArea.getGeom()).willReturn(geometry);
     given(geometry.contains(any(Point.class))).willReturn(true);
@@ -76,7 +76,7 @@ class AreaServiceTest {
   @DisplayName("회원가입 시 행정구역 밖에 있는 경우 - 실패 테스트")
   void 행정구역_밖이면_예외_발생() {
     // given
-    AuthenticationCommand command = defaultSignUpCommand();
+    AuthenticationCommand command = defaultAuthenticationCommand();
     given(areaReader.readEmdArea(command.emdId())).willReturn(emdArea);
     given(emdArea.getGeom()).willReturn(geometry);
     given(geometry.contains(any(Point.class))).willReturn(false);
