@@ -1,14 +1,20 @@
 package com.bob.domain.member.service;
 
-import static com.bob.support.fixture.command.CreateMemberCommandFixture.defaultCreateMemberCommand;
+import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
+import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
 import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
+import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
 import com.bob.domain.member.command.CreateMemberCommand;
+import com.bob.domain.member.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
+import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
+import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
@@ -20,9 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 
 @DisplayName("사용자 회원가입 통합 테스트")
 @Import(RedisContainerConfig.class)
+@Transactional
 @SpringBootTest
 class MemberServiceIntgTest extends TestContainerSupport {
 
@@ -37,6 +46,9 @@ class MemberServiceIntgTest extends TestContainerSupport {
 
   @Autowired
   private MailVerificationStore mailVerificationStore;
+
+  @MockitoBean
+  private MailService mailService;
 
   @BeforeEach
   void init() {
@@ -91,5 +103,37 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> memberService.signupProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(ApplicationError.ALREADY_EXISTS_EMAIL.getMessage());
+  }
+
+  @Test
+  @DisplayName("임시 비밀번호 발급 - 성공 테스트")
+  void 이메일로_임시_비밀번호를_받아_비밀번호를_변경할_수_있다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+
+    IssuePasswordCommand command = defaultIssuePasswordCommand();
+    String tempPassword = "temp-password";
+    given(mailService.sendTempPasswordProcess(command.email())).willReturn(tempPassword);
+
+    // when
+    memberService.issueTempPasswordProcess(command);
+
+    // then
+    assertThat(member.getPassword()).isNotEqualTo(defaultMember().getPassword());
+    assertThat(passwordEncoder.matches(tempPassword, member.getPassword())).isTrue();
+  }
+
+  @Test
+  @DisplayName("임시 비밀번호 발급 - 실패 테스트(존재하지 않는 이메일)")
+  void 존재하지_않는_이메일이면_임시_비밀번호_발급에_실패한다() {
+    // given
+    String notExistsEmail = "unknown@email.com";
+    IssuePasswordCommand command = new IssuePasswordCommand(notExistsEmail);
+
+    // when & then
+    assertThatThrownBy(() -> memberService.issueTempPasswordProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.NOT_EXISTS_MEMBER.getMessage());
   }
 }
