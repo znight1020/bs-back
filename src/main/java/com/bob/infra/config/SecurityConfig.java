@@ -1,5 +1,12 @@
 package com.bob.infra.config;
 
+import static jakarta.servlet.http.HttpServletResponse.*;
+
+import com.bob.infra.auth.filter.LoginFilter;
+import com.bob.infra.auth.jwt.JwtProvider;
+import com.bob.infra.auth.jwt.filter.JwtAuthorizationFilter;
+import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
+import com.bob.infra.auth.service.MemberDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,31 +25,26 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import com.bob.infra.auth.filter.LoginFilter;
-import com.bob.infra.auth.jwt.JwtProvider;
-import com.bob.infra.auth.jwt.filter.JwtAuthorizationFilter;
-import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
-import com.bob.infra.auth.service.MemberDetailsService;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
-  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-  private final JwtAuthorizationFilter jwtAuthorizationFilter;
-  private final MemberDetailsService memberDetailsService;
-  private final JwtProvider jwtProvider;
-  private final ObjectMapper objectMapper;
-
   private static final String[] AUTH_WHITELIST = {
       "/auth/**", "/ai/**", "/areas/**",
       "/h2-console/**",
       "/error/**",
   };
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  private final JwtAuthorizationFilter jwtAuthorizationFilter;
+  private final MemberDetailsService memberDetailsService;
+  private final JwtProvider jwtProvider;
+  private final ObjectMapper objectMapper;
 
   @Bean
   public SecurityFilterChain configure(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
@@ -52,7 +54,12 @@ public class SecurityConfig {
         .anonymous(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
-        // TODO : 추후 OAuth 구현 시 세션 정책 = IS_REQUIRED 변경 고려
+        .logout(filter -> filter
+            .logoutUrl("/auth/logout")
+            .logoutSuccessHandler((req, res, auth) -> res.setStatus(SC_OK))
+            .addLogoutHandler((req, res, auth) -> req.getSession().invalidate())
+            .deleteCookies("JSESSIONID", "AUTHORIZATION", "REFRESH")
+        )
         .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
         .authorizeHttpRequests(request -> request
