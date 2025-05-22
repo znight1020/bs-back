@@ -5,7 +5,6 @@ import static com.bob.global.exception.response.AuthenticationError.IS_EXPIRED_T
 import static com.bob.global.exception.response.AuthenticationError.IS_NOT_EXIST_TOKEN;
 import static com.bob.support.fixture.auth.CookieFixture.ACCESS_VALUE;
 import static com.bob.support.fixture.auth.CookieFixture.AUTH_COOKIE_NAME;
-import static com.bob.support.fixture.auth.CookieFixture.TOKEN_PREFIX;
 import static com.bob.support.fixture.auth.CookieFixture.defaultAuthCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,7 +68,6 @@ class JwtAuthorizationFilterTest {
 
   @BeforeEach
   void setUp() {
-    ReflectionTestUtils.setField(jwtAuthorizationFilter, "TOKEN_PREFIX", TOKEN_PREFIX);
     ReflectionTestUtils.setField(jwtAuthorizationFilter, "COOKIE_NAME", AUTH_COOKIE_NAME);
     given(permitAllRegistry.isWhiteList(any(HttpServletRequest.class))).willReturn(false);
   }
