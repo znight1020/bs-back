@@ -36,4 +36,12 @@ public class MemberFixture {
         .nickname("tester")
         .build();
   }
+
+  public static Member encryptPasswordMember(String encryptedPassword) {
+    return Member.builder()
+        .email("test@email.com")
+        .password(encryptedPassword)
+        .nickname("tester")
+        .build();
+  }
 }

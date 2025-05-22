@@ -1,20 +1,22 @@
 package com.bob.domain.member.service;
 
+import static com.bob.support.fixture.command.MemberCommandFixture.customChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
 import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
+import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
+import com.bob.domain.member.command.ChangePasswordCommand;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
-import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
@@ -29,7 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-@DisplayName("사용자 회원가입 통합 테스트")
+@DisplayName("사용자 서비스 통합 테스트")
 @Import(RedisContainerConfig.class)
 @Transactional
 @SpringBootTest
@@ -135,5 +137,46 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> memberService.issueTempPasswordProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(ApplicationError.NOT_EXISTS_MEMBER.getMessage());
+  }
+
+  @Test
+  @DisplayName("비밀번호 변경 - 성공 테스트")
+  void 기존_비밀번호가_일치하면_비밀번호를_변경할_수_있다() {
+    // given
+    String password = "password";
+    String newPassword = "new-password";
+    Member member = encryptPasswordMember(passwordEncoder.encode(password));
+    memberRepository.save(member);
+
+    ChangePasswordCommand command = customChangePasswordCommand(member.getId(), password, newPassword);
+
+    // when
+    memberService.changePasswordProcess(command);
+
+    // then
+    assertThat(passwordEncoder.matches(newPassword, member.getPassword())).isTrue();
+  }
+
+  @Test
+  @DisplayName("비밀번호 변경 - 실패 테스트(기존 비밀번호 불일치)")
+  void 기존_비밀번호가_일치하지_않으면_비밀번호를_변경할_수_없다() {
+    // given
+    String password = "password";
+    String encoded = passwordEncoder.encode(password);
+    System.out.println("ENCODED: " + encoded);
+
+
+    String wrongOldPassword = "wrong-password";
+    String newPassword = "new-password";
+
+    Member member = encryptPasswordMember(passwordEncoder.encode(password));
+    memberRepository.save(member);
+
+    ChangePasswordCommand command = customChangePasswordCommand(member.getId(), wrongOldPassword, newPassword);
+
+    // when & then
+    assertThatThrownBy(() -> memberService.changePasswordProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.INVALID_OLD_PASSWORD.getMessage());
   }
 }
