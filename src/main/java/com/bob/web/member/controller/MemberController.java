@@ -1,8 +1,10 @@
 package com.bob.web.member.controller;
 
 import com.bob.domain.member.service.MemberService;
+import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
+import com.bob.web.member.request.ChangePasswordRequest;
 import com.bob.web.member.request.IssuePasswordRequest;
 import com.bob.web.member.request.SignupRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,15 @@ public class MemberController {
   public CommonResponse<ResponseSymbol> handleSignup(@RequestBody SignupRequest request) {
     memberService.signupProcess(request.toCommand());
     return new CommonResponse<>(true, ResponseSymbol.CREATED);
+  }
+
+  @PatchMapping("/me/password")
+  public CommonResponse<ResponseSymbol> handleChangePassword(
+      @RequestBody ChangePasswordRequest request,
+      @AuthenticationId Long memberId
+  ) {
+    memberService.changePasswordProcess(request.toCommand(memberId));
+    return new CommonResponse<>(true, ResponseSymbol.UPDATED);
   }
 
   @PatchMapping("/temp/password")

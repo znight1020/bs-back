@@ -1,10 +1,12 @@
 package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
+import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
+import com.bob.domain.member.command.ChangePasswordCommand;
 import com.bob.domain.member.command.CreateMemberCommand;
 import com.bob.domain.member.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
@@ -57,6 +59,18 @@ public class MemberService {
     }
 
     mailVerificationStore.deleteVerified(email);
+  }
+
+  public void changePasswordProcess(ChangePasswordCommand command) {
+    Member member = memberReader.readMemberById(command.memberId());
+    verifyPassword(member.getPassword(), command.oldPassword());
+    member.updatePassword(encoder.encode(command.newPassword()));
+  }
+
+  private void verifyPassword(String memberPassword, String receiveOldPassword) {
+    if (!encoder.matches(receiveOldPassword, memberPassword)) {
+      throw new ApplicationException(INVALID_OLD_PASSWORD);
+    }
   }
 
   public void issueTempPasswordProcess(IssuePasswordCommand command) {
