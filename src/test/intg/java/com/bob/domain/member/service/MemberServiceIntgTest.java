@@ -3,6 +3,7 @@ package com.bob.domain.member.service;
 import static com.bob.support.fixture.command.MemberCommandFixture.customChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
+import static com.bob.support.fixture.domain.ActivityAreaFixture.defaultActivityArea;
 import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
@@ -13,6 +14,8 @@ import static org.mockito.BDDMockito.given;
 import com.bob.domain.member.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.response.MemberProfileResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
@@ -105,6 +108,26 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> memberService.signupProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(ApplicationError.ALREADY_EXISTS_EMAIL.getMessage());
+  }
+
+  @Test
+  @DisplayName("내 프로필 조회 - 성공 테스트")
+  void 회원은_자신의_프로필을_조회할_수_있다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+    member.updateActivityArea(defaultActivityArea());
+    ReadProfileQuery query = ReadProfileQuery.of(member.getId());
+
+    // when
+    MemberProfileResponse response = memberService.readProfileProcess(query);
+
+    // then
+    assertThat(response.getMemberId()).isEqualTo(member.getId());
+    assertThat(response.getNickname()).isEqualTo(member.getNickname());
+    assertThat(response.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
+    assertThat(response.getArea().emdId()).isEqualTo(member.getActivityArea().getEmdArea().getId());
+    assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
   }
 
   @Test
