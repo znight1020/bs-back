@@ -10,13 +10,18 @@ import com.bob.domain.member.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.dto.response.MemberProfileResponse;
+import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
+import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
+import com.bob.domain.post.dto.PostResponse;
 import com.bob.global.exception.exceptions.ApplicationException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,11 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
   private final MemberRepository memberRepository;
-  private final AreaReader areaReader;
-  private final PasswordEncoder encoder;
-  private final MailVerificationStore mailVerificationStore;
-  private final MailService mailService;
   private final MemberReader memberReader;
+  private final AreaReader areaReader;
+  private final MailService mailService;
+  private final MailVerificationStore mailVerificationStore;
+  private final PostSearcher postProvider;
+  private final PasswordEncoder encoder;
 
   public void signupProcess(CreateMemberCommand command) {
     verifyAlreadyExistEmail(command.email());
@@ -67,6 +73,14 @@ public class MemberService {
   public MemberProfileResponse readProfileProcess(ReadProfileQuery query) {
     Member member = memberReader.readMemberById(query.memberId());
     return MemberProfileResponse.of(member);
+  }
+
+  @Transactional(readOnly = true)
+  public MemberProfileWithPostsResponse readProfileByIdWithPostsProcess(ReadProfileWithPostsQuery query) {
+    Member member = memberReader.readMemberById(query.memberId());
+    MemberProfileResponse profile = MemberProfileResponse.of(member);
+    List<PostResponse> posts = postProvider.readPostsOfMember(query.memberId());
+    return MemberProfileWithPostsResponse.of(profile, posts);
   }
 
   public void changePasswordProcess(ChangePasswordCommand command) {
