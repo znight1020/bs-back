@@ -1,6 +1,7 @@
 package com.bob.web.member.controller;
 
 import static com.bob.support.fixture.response.MemberProfileResponseFixture.DEFAULT_MEMBER_PROFILE_RESPONSE;
+import static com.bob.support.fixture.response.MemberProfileWithPostsResponseFixture.DEFAULT_MEMBER_PROFILE_WITH_POSTS_RESPONSE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -74,7 +76,8 @@ class MemberControllerTest {
     given(memberService.readProfileProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_RESPONSE);
 
     // when & then
-    mvc.perform(get("/members/me").requestAttr("memberId", memberId))
+    mvc.perform(get("/members/me")
+            .requestAttr("memberId", memberId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.memberId").value(1L))
         .andExpect(jsonPath("$.nickname").value("tester"))
@@ -83,6 +86,31 @@ class MemberControllerTest {
         .andExpect(jsonPath("$.area.isAuthentication").value(true));
 
     verify(memberService, times(1)).readProfileProcess(any());
+  }
+
+  @Test
+  @DisplayName("회원 프로필 조회 API 호출 테스트")
+  void 특정_회원_프로필과_게시글_목록을_조회할_수_있다() throws Exception {
+    // given
+    PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
+    mvc = standaloneSetup(memberController).setCustomArgumentResolvers(pageableResolver).build();
+
+    Long memberId = 1L;
+    given(memberService.readProfileByIdWithPostsProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_WITH_POSTS_RESPONSE);
+
+    // when & then
+    mvc.perform(get("/members/{memberId}", memberId)
+            .param("page", "0")
+            .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.profile.memberId").value(1L))
+        .andExpect(jsonPath("$.profile.nickname").value("tester"))
+        .andExpect(jsonPath("$.posts[0].postId").value(10))
+        .andExpect(jsonPath("$.posts[0].postTitle").value("객체지향의 사실과 오해"))
+        .andExpect(jsonPath("$.posts[1].postId").value(11))
+        .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
+
+    verify(memberService, times(1)).readProfileByIdWithPostsProcess(any());
   }
 
   @Test

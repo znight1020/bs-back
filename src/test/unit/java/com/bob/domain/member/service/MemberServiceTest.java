@@ -12,6 +12,8 @@ import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileQuery;
+import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,17 +22,19 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
-import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.dto.response.MemberProfileResponse;
+import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
+import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import java.util.Optional;
@@ -67,6 +71,9 @@ class MemberServiceTest {
 
   @Mock
   private AreaReader areaReader;
+
+  @Mock
+  private PostSearcher postSearcher;
 
   @Test
   @DisplayName("회원가입 - 성공 테스트")
@@ -117,6 +124,31 @@ class MemberServiceTest {
     assertThat(response.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
     assertThat(response.getArea().emdId()).isEqualTo(member.getActivityArea().getEmdArea().getId());
     assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
+  }
+
+
+  @Test
+  @DisplayName("다른 사용자 프로필 조회 - 성공 테스트")
+  void 특정_사용자의_프로필과_게시글_목록을_조회할_수_있다() {
+    // given
+    Member member = defaultMember();
+    member.updateActivityArea(defaultActivityArea());
+    ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
+
+    given(memberReader.readMemberById(query.memberId())).willReturn(member);
+    given(postSearcher.readPostsOfMember(query.memberId())).willReturn(DEFAULT_POST_LIST());
+
+    // when
+    MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);
+
+    // then
+    then(memberReader).should(times(1)).readMemberById(query.memberId());
+    then(postSearcher).should(times(1)).readPostsOfMember(query.memberId());
+    assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
+    assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
+    assertThat(response.getPosts()).hasSize(2);
+    assertThat(response.getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
+    assertThat(response.getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
   }
 
   @Test
