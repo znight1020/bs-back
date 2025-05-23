@@ -1,4 +1,4 @@
-package com.bob.domain.member.command;
+package com.bob.domain.member.dto.command;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.entity.activity.ActivityArea;

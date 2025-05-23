@@ -1,6 +1,6 @@
 package com.bob.domain.area.command;
 
-import com.bob.domain.member.command.AuthenticationPurpose;
+import com.bob.domain.member.dto.command.AuthenticationPurpose;
 
 public record AuthenticationCommand(
     Integer emdId,

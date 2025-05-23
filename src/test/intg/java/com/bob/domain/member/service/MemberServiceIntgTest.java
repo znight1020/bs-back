@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
-import com.bob.domain.member.command.ChangePasswordCommand;
-import com.bob.domain.member.command.CreateMemberCommand;
-import com.bob.domain.member.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.dto.command.CreateMemberCommand;
+import com.bob.domain.member.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;

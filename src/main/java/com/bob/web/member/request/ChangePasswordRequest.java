@@ -1,6 +1,6 @@
 package com.bob.web.member.request;
 
-import com.bob.domain.member.command.ChangePasswordCommand;
+import com.bob.domain.member.dto.command.ChangePasswordCommand;
 
 public record ChangePasswordRequest(
     String oldPassword,

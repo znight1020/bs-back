@@ -6,9 +6,11 @@ import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAI
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
-import com.bob.domain.member.command.ChangePasswordCommand;
-import com.bob.domain.member.command.CreateMemberCommand;
-import com.bob.domain.member.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.dto.command.CreateMemberCommand;
+import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.response.MemberProfileResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
@@ -59,6 +61,12 @@ public class MemberService {
     }
 
     mailVerificationStore.deleteVerified(email);
+  }
+
+  @Transactional(readOnly = true)
+  public MemberProfileResponse readProfileProcess(ReadProfileQuery query) {
+    Member member = memberReader.readMemberById(query.memberId());
+    return MemberProfileResponse.of(member);
   }
 
   public void changePasswordProcess(ChangePasswordCommand command) {

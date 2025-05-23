@@ -1,7 +1,7 @@
 package com.bob.web.area.request;
 
 import com.bob.domain.area.command.AuthenticationCommand;
-import com.bob.domain.member.command.AuthenticationPurpose;
+import com.bob.domain.member.dto.command.AuthenticationPurpose;
 
 public record AuthenticationRequest(
     Integer emdId,
@@ -9,6 +9,7 @@ public record AuthenticationRequest(
     Double lon,
     String purpose
 ) {
+
   public AuthenticationCommand toCommand(Long memberId) {
     return new AuthenticationCommand(
         emdId,

@@ -1,6 +1,6 @@
 package com.bob.web.member.request;
 
-import com.bob.domain.member.command.CreateMemberCommand;
+import com.bob.domain.member.dto.command.CreateMemberCommand;
 
 public record SignupRequest(
     String nickname,

@@ -1,6 +1,6 @@
 package com.bob.web.member.request;
 
-import com.bob.domain.member.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.command.IssuePasswordCommand;
 
 public record IssuePasswordRequest(
     String email

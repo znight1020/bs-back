@@ -1,7 +1,7 @@
 package com.bob.support.fixture.command;
 
 import com.bob.domain.area.command.AuthenticationCommand;
-import com.bob.domain.member.command.AuthenticationPurpose;
+import com.bob.domain.member.dto.command.AuthenticationPurpose;
 
 public class AuthenticationCommandFixture {
 

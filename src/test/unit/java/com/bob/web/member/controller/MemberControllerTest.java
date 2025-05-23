@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
-import com.bob.domain.member.command.ChangePasswordCommand;
-import com.bob.domain.member.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.dto.command.IssuePasswordCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.bob.domain.member.command.CreateMemberCommand;
+import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.MemberService;
 
 @DisplayName("회원 API 테스트")
