@@ -7,9 +7,11 @@ import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAI
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
+import static com.bob.support.fixture.domain.ActivityAreaFixture.defaultActivityArea;
 import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
+import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -18,10 +20,13 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
+import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.response.MemberProfileResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
@@ -91,6 +96,27 @@ class MemberServiceTest {
     assertThat(saved.getPassword()).isEqualTo(encodedPassword);
     assertThat(saved.getActivityArea().getEmdArea().getId()).isEqualTo(command.emdId());
     assertThat(saved.getActivityArea().getAuthenticationAt()).isNotNull();
+  }
+
+  @Test
+  @DisplayName("내 프로필 조회 - 성공 테스트")
+  void 내_프로필을_조회할_수_있다() {
+    // given
+    Member member = defaultMember();
+    member.updateActivityArea(defaultActivityArea());
+    ReadProfileQuery query = defaultReadProfileQuery();
+    given(memberReader.readMemberById(query.memberId())).willReturn(member);
+
+    // when
+    MemberProfileResponse response = memberService.readProfileProcess(query);
+
+    // then
+    then(memberReader).should(times(1)).readMemberById(query.memberId());
+    assertThat(response.getMemberId()).isEqualTo(member.getId());
+    assertThat(response.getNickname()).isEqualTo(member.getNickname());
+    assertThat(response.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
+    assertThat(response.getArea().emdId()).isEqualTo(member.getActivityArea().getEmdArea().getId());
+    assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
   }
 
   @Test

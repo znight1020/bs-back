@@ -1,15 +1,22 @@
 package com.bob.web.member.controller;
 
+import static com.bob.support.fixture.response.MemberProfileResponseFixture.DEFAULT_MEMBER_PROFILE_RESPONSE;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 import com.bob.domain.member.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.MemberService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.service.MemberService;
 
 @DisplayName("회원 API 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -31,12 +36,17 @@ class MemberControllerTest {
   @Mock
   private MemberService memberService;
 
+  private MockMvc mvc;
+
+  @BeforeEach
+  void setUp() {
+    mvc = standaloneSetup(memberController).build();
+  }
+
   @Test
   @DisplayName("회원가입 API 호출 테스트")
   void 회원가입_API를_호출할_수_있다() throws Exception {
     // given
-    MockMvc mvc = standaloneSetup(memberController).build();
-
     String json = """
         {
             "email": "test@email.com",
@@ -57,11 +67,28 @@ class MemberControllerTest {
   }
 
   @Test
+  @DisplayName("내 프로필 조회 API 호출 테스트")
+  void 내_프로필_조회_API를_호출할_수_있다() throws Exception {
+    // given
+    Long memberId = 1L;
+    given(memberService.readProfileProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_RESPONSE);
+
+    // when & then
+    mvc.perform(get("/members/me").requestAttr("memberId", memberId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.memberId").value(1L))
+        .andExpect(jsonPath("$.nickname").value("tester"))
+        .andExpect(jsonPath("$.profileImageUrl").value("http://image.url"))
+        .andExpect(jsonPath("$.area.emdId").value(213))
+        .andExpect(jsonPath("$.area.isAuthentication").value(true));
+
+    verify(memberService, times(1)).readProfileProcess(any());
+  }
+
+  @Test
   @DisplayName("비밀번호 변경 API 호출 테스트")
   void 비밀번호_변경_API를_호출할_수_있다() throws Exception {
     // given
-    MockMvc mvc = standaloneSetup(memberController).build();
-
     String json = """
         {
             "oldPassword": "password",
@@ -83,8 +110,6 @@ class MemberControllerTest {
   @DisplayName("임시 비밀번호 발급 API 호출 테스트")
   void 임시_비밀번호_발급_API를_호출할_수_있다() throws Exception {
     // given
-    MockMvc mvc = standaloneSetup(memberController).build();
-
     String json = """
         {
             "email": "test@email.com"
