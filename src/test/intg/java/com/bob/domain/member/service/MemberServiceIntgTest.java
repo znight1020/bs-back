@@ -7,6 +7,8 @@ import static com.bob.support.fixture.domain.ActivityAreaFixture.defaultActivity
 import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
+import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -15,11 +17,14 @@ import com.bob.domain.member.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.dto.command.CreateMemberCommand;
 import com.bob.domain.member.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.dto.response.MemberProfileResponse;
+import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
+import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
@@ -30,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +57,10 @@ class MemberServiceIntgTest extends TestContainerSupport {
 
   @Autowired
   private MailVerificationStore mailVerificationStore;
+
+  // TODO: PostProvider 구현 후 Autowired 변경
+  @MockitoBean
+  private PostSearcher postSearcher;
 
   @MockitoBean
   private MailService mailService;
@@ -128,6 +138,29 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThat(response.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
     assertThat(response.getArea().emdId()).isEqualTo(member.getActivityArea().getEmdArea().getId());
     assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
+  }
+
+  @Test
+  @DisplayName("다른 사용자 프로필 + 게시글 목록 조회 - 성공 테스트")
+  void 회원은_다른_사용자의_프로필과_게시글_목록을_조회할_수_있다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+    member.updateActivityArea(defaultActivityArea());
+    ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
+
+    // TODO: post 도메인 서비스 구현 후 실제 데이터 DB 저장 후 조회
+    given(postSearcher.readPostsOfMember(query.memberId())).willReturn(DEFAULT_POST_LIST());
+
+    // when
+    MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);
+
+    // then
+    assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
+    assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
+    assertThat(response.getPosts()).hasSize(2);
+    assertThat(response.getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
+    assertThat(response.getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
   }
 
   @Test
