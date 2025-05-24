@@ -80,50 +80,6 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 -- ========================
--- 💬 CHAT_ROOMS TABLE
--- ========================
-CREATE TABLE IF NOT EXISTS chat_rooms (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    trade_id BIGINT NOT NULL,
-    title_suffix VARCHAR(100) NOT NULL,
-    last_chat_at DATETIME NOT NULL,
-    status BOOLEAN NOT NULL,
-    created_at DATETIME,
-    modified_at DATETIME,
-    FOREIGN KEY (trade_id) REFERENCES trades(id)
-);
-
--- ========================
--- 💬 CHAT_MESSAGES TABLE
--- ========================
-CREATE TABLE IF NOT EXISTS chat_messages (
-   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-   chat_room_id BIGINT NOT NULL,
-   sender_id BIGINT NOT NULL,
-   chat_message_type ENUM('MESSAGE', 'IMAGE', 'SYSTEM') NOT NULL,
-   chat_message VARCHAR(500),
-   chat_image_url VARCHAR(255),
-   is_read BOOLEAN DEFAULT FALSE,
-   sent_at DATETIME NOT NULL,
-   FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
-   FOREIGN KEY (sender_id) REFERENCES members(id)
-);
-
--- ========================
--- 👥 CHAT_ROOM_MEMBERS TABLE
--- ========================
-CREATE TABLE IF NOT EXISTS chat_room_members (
-   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-   chat_room_id BIGINT NOT NULL,
-   member_id BIGINT NOT NULL,
-   is_exited BOOLEAN NOT NULL,
-   exited_at DATETIME,
-   status BOOLEAN NOT NULL,
-   FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
-   FOREIGN KEY (member_id) REFERENCES members(id)
-);
-
--- ========================
 -- 🗺️ SIDO_AREAS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS sido_areas (
@@ -179,6 +135,50 @@ CREATE TABLE IF NOT EXISTS trades (
     created_at DATETIME,
     FOREIGN KEY (post_id) REFERENCES posts(id),
     FOREIGN KEY (buyer_id) REFERENCES members(id)
+);
+
+-- ========================
+-- 💬 CHAT_ROOMS TABLE
+-- ========================
+CREATE TABLE IF NOT EXISTS chat_rooms (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  trade_id BIGINT NOT NULL,
+  title_suffix VARCHAR(100) NOT NULL,
+  last_chat_at DATETIME NOT NULL,
+  status BOOLEAN NOT NULL,
+  created_at DATETIME,
+  modified_at DATETIME,
+  FOREIGN KEY (trade_id) REFERENCES trades(id)
+);
+
+-- ========================
+-- 💬 CHAT_MESSAGES TABLE
+-- ========================
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  chat_room_id BIGINT NOT NULL,
+  sender_id BIGINT NOT NULL,
+  chat_message_type ENUM('MESSAGE', 'IMAGE', 'SYSTEM') NOT NULL,
+  chat_message VARCHAR(500),
+  chat_image_url VARCHAR(255),
+  is_read BOOLEAN DEFAULT FALSE,
+  sent_at DATETIME NOT NULL,
+  FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
+  FOREIGN KEY (sender_id) REFERENCES members(id)
+);
+
+-- ========================
+-- 👥 CHAT_ROOM_MEMBERS TABLE
+-- ========================
+CREATE TABLE IF NOT EXISTS chat_room_members (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  chat_room_id BIGINT NOT NULL,
+  member_id BIGINT NOT NULL,
+  is_exited BOOLEAN NOT NULL,
+  exited_at DATETIME,
+  status BOOLEAN NOT NULL,
+  FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
+  FOREIGN KEY (member_id) REFERENCES members(id)
 );
 
 -- ========================

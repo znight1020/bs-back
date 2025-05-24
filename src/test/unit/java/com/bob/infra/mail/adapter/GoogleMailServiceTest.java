@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.bob.domain.member.service.port.MailVerificationStore;
-import com.bob.infra.mail.GoogleMailService;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class GoogleMailServiceTest {
   @DisplayName("이메일 전송 - 성공 테스트")
   void 이메일_인증_코드를_전송할_수_있다() {
     // when
-    googleMailService.sendMailProcess(EMAIL);
+    googleMailService.sendCodeProcess(EMAIL);
 
     // then
     then(mailSender).should().send(simpleMailMessage);
@@ -52,7 +51,7 @@ class GoogleMailServiceTest {
     given(mailVerificationStore.getCode(EMAIL)).willReturn(Optional.of(VALID_CODE));
 
     // when
-    googleMailService.verifyMailProcess(EMAIL, VALID_CODE);
+    googleMailService.verifyCodeProcess(EMAIL, VALID_CODE);
 
     // then
     then(mailVerificationStore).should().getCode(EMAIL);
@@ -67,7 +66,7 @@ class GoogleMailServiceTest {
     given(mailVerificationStore.getCode(EMAIL)).willReturn(Optional.of(INVALID_CODE));
 
     // when, then
-    assertThatThrownBy(() -> googleMailService.verifyMailProcess(EMAIL, VALID_CODE))
+    assertThatThrownBy(() -> googleMailService.verifyCodeProcess(EMAIL, VALID_CODE))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("입력하신 인증 코드가 일치하지 않습니다.");
   }
@@ -79,7 +78,7 @@ class GoogleMailServiceTest {
     given(mailVerificationStore.getCode(EMAIL)).willReturn(Optional.empty());
 
     // when, then
-    assertThatThrownBy(() -> googleMailService.verifyMailProcess(EMAIL, VALID_CODE))
+    assertThatThrownBy(() -> googleMailService.verifyCodeProcess(EMAIL, VALID_CODE))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("인증 코드가 만료되었습니다.");
   }

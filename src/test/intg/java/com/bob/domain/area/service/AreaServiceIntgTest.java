@@ -1,7 +1,7 @@
 package com.bob.domain.area.service;
 
-import static com.bob.domain.member.command.AuthenticationPurpose.CHANGE_AREA;
-import static com.bob.domain.member.command.AuthenticationPurpose.RE_AUTHENTICATE;
+import static com.bob.domain.member.service.dto.command.AuthenticationPurpose.CHANGE_AREA;
+import static com.bob.domain.member.service.dto.command.AuthenticationPurpose.RE_AUTHENTICATE;
 import static com.bob.global.exception.response.ApplicationError.INVALID_AREA_AUTHENTICATION;
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.customAuthenticationCommand;
@@ -20,7 +20,7 @@ import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.area.entity.activity.ActivityAreaId;
 import com.bob.domain.area.repository.ActivityAreaRepository;
 import com.bob.domain.area.repository.AreaRepository;
-import com.bob.domain.member.command.AuthenticationPurpose;
+import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.global.exception.exceptions.ApplicationException;

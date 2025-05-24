@@ -40,7 +40,7 @@ class MailControllerTest {
             .content(objectMapper.writeValueAsString(MAIL_SEND_REQUEST)))
         .andExpect(status().isOk());
 
-    verify(mailService, times(1)).sendMailProcess(MAIL_SEND_REQUEST.email());
+    verify(mailService, times(1)).sendCodeProcess(MAIL_SEND_REQUEST.email());
   }
 
   @Test
@@ -53,6 +53,6 @@ class MailControllerTest {
             .content(objectMapper.writeValueAsString(MAIL_VERIFY_REQUEST)))
         .andExpect(status().isOk());
 
-    verify(mailService, times(1)).verifyMailProcess(MAIL_VERIFY_REQUEST.email(), MAIL_VERIFY_REQUEST.code());
+    verify(mailService, times(1)).verifyCodeProcess(MAIL_VERIFY_REQUEST.email(), MAIL_VERIFY_REQUEST.code());
   }
 }

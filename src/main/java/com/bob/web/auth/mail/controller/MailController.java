@@ -19,14 +19,14 @@ public class MailController {
   private final MailService mailService;
 
   @PostMapping
-  public CommonResponse<ResponseSymbol> sendCode(@RequestBody MailSendRequest request) {
-    mailService.sendMailProcess(request.email());
+  public CommonResponse<ResponseSymbol> handleSendCode(@RequestBody MailSendRequest request) {
+    mailService.sendCodeProcess(request.email());
     return new CommonResponse<>(true, ResponseSymbol.SENT);
   }
 
   @PostMapping("/confirm")
-  public CommonResponse<ResponseSymbol> verifyCode(@RequestBody MailVerifyRequest request) {
-    mailService.verifyMailProcess(request.email(), request.code());
+  public CommonResponse<ResponseSymbol> handleVerifyCode(@RequestBody MailVerifyRequest request) {
+    mailService.verifyCodeProcess(request.email(), request.code());
     return new CommonResponse<>(true, ResponseSymbol.VERIFIED);
   }
 }

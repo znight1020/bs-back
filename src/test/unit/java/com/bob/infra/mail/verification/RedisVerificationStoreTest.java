@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.bob.infra.redis.adapter.RedisMailVerificationStore;
 import java.time.Duration;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,7 @@ class RedisVerificationStoreTest {
   private ValueOperations<String, String> valueOperations;
 
   @InjectMocks
-  private RedisVerificationStore redisVerificationStore;
+  private RedisMailVerificationStore redisVerificationStore;
 
   @Test
   @DisplayName("인증 상태 저장 테스트")

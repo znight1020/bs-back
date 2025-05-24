@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,5 +52,17 @@ public class Member extends BaseTime {
 
   public void updateActivityArea(ActivityArea newActivityArea) {
     activityArea = newActivityArea;
+  }
+
+  public void updatePassword(String newPassword) {
+    password = newPassword;
+  }
+
+  public void updateNickname(String newNickname) {
+    nickname = newNickname;
+  }
+
+  public boolean isEqualsNickname(String oldNickname) {
+    return Objects.equals(nickname, oldNickname);
   }
 }

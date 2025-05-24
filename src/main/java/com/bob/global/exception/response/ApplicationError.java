@@ -12,6 +12,8 @@ public enum ApplicationError {
   UNVERIFIED_EMAIL("E101", "이메일 인증이 완료되지 않았습니다.", HttpStatus.BAD_REQUEST),
   ALREADY_EXISTS_EMAIL("E102", "해당 이메일로 가입된 계정이 존재합니다.", HttpStatus.CONFLICT),
   NOT_EXISTS_MEMBER("E103", "사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+  INVALID_OLD_PASSWORD("E104", "비밀번호가 틀립니다.", HttpStatus.BAD_REQUEST),
+  IS_SAME_VALUE("E105", "변경 사항이 없습니다.", HttpStatus.BAD_REQUEST),
 
   EXPIRED_MAIL_CODE("E111", "인증 코드가 만료되었습니다.", HttpStatus.GONE),
   INVALID_MAIL_CODE("E112", "입력하신 인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),

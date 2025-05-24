@@ -28,9 +28,6 @@ import com.bob.global.utils.CookieUtils;
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-  @Value("${jwt.token-prefix}")
-  private String TOKEN_PREFIX;
-
   @Value("${jwt.cookie-name}")
   private String COOKIE_NAME;
 
@@ -51,13 +48,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       return;
     }
 
-    String authorizationCookieValue = CookieUtils.getCookie(request, COOKIE_NAME);
-    if (authorizationCookieValue == null || !authorizationCookieValue.startsWith(TOKEN_PREFIX)) {
+    String accessToken = CookieUtils.getCookie(request, COOKIE_NAME);
+    if (accessToken == null) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(IS_NOT_EXIST_TOKEN));
       return;
     }
 
-    String accessToken = authorizationCookieValue.substring(TOKEN_PREFIX.length());
     if (!jwtProvider.isVerified(accessToken)) {
       jwtAuthEntryPoint.commence(request, response, new ApplicationAuthenticationException(FAILED_VERIFY_TOKEN));
       return;

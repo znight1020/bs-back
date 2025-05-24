@@ -36,7 +36,6 @@ public class MailConfig {
   public SimpleMailMessage defaultMailMessage() {
     SimpleMailMessage message = new SimpleMailMessage();
     message.setFrom(username);
-    message.setSubject("[BookSwap] 이메일 인증 안내");
     return message;
   }
 }

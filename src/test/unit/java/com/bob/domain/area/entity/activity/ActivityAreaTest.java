@@ -1,5 +1,6 @@
 package com.bob.domain.area.entity.activity;
 
+import static com.bob.support.fixture.domain.ActivityAreaFixture.customTimeActivityArea;
 import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,45 +65,32 @@ class ActivityAreaTest {
   }
 
   @Test
-  @DisplayName("인증날짜 - 유효")
-  void 인증날짜가_유효하면_false를_반환한다() {
+  @DisplayName("활동지역 인증 - 유효")
+  void 인증이_유효하면_true를_반환한다() {
     // given
     Member member = defaultIdMember();
     EmdArea emdArea = defaultEmdArea();
-    ActivityAreaId id = ActivityArea.createId(member.getId(), emdArea.getId());
-    ActivityArea activityArea = ActivityArea.builder()
-        .id(id)
-        .member(member)
-        .emdArea(emdArea)
-        .authenticationAt(LocalDate.now())
-        .build();
+    ActivityArea activityArea = customTimeActivityArea(member, emdArea, LocalDate.now().minusWeeks(1)); // 1주일 전
 
     // when
-    boolean isExpired = activityArea.isExpired();
+    boolean isValid = activityArea.isValidAuthentication();
 
     // then
-    assertThat(isExpired).isFalse();
+    assertThat(isValid).isTrue();
   }
 
   @Test
-  @DisplayName("인증날짜 - 만료")
-  void 인증날짜가_유효하면_true를_반환한다() {
+  @DisplayName("활동지역 인증 - 만료")
+  void 인증이_만료되면_false를_반환한다() {
     // given
     Member member = defaultIdMember();
     EmdArea emdArea = defaultEmdArea();
-    ActivityAreaId id = ActivityArea.createId(member.getId(), emdArea.getId());
-    ActivityArea activityArea = ActivityArea.builder()
-        .id(id)
-        .member(member)
-        .emdArea(emdArea)
-        .authenticationAt(LocalDate.now().minusDays(1))
-        .build();
+    ActivityArea activityArea = customTimeActivityArea(member, emdArea, LocalDate.now().minusMonths(2)); // 2달 전
 
     // when
-    boolean isExpired = activityArea.isExpired();
+    boolean isValid = activityArea.isValidAuthentication();
 
     // then
-    assertThat(isExpired).isTrue();
+    assertThat(isValid).isFalse();
   }
-
 }

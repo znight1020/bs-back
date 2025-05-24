@@ -2,10 +2,9 @@ package com.bob.domain.member.service.reader;
 
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
-import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.bob.domain.member.entity.Member;
@@ -30,14 +29,40 @@ class MemberReaderTest {
   private MemberRepository memberRepository;
 
   @Test
-  @DisplayName("회원 조회 - 성공 테스트")
-  void 회원_조회에_성공한다() {
+  @DisplayName("회원 ID 조회 - 성공 테스트")
+  void ID를_이용하여_회원_조회에_성공한다() {
     // given
     Member member = defaultIdMember();
     given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
     // when
-    Member result = memberReader.readMember(1L);
+    Member result = memberReader.readMemberById(1L);
+
+    // then
+    assertThat(result).isEqualTo(member);
+  }
+
+  @Test
+  @DisplayName("회원 ID 조회 - 실패 테스트(존재하지 않는 ID)")
+  void 존재하지_않는_ID의_회원이면_예외를_반환한다() {
+    // given
+    given(memberRepository.findById(1L)).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> memberReader.readMemberById(1L))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessageContaining(NOT_EXISTS_MEMBER.getMessage());
+  }
+
+  @Test
+  @DisplayName("회원 Email 조회 - 성공 테스트")
+  void 이메일을_이용하여_회원_조회에_성공한다() {
+    // given
+    Member member = defaultIdMember();
+    given(memberRepository.findByEmail(defaultIdMember().getEmail())).willReturn(Optional.of(member));
+
+    // when
+    Member result = memberReader.readMemberByEmail(defaultIdMember().getEmail());
 
     // then
     assertThat(result).isEqualTo(member);
@@ -45,12 +70,12 @@ class MemberReaderTest {
 
   @Test
   @DisplayName("회원 조회 - 실패 테스트(존재하지 않는 ID)")
-  void 존재하지_않는_회원이면_예외를_반환한다() {
+  void 등록되지_않은_이메일이면_예외를_반환한다() {
     // given
-    given(memberRepository.findById(1L)).willReturn(Optional.empty());
+    given(memberRepository.findByEmail(any(String.class))).willReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> memberReader.readMember(1L))
+    assertThatThrownBy(() -> memberReader.readMemberByEmail("unknown@email.com"))
         .isInstanceOf(ApplicationException.class)
         .hasMessageContaining(NOT_EXISTS_MEMBER.getMessage());
   }

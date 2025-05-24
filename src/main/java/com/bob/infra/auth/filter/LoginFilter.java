@@ -25,12 +25,6 @@ import com.bob.global.utils.CookieUtils;
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-  @Value("${jwt.token-prefix}")
-  private String TOKEN_PREFIX;
-
-  @Value("${jwt.cookie-name}")
-  private String COOKIE_NAME;
-
   private final AuthenticationManager authenticationManager;
   private final AuthenticationEntryPoint authenticationEntryPoint;
   private final JwtProvider jwtProvider;
@@ -49,8 +43,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     Long memberId = principal.getId();
     String accessToken = jwtProvider.generateAccessToken(memberId);
     String refreshToken = jwtProvider.generateRefreshToken(memberId);
-    CookieUtils.addCookie(response, COOKIE_NAME, TOKEN_PREFIX + accessToken, 216000);
-    CookieUtils.addCookie(response, "refresh", TOKEN_PREFIX + refreshToken, 216000);
+    CookieUtils.addCookie(response, "AUTHORIZATION", accessToken, 216000);
+    CookieUtils.addCookie(response, "REFRESH", refreshToken, 216000);
     response.setStatus(HttpStatus.OK.value());
   }
 
