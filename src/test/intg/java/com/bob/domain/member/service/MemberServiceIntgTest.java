@@ -1,5 +1,7 @@
 package com.bob.domain.member.service;
 
+import static com.bob.support.fixture.command.ChangeProfileCommandFixture.defaultChangeProfileCommand;
+import static com.bob.support.fixture.command.ChangeProfileCommandFixture.sameNicknameChangeProfileCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.customChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
@@ -13,15 +15,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
+import com.bob.domain.member.entity.Member;
+import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.dto.query.ReadProfileQuery;
 import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
-import com.bob.domain.member.entity.Member;
-import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
@@ -163,6 +166,36 @@ class MemberServiceIntgTest extends TestContainerSupport {
   }
 
   @Test
+  @DisplayName("프로필 변경 - 성공 테스트")
+  void 닉네임이_다르면_프로필을_변경할_수_있다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+    ChangeProfileCommand command = defaultChangeProfileCommand(member.getId());
+
+    // when
+    memberService.changeProfileProcess(command);
+
+    // then
+    assertThat(member.getNickname()).isEqualTo(command.nickname());
+  }
+
+  @Test
+  @DisplayName("프로필 변경 - 실패 테스트(동일한 닉네임)")
+  void 닉네임이_동일하면_프로필_변경에_실패한다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+
+    ChangeProfileCommand command = sameNicknameChangeProfileCommand(member.getId());
+
+    // when & then
+    assertThatThrownBy(() -> memberService.changeProfileProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.IS_SAME_VALUE.getMessage());
+  }
+
+  @Test
   @DisplayName("임시 비밀번호 발급 - 성공 테스트")
   void 이메일로_임시_비밀번호를_받아_비밀번호를_변경할_수_있다() {
     // given
@@ -219,7 +252,6 @@ class MemberServiceIntgTest extends TestContainerSupport {
     String password = "password";
     String encoded = passwordEncoder.encode(password);
     System.out.println("ENCODED: " + encoded);
-
 
     String wrongOldPassword = "wrong-password";
     String newPassword = "new-password";
