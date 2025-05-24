@@ -2,8 +2,11 @@ package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
+import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
+import static com.bob.support.fixture.command.ChangeProfileCommandFixture.defaultChangeProfileCommand;
+import static com.bob.support.fixture.command.ChangeProfileCommandFixture.sameNicknameChangeProfileCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
@@ -24,6 +27,7 @@ import static org.mockito.Mockito.times;
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.dto.query.ReadProfileQuery;
@@ -106,6 +110,32 @@ class MemberServiceTest {
   }
 
   @Test
+  @DisplayName("회원가입 - 실패 테스트(이메일 인증 X)")
+  void 이메일_인증이_되지_않으면_회원가입에_실패한다() {
+    // given
+    CreateMemberCommand command = defaultCreateMemberCommand();
+    given(mailVerificationStore.getVerified(command.email())).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> memberService.signupProcess(command))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessage(UNVERIFIED_EMAIL.getMessage());
+  }
+
+  @Test
+  @DisplayName("회원가입 - 실패 테스트(이미 존재하는 이메일 계정)")
+  void 이메일_계정이_존재하면_회원가입에_실패한다() {
+    // given
+    CreateMemberCommand command = defaultCreateMemberCommand();
+    given(memberRepository.existsByEmail(command.email())).willReturn(true);
+
+    // when & then
+    assertThatThrownBy(() -> memberService.signupProcess(command))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessage(ALREADY_EXISTS_EMAIL.getMessage());
+  }
+
+  @Test
   @DisplayName("내 프로필 조회 - 성공 테스트")
   void 내_프로필을_조회할_수_있다() {
     // given
@@ -125,7 +155,6 @@ class MemberServiceTest {
     assertThat(response.getArea().emdId()).isEqualTo(member.getActivityArea().getEmdArea().getId());
     assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
   }
-
 
   @Test
   @DisplayName("다른 사용자 프로필 조회 - 성공 테스트")
@@ -152,29 +181,35 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("회원가입 - 실패 테스트(이메일 인증 X)")
-  void 이메일_인증이_되지_않으면_회원가입에_실패한다() {
+  @DisplayName("프로필 변경 - 성공 테스트")
+  void 닉네임이_다르면_프로필을_변경할_수_있다() {
     // given
-    CreateMemberCommand command = defaultCreateMemberCommand();
-    given(mailVerificationStore.getVerified(command.email())).willReturn(Optional.empty());
+    Member member = defaultIdMember();
+    ChangeProfileCommand command = defaultChangeProfileCommand(member.getId());
 
-    // when & then
-    assertThatThrownBy(() -> memberService.signupProcess(command))
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage(UNVERIFIED_EMAIL.getMessage());
+    given(memberReader.readMemberById(member.getId())).willReturn(member);
+
+    // when
+    memberService.changeProfileProcess(command);
+
+    // then
+    then(memberReader).should().readMemberById(member.getId());
+    assertThat(member.getNickname()).isEqualTo(command.nickname());
   }
 
   @Test
-  @DisplayName("회원가입 - 실패 테스트(이미 존재하는 이메일 계정)")
-  void 이메일_계정이_존재하면_회원가입에_실패한다() {
+  @DisplayName("프로필 변경 - 실패 테스트(동일한 닉네임)")
+  void 닉네임이_동일하면_프로필_변경에_실패한다() {
     // given
-    CreateMemberCommand command = defaultCreateMemberCommand();
-    given(memberRepository.existsByEmail(command.email())).willReturn(true);
+    Member member = defaultIdMember();
+    ChangeProfileCommand command = sameNicknameChangeProfileCommand(member.getId());
+
+    given(memberReader.readMemberById(member.getId())).willReturn(member);
 
     // when & then
-    assertThatThrownBy(() -> memberService.signupProcess(command))
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage(ALREADY_EXISTS_EMAIL.getMessage());
+    assertThatThrownBy(() -> memberService.changeProfileProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(IS_SAME_VALUE.getMessage());
   }
 
   @Test

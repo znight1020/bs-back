@@ -114,6 +114,26 @@ class MemberControllerTest {
   }
 
   @Test
+  @DisplayName("프로필 변경 API 호출 테스트")
+  void 프로필_변경_API를_호출할_수_있다() throws Exception {
+    // given
+    String json = """
+      {
+          "nickname": "변경된닉네임"
+      }
+      """;
+
+    // when
+    mvc.perform(patch("/members/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isOk());
+
+    // then
+    verify(memberService, times(1)).changeProfileProcess(any());
+  }
+
+  @Test
   @DisplayName("비밀번호 변경 API 호출 테스트")
   void 비밀번호_변경_API를_호출할_수_있다() throws Exception {
     // given
