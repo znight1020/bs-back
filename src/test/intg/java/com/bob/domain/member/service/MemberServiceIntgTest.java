@@ -8,18 +8,18 @@ import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_LIST;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
-import com.bob.domain.member.dto.command.ChangePasswordCommand;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.dto.command.IssuePasswordCommand;
-import com.bob.domain.member.dto.query.ReadProfileQuery;
-import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
-import com.bob.domain.member.dto.response.MemberProfileResponse;
-import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.CreateMemberCommand;
+import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.query.ReadProfileQuery;
+import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
+import com.bob.domain.member.service.dto.response.MemberProfileResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,7 +149,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
     ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
 
     // TODO: post 도메인 서비스 구현 후 실제 데이터 DB 저장 후 조회
-    given(postSearcher.readPostsOfMember(query.memberId())).willReturn(DEFAULT_POST_LIST());
+    given(postSearcher.readPostsOfMember(query.memberId(), query.pageable())).willReturn(DEFAULT_POST_SUMMARY());
 
     // when
     MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);

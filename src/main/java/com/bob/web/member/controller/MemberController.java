@@ -3,8 +3,8 @@ package com.bob.web.member.controller;
 import static com.bob.web.member.request.ReadProfileByIdRequest.toQuery;
 import static com.bob.web.member.request.ReadProfileRequest.toQuery;
 
-import com.bob.domain.member.dto.response.MemberProfileResponse;
-import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.service.MemberService;
 import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;

@@ -1,6 +1,6 @@
 package com.bob.web.member.request;
 
-import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
+import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import org.springframework.data.domain.Pageable;
 
 public record ReadProfileByIdRequest(

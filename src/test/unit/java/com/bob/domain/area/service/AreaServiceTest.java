@@ -20,7 +20,7 @@ import com.bob.domain.area.entity.activity.ActivityAreaId;
 import com.bob.domain.area.repository.ActivityAreaRepository;
 import com.bob.domain.area.service.reader.ActivityAreaReader;
 import com.bob.domain.area.service.reader.AreaReader;
-import com.bob.domain.member.dto.command.AuthenticationPurpose;
+import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;

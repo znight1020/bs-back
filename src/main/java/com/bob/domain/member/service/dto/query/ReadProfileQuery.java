@@ -1,4 +1,4 @@
-package com.bob.domain.member.dto.query;
+package com.bob.domain.member.service.dto.query;
 
 public record ReadProfileQuery(
     Long memberId

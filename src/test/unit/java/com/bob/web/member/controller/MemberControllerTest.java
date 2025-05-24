@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
-import com.bob.domain.member.dto.command.ChangePasswordCommand;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.CreateMemberCommand;
+import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

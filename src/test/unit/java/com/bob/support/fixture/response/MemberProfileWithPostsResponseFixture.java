@@ -1,9 +1,9 @@
 package com.bob.support.fixture.response;
 
 import static com.bob.support.fixture.response.MemberProfileResponseFixture.DEFAULT_MEMBER_PROFILE_RESPONSE;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_LIST;
+import static com.bob.support.fixture.response.internal.MemberPostFixture.DEFAULT_POST_LIST;
 
-import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 
 public class MemberProfileWithPostsResponseFixture {
 

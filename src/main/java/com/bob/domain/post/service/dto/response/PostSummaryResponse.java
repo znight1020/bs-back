@@ -1,21 +1,19 @@
-package com.bob.domain.post.dto;
+package com.bob.domain.post.service.dto.response;
 
-import com.bob.domain.post.entity.status.BookStatus;
-import com.bob.domain.trade.entity.status.TradeStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class PostResponse {
+public class PostSummaryResponse {
 
   // NOTE : 추후 게시글 조회 기능 구현 시 변경 가능성
   Long postId;
   String postTitle;
-  TradeStatus tradeStatus;
-  Integer sellPrice;
+  String tradeStatus;
   String thumbnailUrl;
-  BookStatus bookStatus;
+  String bookStatus;
+  Integer sellPrice;
   LocalDateTime createAt;
 }

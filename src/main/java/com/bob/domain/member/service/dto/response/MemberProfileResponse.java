@@ -1,4 +1,4 @@
-package com.bob.domain.member.dto.response;
+package com.bob.domain.member.service.dto.response;
 
 import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.member.entity.Member;

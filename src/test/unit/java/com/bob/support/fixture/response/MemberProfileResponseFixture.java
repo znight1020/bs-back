@@ -1,6 +1,6 @@
 package com.bob.support.fixture.response;
 
-import com.bob.domain.member.dto.response.MemberProfileResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 
 public class MemberProfileResponseFixture {
 

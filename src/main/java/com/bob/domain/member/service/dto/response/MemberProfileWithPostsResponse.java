@@ -1,6 +1,6 @@
-package com.bob.domain.member.dto.response;
+package com.bob.domain.member.service.dto.response;
 
-import com.bob.domain.post.dto.PostResponse;
+import com.bob.domain.member.service.dto.response.internal.MemberPost;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,9 +10,9 @@ import lombok.Getter;
 public class MemberProfileWithPostsResponse {
 
   MemberProfileResponse profile;
-  List<PostResponse> posts;
+  List<MemberPost> posts;
 
-  public static MemberProfileWithPostsResponse of(MemberProfileResponse profile, List<PostResponse> posts) {
+  public static MemberProfileWithPostsResponse of(MemberProfileResponse profile, List<MemberPost> posts) {
     return MemberProfileWithPostsResponse.builder()
         .profile(profile)
         .posts(posts)

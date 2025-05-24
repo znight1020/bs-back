@@ -1,7 +1,7 @@
 package com.bob.web.area.request;
 
 import com.bob.domain.area.command.AuthenticationCommand;
-import com.bob.domain.member.dto.command.AuthenticationPurpose;
+import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 
 public record AuthenticationRequest(
     Integer emdId,

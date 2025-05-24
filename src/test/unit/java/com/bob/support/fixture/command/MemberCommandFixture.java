@@ -3,9 +3,9 @@ package com.bob.support.fixture.command;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 
-import com.bob.domain.member.dto.command.ChangePasswordCommand;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.CreateMemberCommand;
+import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 
 public class MemberCommandFixture {
   public static CreateMemberCommand defaultCreateMemberCommand() {

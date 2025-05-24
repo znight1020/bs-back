@@ -13,7 +13,7 @@ import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileQuery;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_LIST;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,13 +23,13 @@ import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
-import com.bob.domain.member.dto.command.ChangePasswordCommand;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.dto.command.IssuePasswordCommand;
-import com.bob.domain.member.dto.query.ReadProfileQuery;
-import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
-import com.bob.domain.member.dto.response.MemberProfileResponse;
-import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.CreateMemberCommand;
+import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.query.ReadProfileQuery;
+import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
+import com.bob.domain.member.service.dto.response.MemberProfileResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
@@ -136,14 +136,14 @@ class MemberServiceTest {
     ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
 
     given(memberReader.readMemberById(query.memberId())).willReturn(member);
-    given(postSearcher.readPostsOfMember(query.memberId())).willReturn(DEFAULT_POST_LIST());
+    given(postSearcher.readPostsOfMember(query.memberId(), query.pageable())).willReturn(DEFAULT_POST_SUMMARY());
 
     // when
     MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);
 
     // then
     then(memberReader).should(times(1)).readMemberById(query.memberId());
-    then(postSearcher).should(times(1)).readPostsOfMember(query.memberId());
+    then(postSearcher).should(times(1)).readPostsOfMember(query.memberId(), query.pageable());
     assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
     assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
     assertThat(response.getPosts()).hasSize(2);

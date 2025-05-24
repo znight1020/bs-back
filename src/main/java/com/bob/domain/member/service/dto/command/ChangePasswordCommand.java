@@ -1,4 +1,4 @@
-package com.bob.domain.member.dto.command;
+package com.bob.domain.member.service.dto.command;
 
 public record ChangePasswordCommand(
     Long memberId,

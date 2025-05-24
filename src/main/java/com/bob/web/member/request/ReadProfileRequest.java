@@ -1,6 +1,6 @@
 package com.bob.web.member.request;
 
-import com.bob.domain.member.dto.query.ReadProfileQuery;
+import com.bob.domain.member.service.dto.query.ReadProfileQuery;
 
 public record ReadProfileRequest(
 

@@ -6,20 +6,20 @@ import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAI
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
-import com.bob.domain.member.dto.command.ChangePasswordCommand;
-import com.bob.domain.member.dto.command.CreateMemberCommand;
-import com.bob.domain.member.dto.command.IssuePasswordCommand;
-import com.bob.domain.member.dto.query.ReadProfileQuery;
-import com.bob.domain.member.dto.query.ReadProfileWithPostsQuery;
-import com.bob.domain.member.dto.response.MemberProfileResponse;
-import com.bob.domain.member.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.CreateMemberCommand;
+import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.query.ReadProfileQuery;
+import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
+import com.bob.domain.member.service.dto.response.internal.MemberPost;
+import com.bob.domain.member.service.dto.response.MemberProfileResponse;
+import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
-import com.bob.domain.post.dto.PostResponse;
 import com.bob.global.exception.exceptions.ApplicationException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class MemberService {
   private final AreaReader areaReader;
   private final MailService mailService;
   private final MailVerificationStore mailVerificationStore;
-  private final PostSearcher postProvider;
+  private final PostSearcher postSearcher;
   private final PasswordEncoder encoder;
 
   public void signupProcess(CreateMemberCommand command) {
@@ -79,7 +79,7 @@ public class MemberService {
   public MemberProfileWithPostsResponse readProfileByIdWithPostsProcess(ReadProfileWithPostsQuery query) {
     Member member = memberReader.readMemberById(query.memberId());
     MemberProfileResponse profile = MemberProfileResponse.of(member);
-    List<PostResponse> posts = postProvider.readPostsOfMember(query.memberId());
+    List<MemberPost> posts = MemberPost.from(postSearcher.readPostsOfMember(query.memberId(), query.pageable()));
     return MemberProfileWithPostsResponse.of(profile, posts);
   }
 
