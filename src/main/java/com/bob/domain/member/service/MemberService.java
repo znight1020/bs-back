@@ -2,11 +2,13 @@ package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
+import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.dto.query.ReadProfileQuery;
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class MemberService {
 
@@ -40,8 +41,8 @@ public class MemberService {
   private final PostSearcher postSearcher;
   private final PasswordEncoder encoder;
 
+  @Transactional
   public void signupProcess(CreateMemberCommand command) {
-    verifyAlreadyExistEmail(command.email());
     verifyEmail(command.email());
 
     EmdArea memberEmdArea = areaReader.readEmdArea(command.emdId());
@@ -51,13 +52,11 @@ public class MemberService {
     memberRepository.save(member);
   }
 
-  private void verifyAlreadyExistEmail(String email) {
+  private void verifyEmail(String email) {
     if (memberRepository.existsByEmail(email)) {
       throw new ApplicationException(ALREADY_EXISTS_EMAIL);
     }
-  }
 
-  private void verifyEmail(String email) {
     boolean isVerified = mailVerificationStore.getVerified(email)
         .map("true"::equals)
         .orElse(false);
@@ -83,6 +82,20 @@ public class MemberService {
     return MemberProfileWithPostsResponse.of(profile, posts);
   }
 
+  @Transactional
+  public void changeProfileProcess(ChangeProfileCommand command) {
+    Member member = memberReader.readMemberById(command.memberId());
+    verifyNickname(member, command.nickname());
+    member.updateNickname(command.nickname());
+  }
+
+  private static void verifyNickname(Member member, String nickname) {
+    if (member.isEqualsNickname(nickname)) {
+      throw new ApplicationException(IS_SAME_VALUE);
+    }
+  }
+
+  @Transactional
   public void changePasswordProcess(ChangePasswordCommand command) {
     Member member = memberReader.readMemberById(command.memberId());
     verifyPassword(member.getPassword(), command.oldPassword());
@@ -95,6 +108,7 @@ public class MemberService {
     }
   }
 
+  @Transactional
   public void issueTempPasswordProcess(IssuePasswordCommand command) {
     Member member = memberReader.readMemberByEmail(command.email());
     String tempPassword = mailService.sendTempPasswordProcess(command.email());
