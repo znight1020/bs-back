@@ -334,6 +334,6 @@ class MemberServiceTest {
     // when & then
     assertThatThrownBy(() -> memberService.changeProfileImageUrlProcess(command))
         .isInstanceOf(ApplicationException.class)
-        .hasMessageContaining(ApplicationError.NOT_SUPPORT_TYPE.getMessage());
+        .hasMessageContaining(ApplicationError.UN_SUPPORTED_TYPE.getMessage());
   }
 }
