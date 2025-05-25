@@ -1,5 +1,6 @@
 package com.bob.web.member.controller;
 
+import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.DEFAULT_MEMBER_PROFILE_IMAGE_URL_RESPONSE;
 import static com.bob.support.fixture.response.MemberProfileResponseFixture.DEFAULT_MEMBER_PROFILE_RESPONSE;
 import static com.bob.support.fixture.response.MemberProfileWithPostsResponseFixture.DEFAULT_MEMBER_PROFILE_WITH_POSTS_RESPONSE;
 import static org.mockito.ArgumentMatchers.any;
@@ -173,4 +174,28 @@ class MemberControllerTest {
     // then
     verify(memberService, times(1)).issueTempPasswordProcess(any(IssuePasswordCommand.class));
   }
+
+  @Test
+  @DisplayName("프로필 이미지 변경 API 호출 테스트")
+  void 프로필_이미지_Presigned_URL_발급_API를_호출할_수_있다() throws Exception {
+    // given
+    String json = """
+    {
+      "contentType": "image/png"
+    }
+    """;
+    given(memberService.changeProfileImageUrlProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_IMAGE_URL_RESPONSE);
+
+    // when & then
+    mvc.perform(patch("/members/me/image")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .requestAttr("memberId", 1L))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.fileName").value("profile/test.png"))
+        .andExpect(jsonPath("$.imageUploadUrl").value("https://s3-url.com/presigned"));
+
+    verify(memberService, times(1)).changeProfileImageUrlProcess(any());
+  }
+
 }

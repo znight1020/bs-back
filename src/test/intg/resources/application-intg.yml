@@ -17,8 +17,17 @@ spring:
     username: "test"
     password: "test"
 
+  cloud:
+    aws:
+      credentials:
+        access-key: access
+        secret-key: secret
+      region:
+        static: region
+      s3:
+        bucket: bucket
+
 jwt:
-  token-prefix: PRIFIX
   secret-key: secret
   access-token-expire-time: 1
   refresh-token-expire-time: 1

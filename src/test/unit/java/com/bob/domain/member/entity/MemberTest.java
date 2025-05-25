@@ -74,4 +74,18 @@ class MemberTest {
     // then
     assertThat(result).isEqualTo(expected);
   }
+
+  @Test
+  @DisplayName("프로필 이미지 URL 수정 테스트")
+  void 프로필_이미지_URL을_수정할_수_있다() {
+    // given
+    Member member = defaultIdMember();
+    String newProfileImageUrl = "profile/test.jpg";
+
+    // when
+    member.updateProfileImageUrl(newProfileImageUrl);
+
+    // then
+    assertThat(member.getProfileImageUrl()).isEqualTo(newProfileImageUrl);
+  }
 }

@@ -4,20 +4,25 @@ import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
 import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
+import static com.bob.global.utils.ImageDirectory.PROFILE;
+import static com.bob.global.utils.ImageUtils.generateImageFileName;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
+import com.bob.domain.member.entity.Member;
+import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
+import com.bob.domain.member.service.dto.command.ChangeProfileImageUrlCommand;
 import com.bob.domain.member.service.dto.query.ReadProfileQuery;
 import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
-import com.bob.domain.member.service.dto.response.internal.MemberPost;
+import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
-import com.bob.domain.member.entity.Member;
-import com.bob.domain.member.repository.MemberRepository;
+import com.bob.domain.member.service.dto.response.internal.MemberPost;
+import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
@@ -36,9 +41,12 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final MemberReader memberReader;
   private final AreaReader areaReader;
-  private final MailService mailService;
+
+  private final ImageStorageAccessor imageStorageAccessor;
   private final MailVerificationStore mailVerificationStore;
+  private final MailService mailService;
   private final PostSearcher postSearcher;
+
   private final PasswordEncoder encoder;
 
   @Transactional
@@ -113,5 +121,14 @@ public class MemberService {
     Member member = memberReader.readMemberByEmail(command.email());
     String tempPassword = mailService.sendTempPasswordProcess(command.email());
     member.updatePassword(encoder.encode(tempPassword));
+  }
+
+  @Transactional
+  public MemberProfileImageUrlResponse changeProfileImageUrlProcess(ChangeProfileImageUrlCommand command) {
+    String fileName = generateImageFileName(command.contentType(), PROFILE);
+    String signedUrl = imageStorageAccessor.getImageUploadUrl(fileName, command.contentType());
+    Member member = memberReader.readMemberById(command.memberId());
+    member.updateProfileImageUrl(fileName);
+    return MemberProfileImageUrlResponse.of(fileName, signedUrl);
   }
 }

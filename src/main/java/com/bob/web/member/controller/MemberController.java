@@ -7,6 +7,7 @@ import static com.bob.web.member.request.ReadProfileByIdRequest.toQuery;
 import static com.bob.web.member.request.ReadProfileRequest.toQuery;
 
 import com.bob.domain.member.service.MemberService;
+import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
 import com.bob.web.common.AuthenticationId;
@@ -15,6 +16,7 @@ import com.bob.web.common.symbol.ResponseSymbol;
 import com.bob.web.member.request.ChangePasswordRequest;
 import com.bob.web.member.request.ChangeProfileRequest;
 import com.bob.web.member.request.IssuePasswordRequest;
+import com.bob.web.member.request.ReadImageUploadUrlRequest;
 import com.bob.web.member.request.SignupRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -75,5 +77,13 @@ public class MemberController {
   public CommonResponse<ResponseSymbol> handleSendTempPassword(@RequestBody IssuePasswordRequest request) {
     memberService.issueTempPasswordProcess(request.toCommand());
     return new CommonResponse<>(true, SENT);
+  }
+
+  @PatchMapping("/me/image")
+  public ResponseEntity<MemberProfileImageUrlResponse> handleGetImageUploadUrl(
+      @RequestBody ReadImageUploadUrlRequest request,
+      @AuthenticationId Long memberId
+  ) {
+    return ResponseEntity.ok(memberService.changeProfileImageUrlProcess(request.toQuery(memberId)));
   }
 }

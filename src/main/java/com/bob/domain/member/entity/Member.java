@@ -62,6 +62,10 @@ public class Member extends BaseTime {
     nickname = newNickname;
   }
 
+  public void updateProfileImageUrl(String newProfileImageUrl) {
+    profileImageUrl = newProfileImageUrl;
+  }
+
   public boolean isEqualsNickname(String oldNickname) {
     return Objects.equals(nickname, oldNickname);
   }
