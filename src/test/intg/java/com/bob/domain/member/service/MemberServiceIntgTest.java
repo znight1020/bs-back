@@ -2,6 +2,7 @@ package com.bob.domain.member.service;
 
 import static com.bob.support.fixture.command.ChangeProfileCommandFixture.defaultChangeProfileCommand;
 import static com.bob.support.fixture.command.ChangeProfileCommandFixture.sameNicknameChangeProfileCommand;
+import static com.bob.support.fixture.command.ChangeProfileImageUrlCommandFixture.customChangeProfileImageUrlCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.customChangePasswordCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultCreateMemberCommand;
 import static com.bob.support.fixture.command.MemberCommandFixture.defaultIssuePasswordCommand;
@@ -10,21 +11,27 @@ import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
+import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.*;
 import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
+import com.bob.domain.member.service.dto.command.ChangeProfileImageUrlCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.dto.query.ReadProfileQuery;
 import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
+import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
@@ -66,6 +73,9 @@ class MemberServiceIntgTest extends TestContainerSupport {
 
   @MockitoBean
   private MailService mailService;
+
+  @MockitoBean
+  private ImageStorageAccessor imageStorageAccessor;
 
   @BeforeEach
   void init() {
@@ -265,5 +275,26 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> memberService.changePasswordProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(ApplicationError.INVALID_OLD_PASSWORD.getMessage());
+  }
+
+  @Test
+  @DisplayName("프로필 이미지 Presigned URL 발급 및 경로 저장 - 통합 성공 테스트")
+  void 프로필_이미지_업로드를_위한_URL을_발급하고_DB에_경로를_저장할_수_있다() {
+    // given
+    Member member = defaultMember();
+    memberRepository.save(member);
+    ChangeProfileImageUrlCommand command = customChangeProfileImageUrlCommand(member.getId());
+    MemberProfileImageUrlResponse expected = DEFAULT_MEMBER_PROFILE_IMAGE_URL_RESPONSE;
+    given(imageStorageAccessor.getImageUploadUrl(anyString(), eq(command.contentType())))
+        .willReturn(expected.getImageUploadUrl());
+
+    // when
+    MemberProfileImageUrlResponse response = memberService.changeProfileImageUrlProcess(command);
+
+    // then
+    assertThat(member.getProfileImageUrl()).isEqualTo(response.getFileName());
+    assertThat(response.getImageUploadUrl()).isEqualTo(expected.getImageUploadUrl());
+    assertThat(response.getFileName()).startsWith("profile");
+    assertThat(response.getFileName()).endsWith(".png");
   }
 }

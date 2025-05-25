@@ -8,6 +8,10 @@ public class ChangeProfileImageUrlCommandFixture {
     return new ChangeProfileImageUrlCommand(1L, "image/png");
   }
 
+  public static ChangeProfileImageUrlCommand customChangeProfileImageUrlCommand(Long memberId) {
+    return new ChangeProfileImageUrlCommand(memberId, "image/png");
+  }
+
   public static ChangeProfileImageUrlCommand unSupportedChangeProfileImageUrlCommand() {
     return new ChangeProfileImageUrlCommand(1L, "video/mp4");
   }
