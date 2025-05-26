@@ -26,7 +26,7 @@ class ImageUtilsTest {
         .isInstanceOf(ApplicationException.class)
         .satisfies(ex -> {
           ApplicationException appEx = (ApplicationException) ex;
-          assertThat(appEx.getError()).isEqualTo(ApplicationError.NOT_SUPPORT_TYPE);
+          assertThat(appEx.getError()).isEqualTo(ApplicationError.UN_SUPPORTED_TYPE);
         });
   }
 

@@ -17,7 +17,7 @@ public class ImageUtils {
       case "image/jpeg" -> "jpg";
       case "image/png" -> "png";
       case "image/gif" -> "gif";
-      default -> throw new ApplicationException(ApplicationError.NOT_SUPPORT_TYPE);
+      default -> throw new ApplicationException(ApplicationError.UN_SUPPORTED_TYPE);
     };
   }
 }
