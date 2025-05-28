@@ -4,8 +4,8 @@ import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
 import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
-import static com.bob.global.utils.ImageDirectory.PROFILE;
-import static com.bob.global.utils.ImageUtils.generateImageFileName;
+import static com.bob.global.utils.image.ImageDirectory.PROFILE;
+import static com.bob.global.utils.image.ImageUtils.generateImageFileName;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;

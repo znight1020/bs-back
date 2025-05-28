@@ -22,7 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
 import com.bob.infra.auth.jwt.JwtProvider;
 import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 
 @RequiredArgsConstructor
 @Component

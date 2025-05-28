@@ -11,7 +11,7 @@ import com.bob.domain.area.entity.activity.ActivityAreaId;
 import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
-import com.bob.global.utils.GeometryUtils;
+import com.bob.global.utils.geo.GeometryUtils;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;

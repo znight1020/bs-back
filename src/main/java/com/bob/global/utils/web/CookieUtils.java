@@ -1,4 +1,4 @@
-package com.bob.global.utils;
+package com.bob.global.utils.web;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

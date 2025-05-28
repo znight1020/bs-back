@@ -14,7 +14,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 import com.bob.infra.auth.jwt.JwtProvider;
 import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
 import com.bob.infra.auth.response.MemberDetails;
