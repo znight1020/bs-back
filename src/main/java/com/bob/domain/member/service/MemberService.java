@@ -2,7 +2,7 @@ package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
-import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
+import static com.bob.global.exception.response.ApplicationError.IS_SAME_REQUEST;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
 import static com.bob.global.utils.image.ImageDirectory.PROFILE;
 import static com.bob.global.utils.image.ImageUtils.generateImageFileName;
@@ -99,7 +99,7 @@ public class MemberService {
 
   private static void verifyNickname(Member member, String nickname) {
     if (member.isEqualsNickname(nickname)) {
-      throw new ApplicationException(IS_SAME_VALUE);
+      throw new ApplicationException(IS_SAME_REQUEST);
     }
   }
 

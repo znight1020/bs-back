@@ -6,6 +6,7 @@ import static com.bob.support.fixture.command.AuthenticationCommandFixture.defau
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultReAuthenticateCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultAuthenticationCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.guestCommand;
+import static com.bob.support.fixture.domain.EmdAreaFixture.otherEmdArea;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.eq;
@@ -16,9 +17,6 @@ import static org.mockito.BDDMockito.then;
 import com.bob.domain.area.command.AuthenticationCommand;
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.entity.activity.ActivityArea;
-import com.bob.domain.area.entity.activity.ActivityAreaId;
-import com.bob.domain.area.repository.ActivityAreaRepository;
-import com.bob.domain.area.service.reader.ActivityAreaReader;
 import com.bob.domain.area.service.reader.AreaReader;
 import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 import com.bob.domain.member.entity.Member;
@@ -42,12 +40,6 @@ class AreaServiceTest {
   private AreaService areaService;
 
   @Mock
-  private ActivityAreaRepository activityAreaRepository;
-
-  @Mock
-  private ActivityAreaReader activityAreaReader;
-
-  @Mock
   private AreaReader areaReader;
 
   @Mock
@@ -69,7 +61,7 @@ class AreaServiceTest {
     given(geometry.contains(any(Point.class))).willReturn(true);
 
     // when & then
-    areaService.authenticate(command); // 예외 없으면 성공
+    areaService.authenticate(command);
   }
 
   @Test
@@ -98,13 +90,13 @@ class AreaServiceTest {
 
     Member member = mock(Member.class);
     given(memberReader.readMemberById(command.memberId())).willReturn(member);
+    given(member.getActivityArea()).willReturn(mock(ActivityArea.class));
+    given(member.getActivityArea().getEmdArea()).willReturn(otherEmdArea());
 
     // when
     areaService.authenticate(command);
 
     // then
-    then(activityAreaRepository).should().deleteById(ActivityArea.createId(command.memberId(), command.emdId()));
-    then(activityAreaRepository).should().save(any(ActivityArea.class));
     then(member).should().updateActivityArea(any(ActivityArea.class));
   }
 
@@ -132,14 +124,15 @@ class AreaServiceTest {
     given(emdArea.getGeom()).willReturn(geometry);
     given(geometry.contains(any(Point.class))).willReturn(true);
 
-    ActivityArea activityArea = mock(ActivityArea.class);
-    given(activityAreaReader.readActivityArea(any(ActivityAreaId.class))).willReturn(activityArea);
+    Member member = mock(Member.class);
+    given(memberReader.readMemberById(command.memberId())).willReturn(member);
+    given(member.getActivityArea()).willReturn(mock(ActivityArea.class));
 
     // when
     areaService.authenticate(command);
 
     // then
-    then(activityArea).should().updateAuthenticationAt(eq(LocalDate.now()));
+    then(member.getActivityArea()).should().updateAuthenticationAt(eq(LocalDate.now()));
   }
 
   @Test

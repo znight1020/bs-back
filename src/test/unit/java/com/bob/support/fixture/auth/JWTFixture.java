@@ -6,21 +6,22 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 public class JWTFixture {
 
   public static final String SECRET_KEY = "testsecretkeytestsecretkeytestse";
   public static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
-  public static String validToken(Long memberId) {
+  public static String validToken(String memberId) {
     return generateToken(memberId, 60_000);
   }
 
-  public static String expiredToken(Long memberId) {
+  public static String expiredToken(String memberId) {
     return generateToken(memberId, -60_000);
   }
 
-  public static String generateToken(Long memberId, long durationMillis) {
+  public static String generateToken(String memberId, long durationMillis) {
     long now = System.currentTimeMillis();
     return Jwts.builder()
         .setIssuer("bookbridge")

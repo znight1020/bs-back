@@ -26,6 +26,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,12 +95,12 @@ class LoginFilterTest {
     // given
     FilterChain filterChain = mock(FilterChain.class);
 
-    MemberDetails memberDetails = new MemberDetails(1L);
+    MemberDetails memberDetails = new MemberDetails(UUID.randomUUID());
     Authentication authentication = new UsernamePasswordAuthenticationToken(
         memberDetails, null, memberDetails.getAuthorities()
     );
-    given(jwtProvider.generateAccessToken(1L)).willReturn(ACCESS_VALUE);
-    given(jwtProvider.generateRefreshToken(1L)).willReturn(REFRESH_VALUE);
+    given(jwtProvider.generateAccessToken(any(String.class))).willReturn(ACCESS_VALUE);
+    given(jwtProvider.generateRefreshToken(any(String.class))).willReturn(REFRESH_VALUE);
 
     // when
     loginFilter.successfulAuthentication(request, response, filterChain, authentication);

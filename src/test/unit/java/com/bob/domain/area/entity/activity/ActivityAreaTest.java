@@ -2,12 +2,14 @@ package com.bob.domain.area.entity.activity;
 
 import static com.bob.support.fixture.domain.ActivityAreaFixture.customTimeActivityArea;
 import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.member.entity.Member;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +20,7 @@ class ActivityAreaTest {
   @DisplayName("ActivityArea 식별자 생성 테스트")
   void ActivityAreaId를_정상적으로_생성할_수_있다() {
     // given
-    Long memberId = 1L;
+    UUID memberId = MEMBER_ID;
     Integer emdAreaId = 213;
 
     // when

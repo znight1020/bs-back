@@ -18,6 +18,7 @@ import com.bob.web.member.request.ChangeProfileRequest;
 import com.bob.web.member.request.IssuePasswordRequest;
 import com.bob.web.member.request.ReadImageUploadUrlRequest;
 import com.bob.web.member.request.SignupRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -46,19 +47,19 @@ public class MemberController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<MemberProfileResponse> handleReadProfile(@AuthenticationId Long memberId) {
+  public ResponseEntity<MemberProfileResponse> handleReadProfile(@AuthenticationId UUID memberId) {
     return ResponseEntity.ok(memberService.readProfileProcess(toQuery(memberId)));
   }
 
   @GetMapping("/{memberId}")
-  public ResponseEntity<MemberProfileWithPostsResponse> handleReadProfileById(@PathVariable Long memberId, Pageable pageable) {
+  public ResponseEntity<MemberProfileWithPostsResponse> handleReadProfileById(@PathVariable UUID memberId, Pageable pageable) {
     return ResponseEntity.ok(memberService.readProfileByIdWithPostsProcess(toQuery(memberId, pageable)));
   }
 
   @PatchMapping("/me")
   public CommonResponse<ResponseSymbol> handleChangeProfile(
       @RequestBody ChangeProfileRequest request,
-      @AuthenticationId Long memberId
+      @AuthenticationId UUID memberId
   ) {
     memberService.changeProfileProcess(request.toCommand(memberId));
     return new CommonResponse<>(true, UPDATED);
@@ -67,7 +68,7 @@ public class MemberController {
   @PatchMapping("/me/password")
   public CommonResponse<ResponseSymbol> handleChangePassword(
       @RequestBody ChangePasswordRequest request,
-      @AuthenticationId Long memberId
+      @AuthenticationId UUID memberId
   ) {
     memberService.changePasswordProcess(request.toCommand(memberId));
     return new CommonResponse<>(true, UPDATED);
@@ -82,7 +83,7 @@ public class MemberController {
   @PatchMapping("/me/image")
   public ResponseEntity<MemberProfileImageUrlResponse> handleGetImageUploadUrl(
       @RequestBody ReadImageUploadUrlRequest request,
-      @AuthenticationId Long memberId
+      @AuthenticationId UUID memberId
   ) {
     return ResponseEntity.ok(memberService.changeProfileImageUrlProcess(request.toQuery(memberId)));
   }

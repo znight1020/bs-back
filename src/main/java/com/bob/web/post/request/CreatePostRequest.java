@@ -2,6 +2,7 @@ package com.bob.web.post.request;
 
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record CreatePostRequest(
     Long categoryId,
@@ -11,7 +12,7 @@ public record CreatePostRequest(
     BookInfo book
 ) {
 
-  public CreatePostCommand toCommand(Long memberId) {
+  public CreatePostCommand toCommand(UUID memberId) {
     return CreatePostCommand.builder()
         .memberId(memberId)
         .categoryId(categoryId)

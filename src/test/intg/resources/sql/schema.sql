@@ -2,25 +2,25 @@
 -- 📚 BOOKS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS books (
-   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-   isbn13 CHAR(13) NOT NULL UNIQUE,
-   title VARCHAR(50) NOT NULL,
-   description TEXT,
-   price_standard INT,
-   cover VARCHAR(255),
-   pub_date DATE
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    isbn13 CHAR(13) NOT NULL UNIQUE,
+    title VARCHAR(50) NOT NULL,
+    description TEXT,
+    price_standard INT,
+    cover VARCHAR(255),
+    pub_date DATE
 );
 
 -- ========================
--- 🧑 MEMBERS TABLE
+-- 🧑 MEMBERS TABLE (UUID로 수정됨)
 -- ========================
 CREATE TABLE IF NOT EXISTS members (
-     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-     email VARCHAR(50) NOT NULL UNIQUE,
-     password VARCHAR(255) NOT NULL,
-     nickname VARCHAR(20) NOT NULL,
-     profile_image_url VARCHAR(255),
-     created_at DATETIME
+    id BINARY(16) PRIMARY KEY,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    nickname VARCHAR(20) NOT NULL,
+    profile_image_url VARCHAR(255),
+    created_at DATETIME
 );
 
 -- ========================
@@ -37,21 +37,21 @@ CREATE TABLE IF NOT EXISTS categories (
 -- 📝 POSTS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS posts (
-   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-   post_status ENUM('READY', 'IN_PROGRESS', 'COMPLETED') NOT NULL,
-   category_id BIGINT NOT NULL,
-   seller_id BIGINT NOT NULL,
-   thumbnail_url VARCHAR(255) NOT NULL,
-   book_id BIGINT NOT NULL,
-   book_status ENUM('BEST', 'HIGH', 'MEDIUM', 'LOW') NOT NULL,
-   sell_price INT NOT NULL,
-   description VARCHAR(200),
-   view_count INT DEFAULT 0,
-   scrap_count INT DEFAULT 0,
-   created_at DATETIME,
-   FOREIGN KEY (category_id) REFERENCES categories(id),
-   FOREIGN KEY (seller_id) REFERENCES members(id),
-   FOREIGN KEY (book_id) REFERENCES books(id)
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_status ENUM('READY', 'IN_PROGRESS', 'COMPLETED') NOT NULL,
+    category_id BIGINT NOT NULL,
+    seller_id BINARY(16) NOT NULL,
+    thumbnail_url VARCHAR(255) NOT NULL,
+    book_id BIGINT NOT NULL,
+    book_status ENUM('BEST', 'HIGH', 'MEDIUM', 'LOW') NOT NULL,
+    sell_price INT NOT NULL,
+    description VARCHAR(200),
+    view_count INT DEFAULT 0,
+    scrap_count INT DEFAULT 0,
+    created_at DATETIME,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (seller_id) REFERENCES members(id),
+    FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
 -- ========================
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS posts (
 -- ========================
 CREATE TABLE IF NOT EXISTS like_posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id BIGINT NOT NULL,
+    member_id BINARY(16) NOT NULL,
     post_id BIGINT NOT NULL,
     liked_at DATETIME,
     FOREIGN KEY (member_id) REFERENCES members(id),
@@ -70,13 +70,13 @@ CREATE TABLE IF NOT EXISTS like_posts (
 -- 📩 NOTIFICATIONS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS notifications (
-   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-   receiver_id BIGINT NOT NULL,
-   message VARCHAR(255) NOT NULL,
-   is_read BOOLEAN DEFAULT FALSE,
-   type ENUM('CHAT', 'SYSTEM', 'ETC') NOT NULL,
-   created_at DATETIME,
-   FOREIGN KEY (receiver_id) REFERENCES members(id)
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    receiver_id BINARY(16) NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    type ENUM('CHAT', 'SYSTEM', 'ETC') NOT NULL,
+    created_at DATETIME,
+    FOREIGN KEY (receiver_id) REFERENCES members(id)
 );
 
 -- ========================
@@ -103,19 +103,19 @@ CREATE TABLE IF NOT EXISTS sigg_areas (
 -- 🗺️ EMD_AREAS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS emd_areas (
-   id INT PRIMARY KEY,
-   sigg_area_id INT NOT NULL,
-   adm_code VARCHAR(10) NOT NULL,
-   name VARCHAR(50) NOT NULL,
-   geom GEOMETRY SRID 4326,
-   FOREIGN KEY (sigg_area_id) REFERENCES sigg_areas(id)
+    id INT PRIMARY KEY,
+    sigg_area_id INT NOT NULL,
+    adm_code VARCHAR(10) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    geom GEOMETRY SRID 4326,
+    FOREIGN KEY (sigg_area_id) REFERENCES sigg_areas(id)
 );
 
 -- ========================
 -- 📍 ACTIVITY_AREAS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS activity_areas (
-    member_id BIGINT NOT NULL,
+    member_id BINARY(16) NOT NULL,
     emd_area_id INT NOT NULL,
     authentication_at DATE NOT NULL,
     PRIMARY KEY (member_id, emd_area_id),
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS activity_areas (
 CREATE TABLE IF NOT EXISTS trades (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT NOT NULL,
-    buyer_id BIGINT NOT NULL,
+    buyer_id BINARY(16) NOT NULL,
     trade_status ENUM('REQUESTED', 'CANCELED', 'COMPLETED') NOT NULL,
     updated_at DATETIME NOT NULL,
     created_at DATETIME,
@@ -141,44 +141,44 @@ CREATE TABLE IF NOT EXISTS trades (
 -- 💬 CHAT_ROOMS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS chat_rooms (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  trade_id BIGINT NOT NULL,
-  title_suffix VARCHAR(100) NOT NULL,
-  last_chat_at DATETIME NOT NULL,
-  status BOOLEAN NOT NULL,
-  created_at DATETIME,
-  modified_at DATETIME,
-  FOREIGN KEY (trade_id) REFERENCES trades(id)
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trade_id BIGINT NOT NULL,
+    title_suffix VARCHAR(100) NOT NULL,
+    last_chat_at DATETIME NOT NULL,
+    status BOOLEAN NOT NULL,
+    created_at DATETIME,
+    modified_at DATETIME,
+    FOREIGN KEY (trade_id) REFERENCES trades(id)
 );
 
 -- ========================
 -- 💬 CHAT_MESSAGES TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS chat_messages (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  chat_room_id BIGINT NOT NULL,
-  sender_id BIGINT NOT NULL,
-  chat_message_type ENUM('MESSAGE', 'IMAGE', 'SYSTEM') NOT NULL,
-  chat_message VARCHAR(500),
-  chat_image_url VARCHAR(255),
-  is_read BOOLEAN DEFAULT FALSE,
-  sent_at DATETIME NOT NULL,
-  FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
-  FOREIGN KEY (sender_id) REFERENCES members(id)
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    chat_room_id BIGINT NOT NULL,
+    sender_id BINARY(16) NOT NULL,
+    chat_message_type ENUM('MESSAGE', 'IMAGE', 'SYSTEM') NOT NULL,
+    chat_message VARCHAR(500),
+    chat_image_url VARCHAR(255),
+    is_read BOOLEAN DEFAULT FALSE,
+    sent_at DATETIME NOT NULL,
+    FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
+    FOREIGN KEY (sender_id) REFERENCES members(id)
 );
 
 -- ========================
 -- 👥 CHAT_ROOM_MEMBERS TABLE
 -- ========================
 CREATE TABLE IF NOT EXISTS chat_room_members (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  chat_room_id BIGINT NOT NULL,
-  member_id BIGINT NOT NULL,
-  is_exited BOOLEAN NOT NULL,
-  exited_at DATETIME,
-  status BOOLEAN NOT NULL,
-  FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
-  FOREIGN KEY (member_id) REFERENCES members(id)
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    chat_room_id BIGINT NOT NULL,
+    member_id BINARY(16) NOT NULL,
+    is_exited BOOLEAN NOT NULL,
+    exited_at DATETIME,
+    status BOOLEAN NOT NULL,
+    FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
+    FOREIGN KEY (member_id) REFERENCES members(id)
 );
 
 -- ========================

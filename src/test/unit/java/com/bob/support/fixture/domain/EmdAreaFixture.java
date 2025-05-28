@@ -12,4 +12,14 @@ public class EmdAreaFixture {
         .geom(null)
         .build();
   }
+
+  public static EmdArea otherEmdArea() {
+    return EmdArea.builder()
+        .id(1)
+        .admCode("570")
+        .name("신곡동")
+        .siggArea(null)
+        .geom(null)
+        .build();
+  }
 }

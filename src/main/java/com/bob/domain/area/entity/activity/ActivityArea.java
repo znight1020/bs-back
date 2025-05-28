@@ -10,6 +10,7 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,7 @@ public class ActivityArea {
     return new ActivityArea(id, member, emdArea, LocalDate.now());
   }
 
-  public static ActivityAreaId createId(Long memberId, Integer emdAreaId) {
+  public static ActivityAreaId createId(UUID memberId, Integer emdAreaId) {
     return new ActivityAreaId(memberId, emdAreaId);
   }
 
