@@ -1,5 +1,6 @@
 package com.bob.infra.auth.service;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.otherMember;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +42,7 @@ class MemberDetailsServiceTest {
 
     // then
     assertThat(userDetails).isNotNull();
-    assertThat(userDetails.id()).isEqualTo(1L);
+    assertThat(userDetails.id()).isEqualTo(MEMBER_ID);
     assertThat(userDetails.email()).isEqualTo(member.getEmail());
     assertThat(userDetails.password()).isEqualTo(member.getPassword());
   }

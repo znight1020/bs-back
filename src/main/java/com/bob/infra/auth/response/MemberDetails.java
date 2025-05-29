@@ -2,16 +2,17 @@ package com.bob.infra.auth.response;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public record MemberDetails(
-    Long id,
-    String password,
-    String email
+    UUID id,
+    String email,
+    String password
 ) implements UserDetails {
 
-  public MemberDetails(Long id) {
+  public MemberDetails(UUID id) {
     this(id, null, null);
   }
 
@@ -28,10 +29,6 @@ public record MemberDetails(
   @Override
   public String getUsername() {
     return email;
-  }
-
-  public Long getId() {
-    return id;
   }
 }
 

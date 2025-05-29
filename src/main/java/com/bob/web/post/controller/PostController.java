@@ -1,12 +1,13 @@
 package com.bob.web.post.controller;
 
-import static com.bob.web.common.symbol.ResponseSymbol.*;
+import static com.bob.web.common.symbol.ResponseSymbol.CREATED;
 
 import com.bob.domain.post.service.PostService;
 import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
 import com.bob.web.post.request.CreatePostRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class PostController {
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<ResponseSymbol> handleCreatePost(
       @RequestBody CreatePostRequest request,
-      @AuthenticationId Long memberId
+      @AuthenticationId UUID memberId
   ) {
     postService.createPostProcess(request.toCommand(memberId));
     return new CommonResponse<>(true, CREATED);

@@ -1,14 +1,18 @@
 package com.bob.support.fixture.command;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
+
 import com.bob.domain.area.command.AuthenticationCommand;
 import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
+import java.util.UUID;
 
 public class AuthenticationCommandFixture {
 
   public static final int DEFAULT_EMD_ID = 213;
   public static final double DEFAULT_LAT = 37.500578;
   public static final double DEFAULT_LON = 127.036991;
-  public static final Long DEFAULT_MEMBER_ID = 1L;
+  public static final double OTHER_LAT = 37.730629;
+  public static final double OTHER_LON = 127.060564;
 
   public static AuthenticationCommand defaultAuthenticationCommand() {
     return new AuthenticationCommand(
@@ -16,17 +20,17 @@ public class AuthenticationCommandFixture {
         DEFAULT_LAT,
         DEFAULT_LON,
         AuthenticationPurpose.SIGN_UP,
-        DEFAULT_MEMBER_ID
+        MEMBER_ID
     );
   }
 
   public static AuthenticationCommand defaultMismatchAuthenticationCommand() {
     return new AuthenticationCommand(
         DEFAULT_EMD_ID,
-        DEFAULT_LAT+1,
-        DEFAULT_LON+1,
+        DEFAULT_LAT + 1,
+        DEFAULT_LON + 1,
         AuthenticationPurpose.SIGN_UP,
-        DEFAULT_MEMBER_ID
+        MEMBER_ID
     );
   }
 
@@ -36,7 +40,7 @@ public class AuthenticationCommandFixture {
         DEFAULT_LAT,
         DEFAULT_LON,
         AuthenticationPurpose.CHANGE_AREA,
-        DEFAULT_MEMBER_ID
+        MEMBER_ID
     );
   }
 
@@ -46,15 +50,20 @@ public class AuthenticationCommandFixture {
         DEFAULT_LAT,
         DEFAULT_LON,
         AuthenticationPurpose.RE_AUTHENTICATE,
-        DEFAULT_MEMBER_ID
+        MEMBER_ID
     );
   }
 
-  public static AuthenticationCommand customAuthenticationCommand(Long memberId, AuthenticationPurpose purpose) {
+  public static AuthenticationCommand customAuthenticationCommand(
+      UUID memberId,
+      Integer emdId,
+      Double lat, Double lon,
+      AuthenticationPurpose purpose
+  ) {
     return new AuthenticationCommand(
-        DEFAULT_EMD_ID,
-        DEFAULT_LAT,
-        DEFAULT_LON,
+        emdId,
+        lat,
+        lon,
         purpose,
         memberId
     );

@@ -1,4 +1,4 @@
-package com.bob.global.utils;
+package com.bob.global.utils.image;
 
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;

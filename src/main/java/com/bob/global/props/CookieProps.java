@@ -1,6 +1,6 @@
 package com.bob.global.props;
 
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

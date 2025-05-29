@@ -6,8 +6,11 @@ import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 
 import com.bob.domain.member.entity.Member;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class MemberFixture {
+
+  public static final UUID MEMBER_ID = UUID.randomUUID();
 
   public static Member defaultMember() {
     return Member.builder()
@@ -19,7 +22,7 @@ public class MemberFixture {
 
   public static Member defaultIdMember() {
     return Member.builder()
-        .id(1L)
+        .id(MEMBER_ID)
         .email("test@email.com")
         .password("password")
         .nickname("tester")

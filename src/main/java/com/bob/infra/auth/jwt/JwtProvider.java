@@ -3,6 +3,7 @@ package com.bob.infra.auth.jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ public class JwtProvider {
   @Value("${jwt.refresh-token-expire-time}")
   private Long refreshExpireTime;
 
-  public String generateAccessToken(Long memberId) {
+  public String generateAccessToken(String memberId) {
     return Jwts.builder()
         .setIssuer(ISSUER)
         .setSubject("access-token")
@@ -34,7 +35,7 @@ public class JwtProvider {
         .compact();
   }
 
-  public String generateRefreshToken(Long memberId) {
+  public String generateRefreshToken(String memberId) {
     return Jwts.builder()
         .setIssuer(ISSUER)
         .setSubject("refresh-token")
@@ -45,13 +46,13 @@ public class JwtProvider {
         .compact();
   }
 
-  public Long getMemberId(String token) {
-    return Jwts.parserBuilder()
+  public UUID getMemberId(String token) {
+    return UUID.fromString(Jwts.parserBuilder()
         .setSigningKey(getSecretKey(key))
         .build()
         .parseClaimsJws(token)
         .getBody()
-        .get("memberId", Long.class);
+        .get("memberId", String.class));
   }
 
   public boolean isVerified(String token) {

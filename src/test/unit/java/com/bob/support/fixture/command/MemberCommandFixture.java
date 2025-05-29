@@ -6,6 +6,7 @@ import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
+import java.util.UUID;
 
 public class MemberCommandFixture {
   public static CreateMemberCommand defaultCreateMemberCommand() {
@@ -24,7 +25,7 @@ public class MemberCommandFixture {
     return new ChangePasswordCommand(defaultIdMember().getId(), oldPassword, newPassword);
   }
 
-  public static ChangePasswordCommand customChangePasswordCommand(Long id, String oldPassword, String newPassword) {
+  public static ChangePasswordCommand customChangePasswordCommand(UUID id, String oldPassword, String newPassword) {
     return new ChangePasswordCommand(id, oldPassword, newPassword);
   }
 }

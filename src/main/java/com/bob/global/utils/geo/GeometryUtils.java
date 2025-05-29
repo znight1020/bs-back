@@ -1,4 +1,4 @@
-package com.bob.global.utils;
+package com.bob.global.utils.geo;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;

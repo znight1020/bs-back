@@ -1,5 +1,6 @@
 package com.bob.web.member.controller;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
 import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.DEFAULT_MEMBER_PROFILE_IMAGE_URL_RESPONSE;
 import static com.bob.support.fixture.response.MemberProfileResponseFixture.DEFAULT_MEMBER_PROFILE_RESPONSE;
 import static com.bob.support.fixture.response.MemberProfileWithPostsResponseFixture.DEFAULT_MEMBER_PROFILE_WITH_POSTS_RESPONSE;
@@ -18,6 +19,7 @@ import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.MemberService;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,14 +75,14 @@ class MemberControllerTest {
   @DisplayName("내 프로필 조회 API 호출 테스트")
   void 내_프로필_조회_API를_호출할_수_있다() throws Exception {
     // given
-    Long memberId = 1L;
+    UUID memberId = MEMBER_ID;
     given(memberService.readProfileProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_RESPONSE);
 
     // when & then
     mvc.perform(get("/members/me")
             .requestAttr("memberId", memberId))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.memberId").value(1L))
+        .andExpect(jsonPath("$.memberId").value(MEMBER_ID.toString()))
         .andExpect(jsonPath("$.nickname").value("tester"))
         .andExpect(jsonPath("$.profileImageUrl").value("http://image.url"))
         .andExpect(jsonPath("$.area.emdId").value(213))
@@ -96,7 +98,7 @@ class MemberControllerTest {
     PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
     mvc = standaloneSetup(memberController).setCustomArgumentResolvers(pageableResolver).build();
 
-    Long memberId = 1L;
+    UUID memberId = MEMBER_ID;
     given(memberService.readProfileByIdWithPostsProcess(any())).willReturn(DEFAULT_MEMBER_PROFILE_WITH_POSTS_RESPONSE);
 
     // when & then
@@ -104,7 +106,7 @@ class MemberControllerTest {
             .param("page", "0")
             .param("size", "10"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.profile.memberId").value(1L))
+        .andExpect(jsonPath("$.profile.memberId").value(MEMBER_ID.toString()))
         .andExpect(jsonPath("$.profile.nickname").value("tester"))
         .andExpect(jsonPath("$.posts[0].postId").value(10))
         .andExpect(jsonPath("$.posts[0].postTitle").value("객체지향의 사실과 오해"))
@@ -190,7 +192,7 @@ class MemberControllerTest {
     mvc.perform(patch("/members/me/image")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json)
-            .requestAttr("memberId", 1L))
+            .requestAttr("memberId", MEMBER_ID))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.fileName").value("profile/test.png"))
         .andExpect(jsonPath("$.imageUploadUrl").value("https://s3-url.com/presigned"));

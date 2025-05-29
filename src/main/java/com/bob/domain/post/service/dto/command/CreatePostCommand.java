@@ -8,11 +8,12 @@ import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.entity.status.BookStatus;
 import com.bob.domain.post.entity.status.PostStatus;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder
 public record CreatePostCommand(
-    Long memberId,
+    UUID memberId,
     Long categoryId,
     Integer sellPrice,
     String postDescription,

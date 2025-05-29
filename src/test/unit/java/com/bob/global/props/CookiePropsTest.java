@@ -2,7 +2,7 @@ package com.bob.global.props;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletResponse;

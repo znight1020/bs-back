@@ -2,6 +2,7 @@ package com.bob.domain.member.service.dto.response;
 
 import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.member.entity.Member;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +10,7 @@ import lombok.Getter;
 @Builder
 public class MemberProfileResponse {
 
-  private Long memberId;
+  private UUID memberId;
   private String nickname;
   private String profileImageUrl;
   private Area area;

@@ -2,7 +2,7 @@ package com.bob.domain.member.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_EXISTS_EMAIL;
 import static com.bob.global.exception.response.ApplicationError.INVALID_OLD_PASSWORD;
-import static com.bob.global.exception.response.ApplicationError.IS_SAME_VALUE;
+import static com.bob.global.exception.response.ApplicationError.IS_SAME_REQUEST;
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
 import static com.bob.global.exception.response.ApplicationError.UNVERIFIED_EMAIL;
 import static com.bob.support.fixture.command.ChangeProfileCommandFixture.defaultChangeProfileCommand;
@@ -219,7 +219,7 @@ class MemberServiceTest {
     // when & then
     assertThatThrownBy(() -> memberService.changeProfileProcess(command))
         .isInstanceOf(ApplicationException.class)
-        .hasMessage(IS_SAME_VALUE.getMessage());
+        .hasMessage(IS_SAME_REQUEST.getMessage());
   }
 
   @Test

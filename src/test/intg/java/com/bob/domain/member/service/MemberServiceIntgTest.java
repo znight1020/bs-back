@@ -202,7 +202,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
     // when & then
     assertThatThrownBy(() -> memberService.changeProfileProcess(command))
         .isInstanceOf(ApplicationException.class)
-        .hasMessage(ApplicationError.IS_SAME_VALUE.getMessage());
+        .hasMessage(ApplicationError.IS_SAME_REQUEST.getMessage());
   }
 
   @Test

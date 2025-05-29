@@ -4,12 +4,15 @@ import static com.bob.domain.member.service.dto.command.AuthenticationPurpose.CH
 import static com.bob.domain.member.service.dto.command.AuthenticationPurpose.RE_AUTHENTICATE;
 import static com.bob.global.exception.response.ApplicationError.INVALID_AREA_AUTHENTICATION;
 import static com.bob.global.exception.response.ApplicationError.NOT_EXISTS_MEMBER;
+import static com.bob.support.fixture.command.AuthenticationCommandFixture.DEFAULT_LAT;
+import static com.bob.support.fixture.command.AuthenticationCommandFixture.DEFAULT_LON;
+import static com.bob.support.fixture.command.AuthenticationCommandFixture.OTHER_LAT;
+import static com.bob.support.fixture.command.AuthenticationCommandFixture.OTHER_LON;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.customAuthenticationCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultAuthenticationCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.defaultMismatchAuthenticationCommand;
 import static com.bob.support.fixture.command.AuthenticationCommandFixture.guestCommand;
 import static com.bob.support.fixture.domain.ActivityAreaFixture.customActivityArea;
-import static com.bob.support.fixture.domain.EmdAreaFixture.defaultEmdArea;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,12 +20,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.bob.domain.area.command.AuthenticationCommand;
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.entity.activity.ActivityArea;
-import com.bob.domain.area.entity.activity.ActivityAreaId;
-import com.bob.domain.area.repository.ActivityAreaRepository;
 import com.bob.domain.area.repository.AreaRepository;
-import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
+import com.bob.domain.member.service.dto.command.AuthenticationPurpose;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.support.TestContainerSupport;
 import com.bob.support.redis.RedisContainerConfig;
@@ -48,27 +49,30 @@ class AreaServiceIntgTest extends TestContainerSupport {
   private AreaService areaService;
 
   @Autowired
-  private AreaRepository areaRepository;
-
-  @Autowired
   private MemberRepository memberRepository;
 
   @Autowired
-  private ActivityAreaRepository activityAreaRepository;
-
-  private EmdArea emdArea;
+  private AreaRepository areaRepository;
 
   private Member member;
 
+  private EmdArea defaultEmdArea;
+
+  private EmdArea otherEmdArea;
+
   @BeforeEach
   void setUp() {
-    emdArea = areaRepository.findById(defaultEmdArea().getId()).get();
-    member = memberRepository.save(defaultMember());
+    defaultEmdArea = areaRepository.findById(213).get(); // 역삼동
+    otherEmdArea = areaRepository.findById(785).get(); // 신곡동
+
+    member = defaultMember();
+    memberRepository.save(member);
+    member.updateActivityArea(customActivityArea(member, defaultEmdArea));
   }
 
   @Test
   @DisplayName("사용자 위치가 활동지역과 일치 - 성공 테스트")
-  void 회원가입_성공() {
+  void 회원가입_시_위치인증_성공() {
     // given
     AuthenticationCommand command = defaultAuthenticationCommand();
 
@@ -78,7 +82,7 @@ class AreaServiceIntgTest extends TestContainerSupport {
 
   @Test
   @DisplayName("사용자 위치가 활동지역과 불일치 - 실패 테스트")
-  void 회원가입_실패() {
+  void 회원가입_시_위치인증_실패() {
     // given
     AuthenticationCommand command = defaultMismatchAuthenticationCommand();
 
@@ -92,36 +96,38 @@ class AreaServiceIntgTest extends TestContainerSupport {
   @DisplayName("활동지역 변경 - 성공 테스트")
   void 활동지역_변경() {
     // given
-    AuthenticationCommand command = customAuthenticationCommand(member.getId(), CHANGE_AREA);
+    AuthenticationCommand command = customAuthenticationCommand(
+        member.getId(),
+        otherEmdArea.getId(),
+        OTHER_LAT, OTHER_LON,
+        CHANGE_AREA
+    );
 
     // when
-    System.out.println("memberID: " + member.getId());
-    System.out.println("command.memberID: " + command.memberId());
     areaService.authenticate(command);
 
     // then
-    ActivityAreaId id = new ActivityAreaId(member.getId(), emdArea.getId());
-    ActivityArea saved = activityAreaRepository.findById(id).orElseThrow();
-
-    assertThat(saved.getMember().getId()).isEqualTo(member.getId());
-    assertThat(saved.getEmdArea().getId()).isEqualTo(emdArea.getId());
+    ActivityArea updated = member.getActivityArea();
+    assertThat(member.getId()).isEqualTo(command.memberId());
+    assertThat(member.getActivityArea().getEmdArea().getId()).isEqualTo(command.emdId());
   }
 
   @Test
   @DisplayName("활동지역 재인증 - 성공 테스트")
   void 재인증_성공() {
     // given
-    ActivityArea area = customActivityArea(member, emdArea);
-    activityAreaRepository.save(area);
-    AuthenticationCommand command = customAuthenticationCommand(member.getId(), RE_AUTHENTICATE);
+    AuthenticationCommand command = customAuthenticationCommand(
+        member.getId(),
+        defaultEmdArea.getId(),
+        DEFAULT_LAT, DEFAULT_LON,
+        RE_AUTHENTICATE
+    );
 
     // when
     areaService.authenticate(command);
 
     // then
-    ActivityAreaId id = new ActivityAreaId(member.getId(), emdArea.getId());
-    ActivityArea updated = activityAreaRepository.findById(id).orElseThrow();
-    assertThat(updated.getAuthenticationAt()).isEqualTo(LocalDate.now());
+    assertThat(member.getActivityArea().getAuthenticationAt()).isEqualTo(LocalDate.now());
   }
 
   @ParameterizedTest

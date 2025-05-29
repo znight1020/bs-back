@@ -14,7 +14,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 import com.bob.infra.auth.jwt.JwtProvider;
 import com.bob.infra.auth.jwt.handler.JwtAuthenticationEntryPoint;
 import com.bob.infra.auth.response.MemberDetails;
@@ -24,6 +24,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +85,7 @@ class JwtAuthorizationFilterTest {
     given(request.getCookies()).willReturn(new Cookie[]{defaultAuthCookie()});
     given(jwtProvider.isVerified(ACCESS_VALUE)).willReturn(true);
     given(jwtProvider.isExpired(ACCESS_VALUE)).willReturn(false);
-    given(jwtProvider.getMemberId(ACCESS_VALUE)).willReturn(1L);
+    given(jwtProvider.getMemberId(ACCESS_VALUE)).willReturn(any(UUID.class));
 
     // when
     jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);

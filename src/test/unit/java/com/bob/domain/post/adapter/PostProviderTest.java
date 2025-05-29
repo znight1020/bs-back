@@ -1,9 +1,11 @@
 package com.bob.domain.post.adapter;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bob.domain.post.service.dto.response.PostSummaryResponse;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +25,7 @@ class PostProviderTest {
   @DisplayName("사용자 등록 게시글 조회 테스트")
   void 사용자_ID로_게시글_목록을_조회할_수_있다() {
     // given
-    Long memberId = 1L;
+    UUID memberId = MEMBER_ID;
     Pageable pageable = PageRequest.of(0, 10);
 
     // when

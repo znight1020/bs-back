@@ -1,7 +1,9 @@
 package com.bob.domain.member.service.dto.command;
 
+import java.util.UUID;
+
 public record ChangeProfileImageUrlCommand(
-    Long memberId,
+    UUID memberId,
     String contentType
 ) {
 

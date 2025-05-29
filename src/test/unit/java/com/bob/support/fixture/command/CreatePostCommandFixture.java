@@ -1,13 +1,16 @@
 package com.bob.support.fixture.command;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
+
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class CreatePostCommandFixture {
 
   public static CreatePostCommand defaultCreatePostCommand() {
     return CreatePostCommand.builder()
-        .memberId(1L)
+        .memberId(MEMBER_ID)
         .categoryId(1L)
         .sellPrice(38000)
         .bookStatus("최상")
@@ -22,7 +25,7 @@ public class CreatePostCommandFixture {
         .build();
   }
 
-  public static CreatePostCommand defaultCreatePostCommand(Long memberId, Long categoryId) {
+  public static CreatePostCommand defaultCreatePostCommand(UUID memberId, Long categoryId) {
     return CreatePostCommand.builder()
         .memberId(memberId)
         .categoryId(categoryId)

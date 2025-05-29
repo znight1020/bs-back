@@ -2,6 +2,7 @@ package com.bob.global.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bob.global.utils.geo.GeometryUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;

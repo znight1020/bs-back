@@ -5,6 +5,7 @@ import com.bob.web.area.request.AuthenticationRequest;
 import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public class AreaController {
   @PatchMapping("/authentication")
   public CommonResponse<ResponseSymbol> handleAreaAuthentication(
       @RequestBody AuthenticationRequest request,
-      @AuthenticationId Long memberId
+      @AuthenticationId UUID memberId
   ) {
     areaAuthenticationService.authenticate(request.toCommand(memberId));
     return new CommonResponse<>(true, ResponseSymbol.OK);

@@ -1,5 +1,7 @@
 package com.bob.support.fixture.domain;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
+
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.entity.activity.ActivityArea;
 import com.bob.domain.area.entity.activity.ActivityAreaId;
@@ -9,11 +11,7 @@ import java.time.LocalDate;
 public class ActivityAreaFixture {
 
   public static ActivityAreaId defaultActivityAreaId() {
-    return new ActivityAreaId(1L, 213);
-  }
-
-  public static ActivityAreaId customActivityAreaId(Long memberId, Integer emdId) {
-    return new ActivityAreaId(memberId, emdId);
+    return new ActivityAreaId(MEMBER_ID, 213);
   }
 
   public static ActivityArea defaultActivityArea() {

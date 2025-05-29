@@ -3,6 +3,7 @@ package com.bob.domain.post.repository;
 import static com.bob.support.fixture.domain.BookFixture.defaultBook;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.PostFixture.defaultPost;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bob.domain.book.entity.Book;
@@ -66,7 +67,7 @@ class PostRepositoryTest {
   @DisplayName("판매자 ID로 게시글 목록 조회 - empty 테스트")
   void 판매자_ID로_게시글이_없으면_빈_리스트를_반환한다() {
     // when
-    List<Post> result = postRepository.findAllBySellerId(-1L);
+    List<Post> result = postRepository.findAllBySellerId(randomUUID());
 
     // then
     assertThat(result).isEmpty();

@@ -8,8 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.bob.global.exception.exceptions.ApplicationAuthenticationException;
 import com.bob.global.exception.response.AuthenticationError;
 import com.bob.infra.auth.jwt.JwtProvider;
-import com.bob.global.utils.CookieUtils;
+import com.bob.global.utils.web.CookieUtils;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -40,9 +40,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
     MemberDetails principal = (MemberDetails) authentication.getPrincipal();
-    Long memberId = principal.getId();
-    String accessToken = jwtProvider.generateAccessToken(memberId);
-    String refreshToken = jwtProvider.generateRefreshToken(memberId);
+    UUID memberId = principal.id();
+    String accessToken = jwtProvider.generateAccessToken(memberId.toString());
+    String refreshToken = jwtProvider.generateRefreshToken(memberId.toString());
     CookieUtils.addCookie(response, "AUTHORIZATION", accessToken, 216000);
     CookieUtils.addCookie(response, "REFRESH", refreshToken, 216000);
     response.setStatus(HttpStatus.OK.value());
