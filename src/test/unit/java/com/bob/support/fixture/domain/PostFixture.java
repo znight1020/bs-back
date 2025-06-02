@@ -18,6 +18,7 @@ public class PostFixture {
         .postStatus(PostStatus.READY)
         .sellPrice(30000)
         .description("Description")
+        .registrationAreaId(seller.getActivityArea().getId().getEmdAreaId())
         .thumbnailUrl("https://image/1.png")
         .build();
   }

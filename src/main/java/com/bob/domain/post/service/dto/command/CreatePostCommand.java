@@ -36,6 +36,7 @@ public record CreatePostCommand(
         .postStatus(PostStatus.READY)
         .sellPrice(sellPrice)
         .description(postDescription)
+        .registrationAreaId(member.getActivityArea().getId().getEmdAreaId())
         .thumbnailUrl(bookCover)
         .build();
   }

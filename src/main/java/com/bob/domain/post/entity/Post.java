@@ -69,6 +69,9 @@ public class Post extends BaseTime {
   private String description;
 
   @Column(nullable = false)
+  private Integer registrationAreaId;
+
+  @Column(nullable = false)
   @Builder.Default
   private Integer viewCount = 0;
 
