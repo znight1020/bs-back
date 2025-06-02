@@ -55,7 +55,7 @@ class MemberControllerTest {
     String json = """
         {
             "email": "test@email.com",
-            "password": "1234",
+            "password": "1Q2w3e4r",
             "nickname": "테스터",
             "emdId": 1
         }
@@ -143,7 +143,7 @@ class MemberControllerTest {
     String json = """
         {
             "oldPassword": "password",
-            "newPassword": "new-password"
+            "newPassword": "1Q2w3e4r"
         }
         """;
 
