@@ -7,6 +7,7 @@ import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
 import com.bob.web.post.request.CreatePostRequest;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class PostController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<ResponseSymbol> handleCreatePost(
-      @RequestBody CreatePostRequest request,
+      @Valid @RequestBody CreatePostRequest request,
       @AuthenticationId UUID memberId
   ) {
     postService.createPostProcess(request.toCommand(memberId));
