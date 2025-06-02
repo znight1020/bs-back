@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@DisplayName("도서 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 

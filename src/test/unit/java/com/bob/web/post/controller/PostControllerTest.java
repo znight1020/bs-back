@@ -3,12 +3,12 @@ package com.bob.web.post.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 import com.bob.domain.post.service.PostService;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,13 +47,13 @@ class PostControllerTest {
           "bookStatus": "최상",
           "postDescription": "Description",
           "book": {
-            "bookIsbn": "1111111111111",
-            "bookTitle": "Title",
-            "bookAuthor": "Author",
-            "bookDescription": "Book Description",
-            "bookPriceStandard": 20000,
-            "bookCover": "https://image/1.jpg",
-            "bookPubDate": "2025-05-25"
+            "isbn": "1111111111111",
+            "title": "Title",
+            "author": "Author",
+            "description": "Book Description",
+            "priceStandard": 20000,
+            "cover": "https://image/1.jpg",
+            "pubDate": "2025-05-25"
           }
         }
         """;
@@ -62,7 +62,7 @@ class PostControllerTest {
     mvc.perform(post("/posts")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json)
-            .requestAttr("memberId", 1L))
+            .requestAttr("memberId", UUID.randomUUID()))
         .andExpect(status().isCreated());
 
     verify(postService, times(1)).createPostProcess(any());
