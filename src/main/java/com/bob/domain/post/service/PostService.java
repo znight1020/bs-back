@@ -9,9 +9,14 @@ import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
+import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.response.PostsResponse;
+import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
   private final PostRepository postRepository;
+  private final PostReader postReader;
 
   private final BookService bookService;
   private final MemberReader memberReader;
@@ -36,7 +42,16 @@ public class PostService {
   }
 
   private void verifyAreaAuthentication(Member member) {
-    if(member.getActivityArea().isValidAuthentication()) return;
+    if (member.getActivityArea().isValidAuthentication()) {
+      return;
+    }
     throw new ApplicationException(ApplicationError.NOT_VERIFIED_MEMBER);
+  }
+
+  @Transactional(readOnly = true)
+  public PostsResponse readFilteredPostsProcess(ReadFilteredPostsQuery query, Pageable pageable) {
+    List<Post> posts = postReader.readFilteredPosts(query, pageable);
+    Long totalCount = postRepository.countFilteredPosts(query);
+    return PostsResponse.of(totalCount, posts);
   }
 }

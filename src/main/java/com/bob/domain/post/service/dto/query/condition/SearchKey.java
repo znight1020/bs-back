@@ -17,7 +17,7 @@ public enum SearchKey {
 
   public static Optional<SearchKey> from(String input) {
     if (input == null) {
-      return Optional.empty();
+      return Optional.of(ALL);
     }
 
     return Arrays.stream(values())

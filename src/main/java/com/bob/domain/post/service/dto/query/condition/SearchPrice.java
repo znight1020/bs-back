@@ -12,11 +12,11 @@ public enum SearchPrice {
   UNDER_20000(20_000),
   ALL(1_000_000);
 
-  private final int maxPrice;
+  private final Integer maxPrice;
 
   public static Optional<SearchPrice> fromIndex(Integer index) {
     if (index == null || index < 0 || index >= values().length) {
-      return Optional.empty();
+      return Optional.of(values()[3]);
     }
 
     return Optional.of(values()[index]);
