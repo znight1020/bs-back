@@ -39,7 +39,6 @@ import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
 import com.bob.support.redis.RedisContainerConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,11 +75,6 @@ class MemberServiceIntgTest extends TestContainerSupport {
 
   @MockitoBean
   private ImageStorageAccessor imageStorageAccessor;
-
-  @BeforeEach
-  void init() {
-    memberRepository.deleteAll();
-  }
 
   @Test
   @DisplayName("회원가입 - 성공 테스트")
