@@ -45,6 +45,7 @@ public record CreatePostCommand(
     return new BookCreateCommand(
         bookIsbn,
         bookTitle,
+        bookAuthor,
         bookDescription,
         bookPriceStandard,
         bookCover,

@@ -11,6 +11,7 @@ public class BookCreateCommandFixture {
     return new BookCreateCommand(
         DEFAULT_ISBN,
         "객체지향의 사실과 오해",
+        "저우즈밍",
         "설명",
         10000,
         "https://image.url",
