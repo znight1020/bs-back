@@ -10,20 +10,10 @@ public class BookFixture {
     return Book.builder()
         .isbn13(DEFAULT_ISBN)
         .title("객체지향의 사실과 오해")
+        .author("조영호")
         .description("설명")
         .priceStandard(10000)
         .cover("https://image.url")
-        .pubDate(LocalDate.now())
-        .build();
-  }
-
-  public static Book customBook(String isbn) {
-    return Book.builder()
-        .isbn13(isbn)
-        .title("커스텀 책")
-        .description("기본 설명")
-        .priceStandard(12000)
-        .cover("https://image.url/cover")
         .pubDate(LocalDate.now())
         .build();
   }

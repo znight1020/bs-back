@@ -1,13 +1,17 @@
 package com.bob.web.post.controller;
 
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 import com.bob.domain.post.service.PostService;
+import com.bob.domain.post.service.dto.response.PostsResponse;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +20,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @DisplayName("게시글 API 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +39,9 @@ class PostControllerTest {
 
   @BeforeEach
   void setUp() {
-    mvc = standaloneSetup(postController).build();
+    mvc = MockMvcBuilders.standaloneSetup(postController)
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
   }
 
   @Test
@@ -66,5 +74,33 @@ class PostControllerTest {
         .andExpect(status().isCreated());
 
     verify(postService, times(1)).createPostProcess(any());
+  }
+
+  @Test
+  @DisplayName("게시글 목록 필터 조회 API 호출 테스트")
+  void 게시글_목록_필터_조회_API를_호출할_수_있다() throws Exception {
+    // given
+    PostsResponse response = new PostsResponse(2L, DEFAULT_POST_SUMMARY());
+    given(postService.readFilteredPostsProcess(any(), any())).willReturn(response);
+
+    // when & then
+    mvc.perform(get("/posts")
+            .param("key", "TITLE")
+            .param("keyword", "객체지향")
+            .param("emdId", "11010")
+            .param("categoryId", "1")
+            .param("price", "0")
+            .param("postStatus", "미거래")
+            .param("bookStatus", "최상")
+            .param("sortKey", "RECENT")
+            .param("page", "0")
+            .param("size", "12")
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.totalCount").value(2))
+        .andExpect(jsonPath("$.posts[0].postTitle").value("객체지향의 사실과 오해"))
+        .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
+
+    verify(postService, times(1)).readFilteredPostsProcess(any(), any());
   }
 }

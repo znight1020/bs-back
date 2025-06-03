@@ -15,13 +15,16 @@ import com.bob.domain.category.repository.CategoryRepository;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.post.entity.Post;
+import com.bob.support.config.TestConfig;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
+@Import(TestConfig.class)
 @DataJpaTest
 @DisplayName("PostRepository 테스트")
 class PostRepositoryTest {

@@ -108,9 +108,9 @@ class MemberControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.profile.memberId").value(MEMBER_ID.toString()))
         .andExpect(jsonPath("$.profile.nickname").value("tester"))
-        .andExpect(jsonPath("$.posts[0].postId").value(10))
+        .andExpect(jsonPath("$.posts[0].postId").value(1))
         .andExpect(jsonPath("$.posts[0].postTitle").value("객체지향의 사실과 오해"))
-        .andExpect(jsonPath("$.posts[1].postId").value(11))
+        .andExpect(jsonPath("$.posts[1].postId").value(2))
         .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
 
     verify(memberService, times(1)).readProfileByIdWithPostsProcess(any());

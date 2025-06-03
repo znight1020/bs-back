@@ -6,6 +6,9 @@ import static com.bob.support.fixture.domain.BookFixture.defaultBook;
 import static com.bob.support.fixture.domain.CategoryFixture.defaultCategory;
 import static com.bob.support.fixture.domain.MemberFixture.authenticatedMember;
 import static com.bob.support.fixture.domain.MemberFixture.unverifiedMember;
+import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
+import static com.bob.support.fixture.query.PostQueryFixture.defaultReadFilteredPostsQuery;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -20,8 +23,10 @@ import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
+import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.response.PostsResponse;
+import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +34,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @DisplayName("게시글 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +43,9 @@ class PostServiceTest {
 
   @InjectMocks
   private PostService postService;
+
+  @Mock
+  private PostReader postReader;
 
   @Mock
   private BookService bookService;
@@ -48,6 +58,8 @@ class PostServiceTest {
 
   @Mock
   private PostRepository postRepository;
+
+  Pageable pageable = PageRequest.of(0, 10);
 
   @Test
   @DisplayName("게시글 등록 - 성공 테스트")
@@ -73,9 +85,9 @@ class PostServiceTest {
     then(postRepository).should(times(1)).save(captor.capture());
 
     Post saved = captor.getValue();
-    Assertions.assertThat(saved.getBook()).isEqualTo(book);
-    Assertions.assertThat(saved.getSeller()).isEqualTo(member);
-    Assertions.assertThat(saved.getCategory()).isEqualTo(category);
+    assertThat(saved.getBook()).isEqualTo(book);
+    assertThat(saved.getSeller()).isEqualTo(member);
+    assertThat(saved.getCategory()).isEqualTo(category);
   }
 
   @Test
@@ -92,5 +104,22 @@ class PostServiceTest {
     assertThatThrownBy(() -> postService.createPostProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(NOT_VERIFIED_MEMBER.getMessage());
+  }
+
+  @DisplayName("게시글 목록 조회 테스트")
+  @Test
+  void 게시글_목록을_조회할_수_있다() {
+    // given
+    ReadFilteredPostsQuery query = defaultReadFilteredPostsQuery();
+    given(postReader.readFilteredPosts(query, pageable)).willReturn(DEFAULT_MOCK_POSTS());
+    given(postRepository.countFilteredPosts(query)).willReturn(2L);
+
+    // when
+    PostsResponse response = postService.readFilteredPostsProcess(query, pageable);
+
+    // then
+    assertThat(response.totalCount()).isEqualTo(2L);
+    then(postReader).should(times(1)).readFilteredPosts(query, pageable);
+    then(postRepository).should(times(1)).countFilteredPosts(query);
   }
 }
