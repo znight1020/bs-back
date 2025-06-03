@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public record CreatePostRequest(
     @NotNull(message = "카테고리는 필수입니다.")
-    Long categoryId,
+    Integer categoryId,
 
     @NotNull(message = "판매 가격은 필수입니다.")
     @PositiveOrZero(message = "판매 가격은 0 이상이어야 합니다.")

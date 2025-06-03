@@ -11,7 +11,7 @@ public class CreatePostCommandFixture {
   public static CreatePostCommand defaultCreatePostCommand() {
     return CreatePostCommand.builder()
         .memberId(MEMBER_ID)
-        .categoryId(1L)
+        .categoryId(1)
         .sellPrice(38000)
         .bookStatus("최상")
         .postDescription("거의 새 책입니다.")
@@ -25,7 +25,7 @@ public class CreatePostCommandFixture {
         .build();
   }
 
-  public static CreatePostCommand defaultCreatePostCommand(UUID memberId, Long categoryId) {
+  public static CreatePostCommand defaultCreatePostCommand(UUID memberId, Integer categoryId) {
     return CreatePostCommand.builder()
         .memberId(memberId)
         .categoryId(categoryId)

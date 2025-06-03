@@ -14,7 +14,7 @@ import lombok.Builder;
 @Builder
 public record CreatePostCommand(
     UUID memberId,
-    Long categoryId,
+    Integer categoryId,
     Integer sellPrice,
     String postDescription,
     String bookStatus,

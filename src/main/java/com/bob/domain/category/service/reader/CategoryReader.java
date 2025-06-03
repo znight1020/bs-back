@@ -15,7 +15,7 @@ public class CategoryReader {
 
   private final CategoryRepository categoryRepository;
 
-  public Category readCategoryById(Long categoryId) {
+  public Category readCategoryById(Integer categoryId) {
     return categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ApplicationException(ApplicationError.UN_SUPPORTED_CATEGORY));
   }

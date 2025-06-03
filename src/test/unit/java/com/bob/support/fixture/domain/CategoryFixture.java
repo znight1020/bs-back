@@ -4,7 +4,7 @@ import com.bob.domain.category.entity.Category;
 
 public class CategoryFixture {
 
-  public static final Long DEFAULT_CATEGORY_ID = 1L;
+  public static final Integer DEFAULT_CATEGORY_ID = 1;
   public static final String DEFAULT_CATEGORY_NAME = "경제/경영";
 
   public static Category defaultCategory() {
