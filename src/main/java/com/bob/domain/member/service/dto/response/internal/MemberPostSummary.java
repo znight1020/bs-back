@@ -21,14 +21,14 @@ public class MemberPostSummary {
 
   public static List<MemberPostSummary> from(List<PostSummary> summaries) {
     return summaries.stream().map(summary -> MemberPostSummary.builder()
-            .postId(summary.getPostId())
-            .categoryId(summary.getCategoryId())
-            .postTitle(summary.getPostTitle())
-            .postStatus(summary.getPostStatus())
-            .thumbnailUrl(summary.getThumbnailUrl())
-            .bookStatus(summary.getBookStatus())
-            .sellPrice(summary.getSellPrice())
-            .createdAt(summary.getCreatedAt())
+            .postId(summary.postId())
+            .categoryId(summary.categoryId())
+            .postTitle(summary.postTitle())
+            .postStatus(summary.postStatus())
+            .thumbnailUrl(summary.thumbnailUrl())
+            .bookStatus(summary.bookStatus())
+            .sellPrice(summary.sellPrice())
+            .createdAt(summary.createdAt())
             .build()
         )
         .toList();

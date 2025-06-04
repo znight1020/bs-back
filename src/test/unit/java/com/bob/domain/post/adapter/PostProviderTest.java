@@ -41,7 +41,7 @@ class PostProviderTest {
 
     // then
     assertThat(result.totalCount()).isEqualTo(2);
-    assertThat(result.posts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
-    assertThat(result.posts().get(1).getPostTitle()).isEqualTo("오브젝트");
+    assertThat(result.posts().get(0).postTitle()).isEqualTo("객체지향의 사실과 오해");
+    assertThat(result.posts().get(1).postTitle()).isEqualTo("오브젝트");
   }
 }

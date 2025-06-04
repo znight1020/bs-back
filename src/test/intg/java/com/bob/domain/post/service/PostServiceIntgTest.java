@@ -132,7 +132,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getPostTitle)
+        .extracting(PostSummary::postTitle)
         .allMatch(title -> title.contains("오브젝트"));
   }
 
@@ -143,7 +143,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getPostTitle)
+        .extracting(PostSummary::postTitle)
         .contains("자바 ORM 표준 JPA 프로그래밍");
   }
 
@@ -154,7 +154,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getSellPrice)
+        .extracting(PostSummary::sellPrice)
         .allMatch(price -> price <= 5000);
   }
 
@@ -165,7 +165,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getCategoryId)
+        .extracting(PostSummary::categoryId)
         .containsOnly(1);
   }
 
@@ -176,7 +176,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getPostStatus)
+        .extracting(PostSummary::postStatus)
         .containsOnly("COMPLETED");
   }
 
@@ -187,7 +187,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     assertThat(result.posts())
-        .extracting(PostSummary::getBookStatus)
+        .extracting(PostSummary::bookStatus)
         .contains("BEST");
   }
 
@@ -198,7 +198,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<LocalDateTime> createdAtList = result.posts().stream()
-        .map(PostSummary::getCreatedAt)
+        .map(PostSummary::createdAt)
         .toList();
 
     assertThat(createdAtList).isSortedAccordingTo(Comparator.reverseOrder());
@@ -211,7 +211,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<LocalDateTime> createdAtList = result.posts().stream()
-        .map(PostSummary::getCreatedAt)
+        .map(PostSummary::createdAt)
         .toList();
 
     assertThat(createdAtList).isSorted();
@@ -224,7 +224,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<Integer> prices = result.posts().stream()
-        .map(PostSummary::getSellPrice)
+        .map(PostSummary::sellPrice)
         .toList();
 
     assertThat(prices).isSorted();
@@ -237,7 +237,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<Integer> prices = result.posts().stream()
-        .map(PostSummary::getSellPrice)
+        .map(PostSummary::sellPrice)
         .toList();
 
     assertThat(prices).isSortedAccordingTo(Comparator.reverseOrder());
