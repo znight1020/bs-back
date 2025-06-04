@@ -3,6 +3,8 @@ package com.bob.domain.post.service.reader;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.global.exception.exceptions.ApplicationException;
+import com.bob.global.exception.response.ApplicationError;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -18,5 +20,10 @@ public class PostReader {
 
   public List<Post> readFilteredPosts(ReadFilteredPostsQuery query, Pageable pageable) {
     return postRepository.findFilteredPosts(query, pageable);
+  }
+
+  public Post readPostById(Long postId) {
+    return postRepository.findById(postId)
+        .orElseThrow(() -> new ApplicationException(ApplicationError.NOT_EXIST_POST));
   }
 }

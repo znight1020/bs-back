@@ -31,7 +31,8 @@ public enum ApplicationError {
   INVALID_AREA_AUTHENTICATION("E211", "현재 위치를 인증할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
   // 게시글 예외
-  NOT_VERIFIED_MEMBER("E106", "위치 인증을 하지 않은 사용자는 게시글을 작성할 수 없습니다.", HttpStatus.FORBIDDEN),
+  NOT_VERIFIED_MEMBER("E301", "위치 인증을 하지 않은 사용자는 게시글을 작성할 수 없습니다.", HttpStatus.FORBIDDEN),
+  NOT_EXIST_POST("E302", "게시글을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private String code;
