@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,5 +136,33 @@ class PostControllerTest {
         .andExpect(jsonPath("$.createdAt[0]").value(2024));
 
     verify(postService, times(1)).readPostDetailProcess(any());
+  }
+
+  @Test
+  @DisplayName("게시글 수정 API 호출 테스트")
+  void 게시글_수정_API를_호출할_수_있다() throws Exception {
+    // given
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+    String json = """
+        {
+          "sellPrice": 12000,
+          "bookStatus": "중",
+          "description": "설명이 수정되었습니다."
+        }
+        """;
+
+    // when & then
+    mvc.perform(
+            patch("/posts/{postId}", postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .requestAttr("memberId", memberId)
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.result").value("OK"));
+
+    verify(postService, times(1)).changePostProcess(any());
   }
 }

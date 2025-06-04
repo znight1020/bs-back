@@ -1,6 +1,7 @@
 package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
+import static com.bob.support.fixture.command.ChangePostCommandFixture.DEFAULT_CHANGE_POST_COMMAND;
 import static com.bob.support.fixture.command.CreatePostCommandFixture.defaultCreatePostCommand;
 import static com.bob.support.fixture.domain.ActivityAreaFixture.defaultActivityArea;
 import static com.bob.support.fixture.domain.BookFixture.defaultBook;
@@ -27,6 +28,7 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
+import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -34,6 +36,7 @@ import com.bob.domain.post.service.dto.response.PostDetailResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
+import com.bob.global.exception.response.ApplicationError;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -168,5 +171,43 @@ class PostServiceTest {
     // then
     assertThat(response.isOwner()).isFalse();
     then(postRepository).should(times(1)).increaseViewCount(post.getId());
+  }
+
+  @DisplayName("게시글 수정 - 성공 테스트")
+  @Test
+  void 게시글_작성자는_게시글을_수정할_수_있다() {
+    // given
+    Member writer = defaultIdMember();
+    writer.updateActivityArea(defaultActivityArea());
+    Post post = defaultPost(defaultBook(), writer, defaultCategory());
+    ChangePostCommand command = DEFAULT_CHANGE_POST_COMMAND(writer.getId(), post.getId());
+    given(postReader.readPostById(post.getId())).willReturn(post);
+
+    // when
+    postService.changePostProcess(command);
+
+    // then
+    assertThat(post.getSellPrice()).isEqualTo(12000);
+    assertThat(post.getDescription()).isEqualTo("상태 좋음");
+    then(postReader).should().readPostById(post.getId());
+  }
+
+  @DisplayName("게시글 수정 - 실패 테스트 (작성자 X)")
+  @Test
+  void 작성자가_아닌_사람은_게시글을_수정할_수_없다() {
+    // given
+    Member writer = defaultIdMember();
+    writer.updateActivityArea(defaultActivityArea());
+    Post post = defaultPost(defaultBook(), writer, defaultCategory());
+    Member otherUser = customIdMember(UUID.randomUUID());
+    given(postReader.readPostById(post.getId())).willReturn(post);
+    ChangePostCommand command = DEFAULT_CHANGE_POST_COMMAND(otherUser.getId(), post.getId());
+
+    // when & then
+    assertThatThrownBy(() -> postService.changePostProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.NOT_POST_OWNER.getMessage());
+
+    then(postReader).should().readPostById(post.getId());
   }
 }
