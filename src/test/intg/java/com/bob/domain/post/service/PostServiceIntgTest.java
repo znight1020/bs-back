@@ -30,14 +30,19 @@ import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
+import com.bob.domain.post.service.dto.response.PostDetailResponse;
 import com.bob.domain.post.service.dto.response.PostSummary;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.support.TestContainerSupport;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +73,9 @@ class PostServiceIntgTest extends TestContainerSupport {
 
   @Autowired
   private AreaRepository areaRepository;
+
+  @PersistenceContext
+  private EntityManager em;
 
   private EmdArea emdArea;
 
@@ -241,5 +249,39 @@ class PostServiceIntgTest extends TestContainerSupport {
         .toList();
 
     assertThat(prices).isSortedAccordingTo(Comparator.reverseOrder());
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 작성자 본인, 조회수 증가")
+  void 게시글_상세_조회_작성자일_경우_isOwner_true_조회수_증가() {
+    // given
+    UUID writerId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0");
+    Post post = postRepository.findAllBySellerId(writerId).get(0); // 더미 데이터의 첫 번째 게시글
+    int beforeViewCount = post.getViewCount();
+
+    // when
+    PostDetailResponse result = postService.readPostDetailProcess(new ReadPostDetailQuery(writerId, post.getId()));
+    em.flush();
+    em.clear(); // @Modifying @Query 작성으로 인한 영속성 컨텍스트 무시 -> Dirty checking X
+
+    // then
+    Post updated = postRepository.findById(post.getId()).orElseThrow();
+    assertThat(result.isOwner()).isTrue();
+    assertThat(updated.getViewCount()).isEqualTo(beforeViewCount + 1);
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 요청자가 작성자가 아닐 경우 isOwner=false")
+  void 게시글_상세_조회_작성자가_아닌_경우_isOwner_false() {
+    // given
+    UUID viewerId = UUID.randomUUID();
+    UUID writerId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0");
+    Post post = postRepository.findAllBySellerId(writerId).get(0);
+
+    // when
+    PostDetailResponse result = postService.readPostDetailProcess(new ReadPostDetailQuery(viewerId, post.getId()));
+
+    // then
+    assertThat(result.isOwner()).isFalse();
   }
 }

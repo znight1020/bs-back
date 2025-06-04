@@ -57,7 +57,7 @@ public class PostService {
     return PostsResponse.of(totalCount, posts);
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   public PostDetailResponse readPostDetailProcess(ReadPostDetailQuery query) {
     postRepository.increaseViewCount(query.postId());
     Post post = postReader.readPostById(query.postId());
