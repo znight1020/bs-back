@@ -29,6 +29,7 @@ public class PostFixture {
   public static List<Post> DEFAULT_MOCK_POSTS() {
     return List.of(
         Post.builder()
+            .id(1L)
             .book(Book.builder().title("객체지향의 사실과 오해").build())
             .category(defaultCategory())
             .postStatus(PostStatus.READY)
@@ -37,6 +38,7 @@ public class PostFixture {
             .bookStatus(BookStatus.BEST)
             .build(),
         Post.builder()
+            .id(2L)
             .book(Book.builder().title("오브젝트").build())
             .category(defaultCategory())
             .postStatus(PostStatus.READY)

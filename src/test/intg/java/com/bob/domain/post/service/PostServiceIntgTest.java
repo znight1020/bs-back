@@ -198,7 +198,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<LocalDateTime> createdAtList = result.posts().stream()
-        .map(PostSummary::getCreateAt)
+        .map(PostSummary::getCreatedAt)
         .toList();
 
     assertThat(createdAtList).isSortedAccordingTo(Comparator.reverseOrder());
@@ -211,7 +211,7 @@ class PostServiceIntgTest extends TestContainerSupport {
     PostsResponse result = postService.readFilteredPostsProcess(query, pageable);
 
     List<LocalDateTime> createdAtList = result.posts().stream()
-        .map(PostSummary::getCreateAt)
+        .map(PostSummary::getCreatedAt)
         .toList();
 
     assertThat(createdAtList).isSorted();

@@ -19,7 +19,7 @@ import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileQuery;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
 import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.mockPresignedUrlResponse;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POSTS_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,6 +29,8 @@ import static org.mockito.Mockito.times;
 
 import com.bob.domain.area.entity.EmdArea;
 import com.bob.domain.area.service.reader.AreaReader;
+import com.bob.domain.member.entity.Member;
+import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.ChangeProfileCommand;
 import com.bob.domain.member.service.dto.command.ChangeProfileImageUrlCommand;
@@ -39,8 +41,6 @@ import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
-import com.bob.domain.member.entity.Member;
-import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
@@ -175,19 +175,19 @@ class MemberServiceTest {
     ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
 
     given(memberReader.readMemberById(query.memberId())).willReturn(member);
-    given(postSearcher.readPostsOfMember(query.memberId(), query.pageable())).willReturn(DEFAULT_POST_SUMMARY());
+    given(postSearcher.readMemberPostSummary(query.memberId(), query.pageable())).willReturn(DEFAULT_POSTS_RESPONSE());
 
     // when
     MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);
 
     // then
     then(memberReader).should(times(1)).readMemberById(query.memberId());
-    then(postSearcher).should(times(1)).readPostsOfMember(query.memberId(), query.pageable());
+    then(postSearcher).should(times(1)).readMemberPostSummary(query.memberId(), query.pageable());
     assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
     assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
-    assertThat(response.getPosts()).hasSize(2);
-    assertThat(response.getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
-    assertThat(response.getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
+    assertThat(response.getMemberPosts().getTotalCount()).isEqualTo(2);
+    assertThat(response.getMemberPosts().getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
+    assertThat(response.getMemberPosts().getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
   }
 
   @Test
