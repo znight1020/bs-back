@@ -13,6 +13,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -34,7 +35,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
             categoryCondition(query.categoryId()),
             priceCondition(query.price()),
             tradeStatusCondition(query.postStatus()),
-            bookStatusCondition(query.bookStatus())
+            bookStatusCondition(query.bookStatus()),
+            memberIdCondition(query.memberId())
         )
         .orderBy(getSortKey(query.sortKey()))
         .offset(pageable.getOffset())
@@ -53,7 +55,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
             categoryCondition(query.categoryId()),
             priceCondition(query.price()),
             tradeStatusCondition(query.postStatus()),
-            bookStatusCondition(query.bookStatus())
+            bookStatusCondition(query.bookStatus()),
+            memberIdCondition(query.memberId())
         )
         .fetchOne();
   }
@@ -88,6 +91,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
   private BooleanExpression bookStatusCondition(String status) {
     return !StringUtils.hasText(status) ? null : post.bookStatus.eq(BookStatus.valueOf(status));
+  }
+
+  private BooleanExpression memberIdCondition(UUID sellerId) {
+    return sellerId != null ? post.seller.id.eq(sellerId) : null;
   }
 
   private OrderSpecifier<?> getSortKey(SortKey sort) {

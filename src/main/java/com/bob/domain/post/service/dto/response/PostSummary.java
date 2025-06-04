@@ -16,7 +16,7 @@ public class PostSummary {
   String thumbnailUrl;
   String bookStatus;
   Integer sellPrice;
-  LocalDateTime createAt;
+  LocalDateTime createdAt;
 
   public static PostSummary of(Post post) {
     return PostSummary.builder()
@@ -27,7 +27,7 @@ public class PostSummary {
         .thumbnailUrl(post.getThumbnailUrl())
         .bookStatus(post.getBookStatus().name())
         .sellPrice(post.getSellPrice())
-        .createAt(post.getCreatedAt())
+        .createdAt(post.getCreatedAt())
         .build();
   }
 }
