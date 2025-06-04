@@ -1,7 +1,6 @@
 package com.bob.domain.member.service.dto.response;
 
-import com.bob.domain.member.service.dto.response.internal.MemberPost;
-import java.util.List;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,12 +9,12 @@ import lombok.Getter;
 public class MemberProfileWithPostsResponse {
 
   MemberProfileResponse profile;
-  List<MemberPost> posts;
+  MemberPostsResponse memberPosts;
 
-  public static MemberProfileWithPostsResponse of(MemberProfileResponse profile, List<MemberPost> posts) {
+  public static MemberProfileWithPostsResponse of(MemberProfileResponse profile, MemberPostsResponse memberPosts) {
     return MemberProfileWithPostsResponse.builder()
         .profile(profile)
-        .posts(posts)
+        .memberPosts(memberPosts)
         .build();
   }
 }

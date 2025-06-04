@@ -47,7 +47,7 @@ class CategoryReaderTest {
   @DisplayName("카테고리 ID로 조회 - 존재하지 않는 경우 예외 발생")
   void 카테고리ID로_조회_시_존재하지_않으면_예외를_던진다() {
     // given
-    Long categoryId = -1L;
+    Integer categoryId = -1;
     given(categoryRepository.findById(categoryId)).willReturn(Optional.empty());
 
     // when & then

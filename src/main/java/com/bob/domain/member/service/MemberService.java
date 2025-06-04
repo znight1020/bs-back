@@ -21,14 +21,14 @@ import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
-import com.bob.domain.member.service.dto.response.internal.MemberPost;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
 import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
+import com.bob.domain.post.service.dto.query.ReadMemberPostsQuery;
 import com.bob.global.exception.exceptions.ApplicationException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -83,10 +83,15 @@ public class MemberService {
   }
 
   @Transactional(readOnly = true)
+  public MemberPostsResponse readMemberPostsProcess(ReadMemberPostsQuery query) {
+    return MemberPostsResponse.from(postSearcher.readMemberPostSummary(query.memberId(), query.pageable()));
+  }
+
+  @Transactional(readOnly = true)
   public MemberProfileWithPostsResponse readProfileByIdWithPostsProcess(ReadProfileWithPostsQuery query) {
     Member member = memberReader.readMemberById(query.memberId());
     MemberProfileResponse profile = MemberProfileResponse.of(member);
-    List<MemberPost> posts = MemberPost.from(postSearcher.readPostsOfMember(query.memberId(), query.pageable()));
+    MemberPostsResponse posts = MemberPostsResponse.from(postSearcher.readMemberPostSummary(query.memberId(), query.pageable()));
     return MemberProfileWithPostsResponse.of(profile, posts);
   }
 

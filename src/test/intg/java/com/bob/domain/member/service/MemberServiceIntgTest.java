@@ -11,8 +11,7 @@ import static com.bob.support.fixture.domain.MemberFixture.customEmailMember;
 import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.domain.MemberFixture.encryptPasswordMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
-import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.*;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
+import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.DEFAULT_MEMBER_PROFILE_IMAGE_URL_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -39,7 +38,7 @@ import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
 import com.bob.support.redis.RedisContainerConfig;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +66,7 @@ class MemberServiceIntgTest extends TestContainerSupport {
   @Autowired
   private MailVerificationStore mailVerificationStore;
 
-  // TODO: PostProvider 구현 후 Autowired 변경
-  @MockitoBean
+  @Autowired
   private PostSearcher postSearcher;
 
   @MockitoBean
@@ -76,11 +74,6 @@ class MemberServiceIntgTest extends TestContainerSupport {
 
   @MockitoBean
   private ImageStorageAccessor imageStorageAccessor;
-
-  @BeforeEach
-  void init() {
-    memberRepository.deleteAll();
-  }
 
   @Test
   @DisplayName("회원가입 - 성공 테스트")
@@ -156,23 +149,19 @@ class MemberServiceIntgTest extends TestContainerSupport {
   @DisplayName("다른 사용자 프로필 + 게시글 목록 조회 - 성공 테스트")
   void 회원은_다른_사용자의_프로필과_게시글_목록을_조회할_수_있다() {
     // given
-    Member member = defaultMember();
-    memberRepository.save(member);
-    member.updateActivityArea(defaultActivityArea());
-    ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(member.getId());
-
-    // TODO: post 도메인 서비스 구현 후 실제 데이터 DB 저장 후 조회
-    given(postSearcher.readPostsOfMember(query.memberId(), query.pageable())).willReturn(DEFAULT_POST_SUMMARY());
+    UUID memberId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0"); // DB Dummy Insert Data by schema.sql
+    Member foundMember = memberRepository.findById(memberId).orElseThrow();
+    ReadProfileWithPostsQuery query = defaultReadProfileWithPostsQuery(memberId);
 
     // when
     MemberProfileWithPostsResponse response = memberService.readProfileByIdWithPostsProcess(query);
 
     // then
-    assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
-    assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
-    assertThat(response.getPosts()).hasSize(2);
-    assertThat(response.getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
-    assertThat(response.getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
+    assertThat(response.getProfile().getMemberId()).isEqualTo(foundMember.getId());
+    assertThat(response.getProfile().getNickname()).isEqualTo(foundMember.getNickname());
+    assertThat(response.getMemberPosts().getTotalCount()).isEqualTo(15);
+    assertThat(response.getMemberPosts().getPosts().get(0).postTitle()).isEqualTo("자바의 정석");
+    assertThat(response.getMemberPosts().getPosts().get(1).postTitle()).isEqualTo("자바 ORM 표준 JPA 프로그래밍");
   }
 
   @Test
@@ -261,7 +250,6 @@ class MemberServiceIntgTest extends TestContainerSupport {
     // given
     String password = "password";
     String encoded = passwordEncoder.encode(password);
-    System.out.println("ENCODED: " + encoded);
 
     String wrongOldPassword = "wrong-password";
     String newPassword = "new-password";

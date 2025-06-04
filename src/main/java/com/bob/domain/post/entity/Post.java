@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,6 +70,9 @@ public class Post extends BaseTime {
   private String description;
 
   @Column(nullable = false)
+  private Integer registrationAreaId;
+
+  @Column(nullable = false)
   @Builder.Default
   private Integer viewCount = 0;
 
@@ -78,4 +82,10 @@ public class Post extends BaseTime {
 
   @OneToMany(mappedBy = "post")
   private final List<Trade> trades = new ArrayList<>();
+
+  public void updateOptionalFields(Integer sellPrice, String bookStatus, String description) {
+    Optional.ofNullable(sellPrice).ifPresent(s -> this.sellPrice = s);
+    Optional.ofNullable(bookStatus).ifPresent(b -> this.bookStatus = BookStatus.from(b));
+    Optional.ofNullable(description).ifPresent(d -> this.description = d);
+  }
 }

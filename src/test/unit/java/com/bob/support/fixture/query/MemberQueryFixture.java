@@ -15,7 +15,7 @@ public class MemberQueryFixture {
   }
 
   public static ReadProfileWithPostsQuery defaultReadProfileWithPostsQuery(UUID memberId) {
-    Pageable pageable = PageRequest.of(0, 10);
+    Pageable pageable = PageRequest.of(0, 12);
     return new ReadProfileWithPostsQuery(memberId, pageable);
   }
 }

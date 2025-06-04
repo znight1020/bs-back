@@ -1,14 +1,13 @@
 package com.bob.support.fixture.response.internal;
 
-import static com.bob.support.fixture.response.PostResponseFixture.FIRST_POST;
-import static com.bob.support.fixture.response.PostResponseFixture.SECOND_POST;
+import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
 
-import com.bob.domain.member.service.dto.response.internal.MemberPost;
-import java.util.List;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
+import com.bob.domain.post.service.dto.response.PostsResponse;
 
 public class MemberPostFixture {
 
-  public static List<MemberPost> DEFAULT_POST_LIST() {
-    return MemberPost.from(List.of(FIRST_POST, SECOND_POST));
+  public static MemberPostsResponse DEFAULT_MEMBER_POSTS() {
+    return MemberPostsResponse.from(PostsResponse.of(2L, DEFAULT_MOCK_POSTS()));
   }
 }

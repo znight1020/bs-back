@@ -14,7 +14,7 @@ import lombok.Builder;
 @Builder
 public record CreatePostCommand(
     UUID memberId,
-    Long categoryId,
+    Integer categoryId,
     Integer sellPrice,
     String postDescription,
     String bookStatus,
@@ -36,6 +36,7 @@ public record CreatePostCommand(
         .postStatus(PostStatus.READY)
         .sellPrice(sellPrice)
         .description(postDescription)
+        .registrationAreaId(member.getActivityArea().getId().getEmdAreaId())
         .thumbnailUrl(bookCover)
         .build();
   }
@@ -44,6 +45,7 @@ public record CreatePostCommand(
     return new BookCreateCommand(
         bookIsbn,
         bookTitle,
+        bookAuthor,
         bookDescription,
         bookPriceStandard,
         bookCover,
