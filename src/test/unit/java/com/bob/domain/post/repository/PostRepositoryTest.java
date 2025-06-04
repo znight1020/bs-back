@@ -16,6 +16,8 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.post.entity.Post;
 import com.bob.support.config.TestConfig;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,9 +43,13 @@ class PostRepositoryTest {
   @Autowired
   private CategoryRepository categoryRepository;
 
+  @PersistenceContext
+  private EntityManager em;
+
   private Member member;
   private Book book;
   private Category category;
+  private Post post;
 
   @BeforeEach
   void setUp() {
@@ -56,7 +62,8 @@ class PostRepositoryTest {
     categoryRepository.save(category);
     member.updateActivityArea(customActivityArea(member, defaultEmdArea()));
 
-    Post post = defaultPost(book, member, category);
+    post = defaultPost(book, member, category);
+    memberRepository.save(member);
     postRepository.save(post);
   }
 
@@ -79,5 +86,24 @@ class PostRepositoryTest {
 
     // then
     assertThat(result).isEmpty();
+  }
+
+  @Test
+  @DisplayName("게시글 조회수 증가 테스트")
+  void 게시글_조회수를_증가시킬_수_있다() {
+    // given
+    Post foundedPost = postRepository.findById(post.getId()).get();
+    Long postId = foundedPost.getId();
+    int originalViewCount = foundedPost.getViewCount();
+
+    // when
+    postRepository.increaseViewCount(postId);
+    em.flush();
+    em.clear();
+
+    Post updatedPost = postRepository.findById(postId).orElseThrow();
+
+    // then
+    assertThat(updatedPost.getViewCount()).isEqualTo(originalViewCount + 1);
   }
 }

@@ -29,6 +29,15 @@ public class MemberFixture {
         .build();
   }
 
+  public static Member customIdMember(UUID memberId) {
+    return Member.builder()
+        .id(memberId)
+        .email("other@email.com")
+        .password("password")
+        .nickname("other")
+        .build();
+  }
+
   public static Member otherMember() {
     return Member.builder()
         .email("unknown@email.com")

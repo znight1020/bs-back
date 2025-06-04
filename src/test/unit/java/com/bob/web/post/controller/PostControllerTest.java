@@ -1,5 +1,6 @@
 package com.bob.web.post.controller;
 
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_DETAIL_RESPONSE;
 import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POST_SUMMARY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bob.domain.post.service.PostService;
+import com.bob.domain.post.service.dto.response.PostDetailResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,5 +104,36 @@ class PostControllerTest {
         .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
 
     verify(postService, times(1)).readFilteredPostsProcess(any(), any());
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 API 호출 테스트")
+  void 게시글_상세_조회_API를_호출할_수_있다() throws Exception {
+    // given
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+    PostDetailResponse response = DEFAULT_POST_DETAIL_RESPONSE(postId);
+    given(postService.readPostDetailProcess(any())).willReturn(response);
+
+    // when & then
+    mvc.perform(get("/posts/{postId}", postId)
+            .requestAttr("memberId", memberId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.postId").value(postId))
+        .andExpect(jsonPath("$.sellPrice").value(10000))
+        .andExpect(jsonPath("$.bookStatus").value("BEST"))
+        .andExpect(jsonPath("$.postStatus").value("거래 대기"))
+        .andExpect(jsonPath("$.category").value(19))
+        .andExpect(jsonPath("$.book.title").value("파과"))
+        .andExpect(jsonPath("$.book.author").value("구병모"))
+        .andExpect(jsonPath("$.book.priceStandard").value(12600))
+        .andExpect(jsonPath("$.writer.nickname").value("booklover"))
+        .andExpect(jsonPath("$.scrapCount").value(2))
+        .andExpect(jsonPath("$.viewCount").value(24))
+        .andExpect(jsonPath("$.isFavorite").value(true))
+        .andExpect(jsonPath("$.isOwner").value(false))
+        .andExpect(jsonPath("$.createdAt[0]").value(2024));
+
+    verify(postService, times(1)).readPostDetailProcess(any());
   }
 }

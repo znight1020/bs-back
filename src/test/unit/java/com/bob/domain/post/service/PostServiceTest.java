@@ -2,16 +2,21 @@ package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
 import static com.bob.support.fixture.command.CreatePostCommandFixture.defaultCreatePostCommand;
+import static com.bob.support.fixture.domain.ActivityAreaFixture.defaultActivityArea;
 import static com.bob.support.fixture.domain.BookFixture.defaultBook;
 import static com.bob.support.fixture.domain.CategoryFixture.defaultCategory;
 import static com.bob.support.fixture.domain.MemberFixture.authenticatedMember;
+import static com.bob.support.fixture.domain.MemberFixture.customIdMember;
+import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.MemberFixture.unverifiedMember;
 import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
+import static com.bob.support.fixture.domain.PostFixture.defaultPost;
 import static com.bob.support.fixture.query.PostQueryFixture.defaultReadFilteredPostsQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 
 import com.bob.domain.book.entity.Book;
@@ -24,9 +29,12 @@ import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
+import com.bob.domain.post.service.dto.response.PostDetailResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,5 +129,44 @@ class PostServiceTest {
     assertThat(response.totalCount()).isEqualTo(2L);
     then(postReader).should(times(1)).readFilteredPosts(query, pageable);
     then(postRepository).should(times(1)).countFilteredPosts(query);
+  }
+
+  @DisplayName("게시글 상세 조회 - 작성자 본인")
+  @Test
+  void 게시글_작성자와_조회자가_같다면_isOwner는_true이다() {
+    // given
+    Member member = defaultIdMember();
+    member.updateActivityArea(defaultActivityArea());
+    Post post = defaultPost(defaultBook(), member, defaultCategory());
+    ReadPostDetailQuery query = new ReadPostDetailQuery(member.getId(), post.getId());
+    given(postReader.readPostById(post.getId())).willReturn(post);
+    willDoNothing().given(postRepository).increaseViewCount(post.getId());
+
+    // when
+    PostDetailResponse response = postService.readPostDetailProcess(query);
+
+    // then
+    assertThat(response.isOwner()).isTrue();
+    then(postRepository).should(times(1)).increaseViewCount(post.getId());
+  }
+
+  @DisplayName("게시글 상세 조회 - 작성자 본인 X")
+  @Test
+  void 게시글_작성자와_조회자가_다르면_isOwner는_false이다() {
+    // given
+    Member writer = defaultIdMember();
+    writer.updateActivityArea(defaultActivityArea());
+    Member otherUser = customIdMember(UUID.randomUUID());
+    Post post = defaultPost(defaultBook(), writer, defaultCategory());
+    ReadPostDetailQuery query = new ReadPostDetailQuery(otherUser.getId(), post.getId());
+    given(postReader.readPostById(post.getId())).willReturn(post);
+    willDoNothing().given(postRepository).increaseViewCount(post.getId());
+
+    // when
+    PostDetailResponse response = postService.readPostDetailProcess(query);
+
+    // then
+    assertThat(response.isOwner()).isFalse();
+    then(postRepository).should(times(1)).increaseViewCount(post.getId());
   }
 }

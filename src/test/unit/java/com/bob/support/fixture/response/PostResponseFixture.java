@@ -3,11 +3,15 @@ package com.bob.support.fixture.response;
 import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
 
 import com.bob.domain.post.entity.status.BookStatus;
+import com.bob.domain.post.service.dto.response.PostDetailResponse;
+import com.bob.domain.post.service.dto.response.PostDetailResponse.BookInfo;
+import com.bob.domain.post.service.dto.response.PostDetailResponse.WriterInfo;
 import com.bob.domain.post.service.dto.response.PostSummary;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.trade.entity.status.TradeStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class PostResponseFixture {
 
@@ -30,6 +34,35 @@ public class PostResponseFixture {
       .bookStatus(BookStatus.LOW.getStatus())
       .createdAt(LocalDateTime.now())
       .build();
+
+  public static PostDetailResponse DEFAULT_POST_DETAIL_RESPONSE(Long postId) {
+    return PostDetailResponse.builder()
+        .postId(postId)
+        .sellPrice(10000)
+        .bookStatus("BEST")
+        .postStatus("거래 대기")
+        .category(19)
+        .book(BookInfo.builder()
+            .title("파과")
+            .author("구병모")
+            .description("파과는 청부살인을 업으로 삼아오던 60대 여성 킬러에 관한 이야기이다...")
+            .priceStandard(12600)
+            .pubDate("2018-04-16")
+            .build())
+        .description("책 상태 양호하고 밑줄 없음")
+        .writer(WriterInfo.builder()
+            .memberId(UUID.fromString("018e0df5-b7ec-7f36-b67f-80f3e4f49895"))
+            .nickname("booklover")
+            .activityArea("사하구 하단동")
+            .profileUrl("https://s3.bucket.com/default.jpg")
+            .build())
+        .scrapCount(2)
+        .viewCount(24)
+        .isFavorite(true)
+        .isOwner(false)
+        .createdAt(LocalDateTime.of(2024, 3, 29, 12, 0))
+        .build();
+  }
 
   public static List<PostSummary> DEFAULT_POST_SUMMARY() {
     return List.of(FIRST_POST, SECOND_POST);
