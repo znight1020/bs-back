@@ -10,6 +10,7 @@ import com.bob.domain.member.service.MemberService;
 import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
 import com.bob.web.common.AuthenticationId;
 import com.bob.web.common.CommonResponse;
 import com.bob.web.common.symbol.ResponseSymbol;
@@ -18,6 +19,7 @@ import com.bob.web.member.request.ChangeProfileRequest;
 import com.bob.web.member.request.IssuePasswordRequest;
 import com.bob.web.member.request.ReadImageUploadUrlRequest;
 import com.bob.web.member.request.SignupRequest;
+import com.bob.web.post.request.ReadMemberPostsRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +54,18 @@ public class MemberController {
     return ResponseEntity.ok(memberService.readProfileProcess(toQuery(memberId)));
   }
 
+  @GetMapping("/me/posts")
+  public ResponseEntity<MemberPostsResponse> handleReadMemberPosts(
+      @AuthenticationId UUID memberId,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(memberService.readMemberPostsProcess(ReadMemberPostsRequest.toQuery(memberId, pageable)));
+  }
+
   @GetMapping("/{memberId}")
-  public ResponseEntity<MemberProfileWithPostsResponse> handleReadProfileById(@PathVariable UUID memberId, Pageable pageable) {
+  public ResponseEntity<MemberProfileWithPostsResponse> handleReadProfileById(
+      @PathVariable UUID memberId,
+      Pageable pageable) {
     return ResponseEntity.ok(memberService.readProfileByIdWithPostsProcess(toQuery(memberId, pageable)));
   }
 

@@ -27,6 +27,7 @@ import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
+import com.bob.domain.post.service.dto.query.ReadMemberPostsQuery;
 import com.bob.global.exception.exceptions.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,6 +80,11 @@ public class MemberService {
   public MemberProfileResponse readProfileProcess(ReadProfileQuery query) {
     Member member = memberReader.readMemberById(query.memberId());
     return MemberProfileResponse.of(member);
+  }
+
+  @Transactional(readOnly = true)
+  public MemberPostsResponse readMemberPostsProcess(ReadMemberPostsQuery query) {
+    return MemberPostsResponse.from(postSearcher.readMemberPostSummary(query.memberId(), query.pageable()));
   }
 
   @Transactional(readOnly = true)
