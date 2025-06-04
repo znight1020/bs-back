@@ -41,11 +41,14 @@ import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.response.internal.MemberPostSummary;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
 import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.member.service.reader.MemberReader;
+import com.bob.domain.post.service.dto.query.ReadMemberPostsQuery;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import java.util.Optional;
@@ -56,6 +59,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @DisplayName("사용자 서비스 테스트")
@@ -166,6 +171,27 @@ class MemberServiceTest {
     assertThat(response.getArea().isAuthentication()).isEqualTo(member.getActivityArea().isValidAuthentication());
   }
 
+  @DisplayName("내 게시글 목록 조회 테스트")
+  @Test
+  void 내_게시글_목록을_조회할_수_있다() {
+    // given
+    Member member = defaultIdMember();
+    Pageable pageable = PageRequest.of(0, 10);
+    ReadMemberPostsQuery query = new ReadMemberPostsQuery(member.getId(), pageable);
+    given(postSearcher.readMemberPostSummary(query.memberId(), query.pageable())).willReturn(DEFAULT_POSTS_RESPONSE());
+
+    // when
+    MemberPostsResponse response = memberService.readMemberPostsProcess(query);
+
+    // then
+    assertThat(response.getTotalCount()).isEqualTo(2);
+    assertThat(response.getPosts())
+        .extracting(MemberPostSummary::postTitle)
+        .containsExactly("객체지향의 사실과 오해", "오브젝트");
+
+    then(postSearcher).should(times(1)).readMemberPostSummary(query.memberId(), query.pageable());
+  }
+
   @Test
   @DisplayName("다른 사용자 프로필 조회 - 성공 테스트")
   void 특정_사용자의_프로필과_게시글_목록을_조회할_수_있다() {
@@ -186,8 +212,8 @@ class MemberServiceTest {
     assertThat(response.getProfile().getMemberId()).isEqualTo(member.getId());
     assertThat(response.getProfile().getNickname()).isEqualTo(member.getNickname());
     assertThat(response.getMemberPosts().getTotalCount()).isEqualTo(2);
-    assertThat(response.getMemberPosts().getPosts().get(0).getPostTitle()).isEqualTo("객체지향의 사실과 오해");
-    assertThat(response.getMemberPosts().getPosts().get(1).getPostTitle()).isEqualTo("오브젝트");
+    assertThat(response.getMemberPosts().getPosts().get(0).postTitle()).isEqualTo("객체지향의 사실과 오해");
+    assertThat(response.getMemberPosts().getPosts().get(1).postTitle()).isEqualTo("오브젝트");
   }
 
   @Test

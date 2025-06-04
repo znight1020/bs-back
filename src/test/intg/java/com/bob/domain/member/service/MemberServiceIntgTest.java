@@ -160,8 +160,8 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThat(response.getProfile().getMemberId()).isEqualTo(foundMember.getId());
     assertThat(response.getProfile().getNickname()).isEqualTo(foundMember.getNickname());
     assertThat(response.getMemberPosts().getTotalCount()).isEqualTo(15);
-    assertThat(response.getMemberPosts().getPosts().get(0).getPostTitle()).isEqualTo("자바의 정석");
-    assertThat(response.getMemberPosts().getPosts().get(1).getPostTitle()).isEqualTo("자바 ORM 표준 JPA 프로그래밍");
+    assertThat(response.getMemberPosts().getPosts().get(0).postTitle()).isEqualTo("자바의 정석");
+    assertThat(response.getMemberPosts().getPosts().get(1).postTitle()).isEqualTo("자바 ORM 표준 JPA 프로그래밍");
   }
 
   @Test
