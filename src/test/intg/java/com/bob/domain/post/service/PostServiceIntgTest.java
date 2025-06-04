@@ -1,6 +1,8 @@
 package com.bob.domain.post.service;
 
+import static com.bob.global.exception.response.ApplicationError.NOT_POST_OWNER;
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
+import static com.bob.support.fixture.command.ChangePostCommandFixture.DEFAULT_CHANGE_POST_COMMAND;
 import static com.bob.support.fixture.command.CreatePostCommandFixture.defaultCreatePostCommand;
 import static com.bob.support.fixture.domain.ActivityAreaFixture.customActivityArea;
 import static com.bob.support.fixture.domain.CategoryFixture.defaultCategory;
@@ -28,6 +30,7 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
+import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -283,5 +286,37 @@ class PostServiceIntgTest extends TestContainerSupport {
 
     // then
     assertThat(result.isOwner()).isFalse();
+  }
+
+  @Test
+  @DisplayName("게시글 수정 - 성공 케이스")
+  void 게시글_정보를_성공적으로_수정할_수_있다() {
+    // given
+    UUID writerId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0");
+    Post post = postRepository.findAll().iterator().next();
+    ChangePostCommand command = DEFAULT_CHANGE_POST_COMMAND(writerId, post.getId());
+
+    // when
+    postService.changePostProcess(command);
+
+    // then
+    Post updated = postRepository.findById(post.getId()).orElseThrow();
+    assertThat(updated.getSellPrice()).isEqualTo(command.sellPrice());
+    assertThat(updated.getBookStatus().getStatus()).isEqualTo(command.bookStatus());
+    assertThat(updated.getDescription()).isEqualTo(command.description());
+  }
+
+  @Test
+  @DisplayName("게시글 수정 - 작성자 불일치 예외")
+  void 게시글_작성자가_아니면_예외가_발생한다() {
+    // given
+    Member viewer = memberRepository.save(defaultMember());
+    Post post = postRepository.findAll().iterator().next();
+    ChangePostCommand command = DEFAULT_CHANGE_POST_COMMAND(viewer.getId(), post.getId());
+
+    // when & then
+    assertThatThrownBy(() -> postService.changePostProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessageContaining(NOT_POST_OWNER.getMessage());
   }
 }
