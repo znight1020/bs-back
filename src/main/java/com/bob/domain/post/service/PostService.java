@@ -8,6 +8,7 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.service.reader.MemberReader;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
+import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -17,6 +18,8 @@ import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,5 +67,18 @@ public class PostService {
     boolean isOwner = query.memberId() != null && post.getSeller().getId().equals(query.memberId());
     boolean isFavorite = false; // TODO : 게시글 좋아요 기능 구현 후 좋아요 여부 매핑
     return PostDetailResponse.of(post, isFavorite, isOwner, List.of()); // TODO : 첨부 이미지 기능 구현 시 이미지 경로 List 매핑
+  }
+
+  @Transactional
+  public void changePostProcess(ChangePostCommand command) {
+    Post post = postReader.readPostById(command.postId());
+    verifyPostOwner(command.memberId(), post.getSeller().getId());
+    post.updateOptionalFields(command.sellPrice(), command.bookStatus(), command.description());
+  }
+
+  private void verifyPostOwner(UUID requestMemberId, UUID postMemberId) {
+    if (!Objects.equals(requestMemberId, postMemberId)) {
+      throw new ApplicationException(ApplicationError.NOT_POST_OWNER);
+    }
   }
 }
