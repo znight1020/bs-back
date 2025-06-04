@@ -1,5 +1,7 @@
 package com.bob.infra.config.registry;
 
+import static org.springframework.http.HttpMethod.GET;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.HttpMethod;
@@ -10,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OptionalRegistry {
   private final List<RequestMatcher> optionalAuthMatchers = List.of(
-      new AntPathRequestMatcher("/areas/**", HttpMethod.PATCH.name())
+      new AntPathRequestMatcher("/areas/**", HttpMethod.PATCH.name()),
+      new AntPathRequestMatcher("/posts/{postId:\\d+}", GET.name())
   );
 
   public boolean isOptionalAuth(HttpServletRequest request) {
