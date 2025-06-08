@@ -1,6 +1,7 @@
 package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
+import static com.bob.global.exception.response.ApplicationError.INVALID_POST_FAVORITE;
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
 import static com.bob.support.fixture.command.ChangePostCommandFixture.DEFAULT_CHANGE_POST_COMMAND;
 import static com.bob.support.fixture.command.CreatePostCommandFixture.defaultCreatePostCommand;
@@ -109,6 +110,22 @@ class PostServiceTest {
     assertThat(saved.getCategory()).isEqualTo(category);
   }
 
+  @Test
+  @DisplayName("게시글 등록 - 실패 테스트(위치 인증 안된 사용자)")
+  void 위치인증_되지_않은_사용자는_게시글을_등록할_수_없다() {
+    // given
+    CreatePostCommand command = defaultCreatePostCommand();
+    Member member = unverifiedMember();
+
+    given(bookService.createBookProcess(command.toBookCreateCommand())).willReturn(defaultBook());
+    given(memberReader.readMemberById(command.memberId())).willReturn(member);
+
+    // when & then
+    assertThatThrownBy(() -> postService.createPostProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(NOT_VERIFIED_MEMBER.getMessage());
+  }
+
   @DisplayName("게시글 좋아요 - 성공 테스트")
   @Test
   void 게시글을_좋아요하면_좋아요_count가_증가한다() {
@@ -164,21 +181,48 @@ class PostServiceTest {
     then(postRepository).shouldHaveNoInteractions();
   }
 
+  @DisplayName("게시글 좋아요 해제 - 성공 테스트")
   @Test
-  @DisplayName("게시글 등록 - 실패 테스트(위치 인증 안된 사용자)")
-  void 위치인증_되지_않은_사용자는_게시글을_등록할_수_없다() {
+  void 게시글_좋아요_해제를_요청하면_scrapCount가_감소한다() {
     // given
-    CreatePostCommand command = defaultCreatePostCommand();
-    Member member = unverifiedMember();
+    RegisterPostFavoriteCommand command = defaultRegisterPostFavoriteCommand();
 
-    given(bookService.createBookProcess(command.toBookCreateCommand())).willReturn(defaultBook());
-    given(memberReader.readMemberById(command.memberId())).willReturn(member);
+    // when
+    postService.unregisterPostFavoriteProcess(command);
+
+    // then
+    then(postFavoriteService)
+        .should(times(1))
+        .deletePostFavoriteProcess(command.memberId(), command.postId());
+
+    then(postRepository)
+        .should(times(1))
+        .decreaseFavoriteCount(command.postId());
+  }
+
+  @DisplayName("게시글 좋아요 해제 - 실패 테스트 (좋아요하지 않은 게시글)")
+  @Test
+  void 좋아요하지_않은_게시글은_해제할_수_없다() {
+    // given
+    RegisterPostFavoriteCommand command = defaultRegisterPostFavoriteCommand();
+
+    willThrow(new ApplicationException(INVALID_POST_FAVORITE))
+        .given(postFavoriteService)
+        .deletePostFavoriteProcess(command.memberId(), command.postId());
 
     // when & then
-    assertThatThrownBy(() -> postService.createPostProcess(command))
+    assertThatThrownBy(() -> postService.unregisterPostFavoriteProcess(command))
         .isInstanceOf(ApplicationException.class)
-        .hasMessage(NOT_VERIFIED_MEMBER.getMessage());
+        .hasMessageContaining(INVALID_POST_FAVORITE.getMessage());
+
+    then(postFavoriteService)
+        .should(times(1))
+        .deletePostFavoriteProcess(command.memberId(), command.postId());
+
+    then(postRepository)
+        .shouldHaveNoInteractions();
   }
+
 
   @DisplayName("게시글 목록 조회 테스트")
   @Test

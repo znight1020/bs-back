@@ -7,11 +7,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
 
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.entity.PostFavorite;
 import com.bob.domain.post.repository.PostFavoriteRepository;
+import com.bob.domain.post.service.reader.PostFavoriteReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,9 @@ class PostFavoriteServiceTest {
 
   @Mock
   private PostFavoriteRepository postFavoriteRepository;
+
+  @Mock
+  private PostFavoriteReader postFavoriteReader;
 
   @Mock
   private Post post;
@@ -66,5 +71,26 @@ class PostFavoriteServiceTest {
         .hasMessage(ALREADY_POST_FAVORITE.getMessage());
 
     then(postFavoriteRepository).should().save(any(PostFavorite.class));
+  }
+
+  @Test
+  @DisplayName("좋아요 해제 - 성공 테스트")
+  void 좋아요를_성공적으로_해제한다() {
+    // given
+    Member member = defaultIdMember();
+    PostFavorite postFavorite = PostFavorite.create(member, post);
+    given(postFavoriteReader.readFavoritePostByMemberIdAndPostId(member.getId(), post.getId())).willReturn(postFavorite);
+
+    // when
+    postFavoriteService.deletePostFavoriteProcess(member.getId(), post.getId());
+
+    // then
+    then(postFavoriteReader)
+        .should(times(1))
+        .readFavoritePostByMemberIdAndPostId(member.getId(), post.getId());
+
+    then(postFavoriteRepository)
+        .should(times(1))
+        .delete(postFavorite);
   }
 }
