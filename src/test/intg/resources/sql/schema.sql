@@ -59,11 +59,11 @@ CREATE TABLE IF NOT EXISTS posts (
 -- ========================
 -- ⭐ LIKE_POSTS TABLE
 -- ========================
-CREATE TABLE IF NOT EXISTS like_posts (
+CREATE TABLE IF NOT EXISTS post_favorites (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id BINARY(16) NOT NULL,
     post_id BIGINT NOT NULL,
-    liked_at DATETIME,
+    created_at DATETIME,
     FOREIGN KEY (member_id) REFERENCES members(id),
     FOREIGN KEY (post_id) REFERENCES posts(id)
 );
