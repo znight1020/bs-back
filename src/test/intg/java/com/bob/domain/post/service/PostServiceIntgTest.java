@@ -1,6 +1,7 @@
 package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
+import static com.bob.global.exception.response.ApplicationError.INVALID_POST_FAVORITE;
 import static com.bob.global.exception.response.ApplicationError.NOT_POST_OWNER;
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
 import static com.bob.support.fixture.command.ChangePostCommandFixture.DEFAULT_CHANGE_POST_COMMAND;
@@ -49,6 +50,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -157,8 +159,7 @@ class PostServiceIntgTest extends TestContainerSupport {
 
     // when
     postService.registerPostFavoriteProcess(command);
-    em.flush();
-    em.clear();
+    clearPersistContext();
 
     // then
     Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
@@ -181,6 +182,43 @@ class PostServiceIntgTest extends TestContainerSupport {
     )
         .isInstanceOf(ApplicationException.class)
         .hasMessageContaining(ALREADY_POST_FAVORITE.getMessage());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 해제 - 성공 테스트")
+  void 사용자가_게시글의_좋아요를_해제할_수_있다() {
+    // given
+    Member member = memberRepository.save(defaultMember());
+    Post post = postRepository.findAll().iterator().next();
+    RegisterPostFavoriteCommand command = new RegisterPostFavoriteCommand(member.getId(), post.getId());
+    postService.registerPostFavoriteProcess(command);
+    clearPersistContext();
+    int before = postRepository.findById(post.getId()).get().getScrapCount();
+
+    // when
+    postService.unregisterPostFavoriteProcess(command);
+    clearPersistContext();
+
+    // then
+    Optional<PostFavorite> result = postFavoriteRepository.findByMemberIdAndPostId(member.getId(), post.getId());
+    int after = postRepository.findById(post.getId()).get().getScrapCount();
+
+    assertThat(result).isEmpty();
+    assertThat(after).isEqualTo(before - 1);
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 해제 - 실패 테스트 (좋아요하지 않은 경우)")
+  void 좋아요를_누르지_않은_게시글에_해제요청하면_예외발생한다() {
+    // given
+    Member member = memberRepository.save(defaultMember());
+    Post post = postRepository.findAll().iterator().next();
+    RegisterPostFavoriteCommand command = new RegisterPostFavoriteCommand(member.getId(), post.getId());
+
+    // when & then
+    assertThatThrownBy(() -> postService.unregisterPostFavoriteProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessageContaining(INVALID_POST_FAVORITE.getMessage());
   }
 
   @Test
@@ -311,8 +349,7 @@ class PostServiceIntgTest extends TestContainerSupport {
 
     // when
     PostDetailResponse result = postService.readPostDetailProcess(new ReadPostDetailQuery(writerId, post.getId()));
-    em.flush();
-    em.clear(); // @Modifying @Query 작성으로 인한 영속성 컨텍스트 무시 -> Dirty checking X
+    clearPersistContext();
 
     // then
     Post updated = postRepository.findById(post.getId()).orElseThrow();
@@ -365,5 +402,10 @@ class PostServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> postService.changePostProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessageContaining(NOT_POST_OWNER.getMessage());
+  }
+
+  private void clearPersistContext() {
+    em.flush();
+    em.clear();
   }
 }
