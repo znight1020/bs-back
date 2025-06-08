@@ -12,8 +12,10 @@ import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
@@ -75,6 +77,11 @@ public class PostService {
     List<Post> posts = postReader.readFilteredPosts(query, pageable);
     Long totalCount = postRepository.countFilteredPosts(query);
     return PostsResponse.of(totalCount, posts);
+  }
+
+  @Transactional(readOnly = true)
+  public PostFavoritesResponse readMemberFavoritePostsProcess(ReadMemberFavoritePostsQuery query, Pageable pageable) {
+    return postFavoriteService.readMemberFavoritePosts(query.memberId(), pageable);
   }
 
   @Transactional

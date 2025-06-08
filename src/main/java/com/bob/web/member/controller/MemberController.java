@@ -62,6 +62,14 @@ public class MemberController {
     return ResponseEntity.ok(memberService.readMemberPostsProcess(ReadMemberPostsRequest.toQuery(memberId, pageable)));
   }
 
+  @GetMapping("/me/favorites")
+  public ResponseEntity<MemberPostsResponse> handleReadMemberFavoritePosts(
+      @AuthenticationId UUID memberId,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(memberService.readMemberFavoritePosts(ReadMemberPostsRequest.toQuery(memberId, pageable)));
+  }
+
   @GetMapping("/{memberId}")
   public ResponseEntity<MemberProfileWithPostsResponse> handleReadProfileById(
       @PathVariable UUID memberId,

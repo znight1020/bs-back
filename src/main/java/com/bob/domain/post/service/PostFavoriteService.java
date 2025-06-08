@@ -8,9 +8,12 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.entity.PostFavorite;
 import com.bob.domain.post.repository.PostFavoriteRepository;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.reader.PostFavoriteReader;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,5 +38,12 @@ public class PostFavoriteService {
   @Transactional
   public boolean isFavorite(UUID memberId, Long postId) {
     return postFavoriteRepository.existsByMemberIdAndPostId(memberId, postId);
+  }
+
+  @Transactional
+  public PostFavoritesResponse readMemberFavoritePosts(UUID memberId, Pageable pageable) {
+    List<PostFavorite> postFavorites = postFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+    Long totalCount = postFavoriteRepository.countByMemberId(memberId);
+    return PostFavoritesResponse.of(totalCount, postFavorites);
   }
 }

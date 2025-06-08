@@ -1,5 +1,6 @@
 package com.bob.domain.member.service.dto.response.internal;
 
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import java.util.List;
 import lombok.Builder;
@@ -16,6 +17,13 @@ public class MemberPostsResponse {
     return MemberPostsResponse.builder()
         .totalCount(summary.totalCount())
         .posts(MemberPostSummary.from(summary.posts()))
+        .build();
+  }
+
+  public static MemberPostsResponse from(PostFavoritesResponse summary) {
+    return MemberPostsResponse.builder()
+        .totalCount(summary.totalCount())
+        .posts(MemberPostSummary.from(summary.postFavorites()))
         .build();
   }
 }
