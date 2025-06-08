@@ -1,5 +1,6 @@
 package com.bob.domain.post.service;
 
+import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
 import static com.bob.global.exception.response.ApplicationError.NOT_POST_OWNER;
 import static com.bob.global.exception.response.ApplicationError.NOT_VERIFIED_MEMBER;
 import static com.bob.support.fixture.command.ChangePostCommandFixture.DEFAULT_CHANGE_POST_COMMAND;
@@ -29,9 +30,12 @@ import com.bob.domain.category.repository.CategoryRepository;
 import com.bob.domain.member.entity.Member;
 import com.bob.domain.member.repository.MemberRepository;
 import com.bob.domain.post.entity.Post;
+import com.bob.domain.post.entity.PostFavorite;
+import com.bob.domain.post.repository.PostFavoriteRepository;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
+import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
@@ -64,6 +68,12 @@ class PostServiceIntgTest extends TestContainerSupport {
 
   @Autowired
   private PostRepository postRepository;
+
+  @Autowired
+  private PostFavoriteService postFavoriteService;
+
+  @Autowired
+  private PostFavoriteRepository postFavoriteRepository;
 
   @Autowired
   private MemberRepository memberRepository;
@@ -134,6 +144,43 @@ class PostServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> postService.createPostProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(NOT_VERIFIED_MEMBER.getMessage());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 등록 - 성공 테스트")
+  void 사용자가_게시글을_좋아요_누를_수_있다() {
+    // given
+    Member member = memberRepository.save(defaultMember());
+    Post post = postRepository.findAll().iterator().next();
+
+    RegisterPostFavoriteCommand command = new RegisterPostFavoriteCommand(member.getId(), post.getId());
+
+    // when
+    postService.registerPostFavoriteProcess(command);
+    em.flush();
+    em.clear();
+
+    // then
+    Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+    PostFavorite postFavorite = postFavoriteRepository.findByMemberIdAndPostId(member.getId(), post.getId()).get();
+    assertThat(updatedPost.getScrapCount()).isEqualTo(post.getScrapCount() + 1);
+    assertThat(postFavorite).isNotNull();
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 등록 - 실패 테스트 (이미 좋아요한 경우)")
+  void 사용자가_이미_좋아요한_게시글에_중복_좋아요시_예외가_발생한다() {
+    // given
+    Member member = memberRepository.save(defaultMember());
+    Post post = postRepository.findAll().iterator().next();
+    RegisterPostFavoriteCommand command = new RegisterPostFavoriteCommand(member.getId(), post.getId());
+    postService.registerPostFavoriteProcess(command);
+
+    // when & then
+    assertThatThrownBy(() -> postService.registerPostFavoriteProcess(command)
+    )
+        .isInstanceOf(ApplicationException.class)
+        .hasMessageContaining(ALREADY_POST_FAVORITE.getMessage());
   }
 
   @Test
