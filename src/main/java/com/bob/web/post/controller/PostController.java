@@ -1,6 +1,7 @@
 package com.bob.web.post.controller;
 
 import static com.bob.web.common.symbol.ResponseSymbol.CREATED;
+import static com.bob.web.common.symbol.ResponseSymbol.DELETED;
 import static com.bob.web.common.symbol.ResponseSymbol.OK;
 import static com.bob.web.post.request.ReadPostDetailRequest.toQuery;
 import static com.bob.web.post.request.RegisterPostFavoriteRequest.toCommand;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +56,16 @@ public class PostController {
   ) {
     postService.registerPostFavoriteProcess(toCommand(memberId, postId));
     return new CommonResponse<>(true, CREATED);
+  }
+
+  @DeleteMapping("/{postId}/favorite")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<ResponseSymbol> handleUnregisterFavoritePost(
+      @PathVariable Long postId,
+      @AuthenticationId UUID memberId
+  ) {
+    postService.unregisterPostFavoriteProcess(toCommand(memberId, postId));
+    return new CommonResponse<>(true, DELETED);
   }
 
   @GetMapping

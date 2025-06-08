@@ -64,6 +64,12 @@ public class PostService {
     postRepository.increaseFavoriteCount(post.getId());
   }
 
+  @Transactional
+  public void unregisterPostFavoriteProcess(RegisterPostFavoriteCommand command) {
+    postFavoriteService.deletePostFavoriteProcess(command.memberId(), command.postId());
+    postRepository.decreaseFavoriteCount(command.postId());
+  }
+
   @Transactional(readOnly = true)
   public PostsResponse readFilteredPostsProcess(ReadFilteredPostsQuery query, Pageable pageable) {
     List<Post> posts = postReader.readFilteredPosts(query, pageable);

@@ -35,6 +35,7 @@ public enum ApplicationError {
   NOT_EXIST_POST("E302", "게시글을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
   NOT_POST_OWNER("E303", "게시글 작성자가 아닙니다.", HttpStatus.FORBIDDEN),
   ALREADY_POST_FAVORITE("E304", "이미 좋아요한 게시글입니다.", HttpStatus.BAD_REQUEST),
+  INVALID_POST_FAVORITE("E305", "좋아요 하지 않은 게시글입니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private String code;
