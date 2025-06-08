@@ -8,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface PostFavoriteRepository extends CrudRepository<PostFavorite, Long> {
 
   Optional<PostFavorite> findByMemberIdAndPostId(UUID memberId, Long postId);
+
+  Boolean existsByMemberIdAndPostId(UUID memberId, Long postId);
 }

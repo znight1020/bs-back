@@ -2,6 +2,7 @@ package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -15,6 +16,7 @@ import com.bob.domain.post.entity.PostFavorite;
 import com.bob.domain.post.repository.PostFavoriteRepository;
 import com.bob.domain.post.service.reader.PostFavoriteReader;
 import com.bob.global.exception.exceptions.ApplicationException;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,5 +94,35 @@ class PostFavoriteServiceTest {
     then(postFavoriteRepository)
         .should(times(1))
         .delete(postFavorite);
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 여부 확인 - true 반환")
+  void 게시글을_좋아요한_경우_true를_반환한다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    Long postId = 1L;
+    given(postFavoriteRepository.existsByMemberIdAndPostId(memberId, postId)).willReturn(true);
+
+    // when
+    boolean result = postFavoriteService.isFavorite(memberId, postId);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 여부 확인 - false 반환")
+  void 게시글을_좋아요하지_않은_경우_false를_반환한다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    Long postId = 2L;
+    given(postFavoriteRepository.existsByMemberIdAndPostId(memberId, postId)).willReturn(false);
+
+    // when
+    boolean result = postFavoriteService.isFavorite(memberId, postId);
+
+    // then
+    assertThat(result).isFalse();
   }
 }

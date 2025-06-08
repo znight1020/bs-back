@@ -82,7 +82,7 @@ public class PostService {
     postRepository.increaseViewCount(query.postId());
     Post post = postReader.readPostById(query.postId());
     boolean isOwner = query.memberId() != null && post.getSeller().getId().equals(query.memberId());
-    boolean isFavorite = false; // TODO : 게시글 좋아요 기능 구현 후 좋아요 여부 매핑
+    boolean isFavorite = postFavoriteService.isFavorite(query.memberId(), post.getId());
     return PostDetailResponse.of(post, isFavorite, isOwner, List.of()); // TODO : 첨부 이미지 기능 구현 시 이미지 경로 List 매핑
   }
 

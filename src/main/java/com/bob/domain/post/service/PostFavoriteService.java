@@ -32,4 +32,8 @@ public class PostFavoriteService {
     postFavoriteRepository.delete(favorite);
   }
 
+  @Transactional
+  public boolean isFavorite(UUID memberId, Long postId) {
+    return postFavoriteRepository.existsByMemberIdAndPostId(memberId, postId);
+  }
 }
