@@ -10,6 +10,7 @@ import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
+import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
@@ -32,6 +33,8 @@ public class PostService {
   private final PostRepository postRepository;
   private final PostReader postReader;
 
+  private final PostFavoriteService postFavoriteService;
+
   private final BookService bookService;
   private final MemberReader memberReader;
   private final CategoryReader categoryReader;
@@ -51,6 +54,14 @@ public class PostService {
       return;
     }
     throw new ApplicationException(ApplicationError.NOT_VERIFIED_MEMBER);
+  }
+
+  @Transactional
+  public void registerPostFavoriteProcess(RegisterPostFavoriteCommand command) {
+    Member member = memberReader.readMemberById(command.memberId());
+    Post post = postReader.readPostById(command.postId());
+    postFavoriteService.createPostFavoriteProcess(member, post);
+    postRepository.increaseFavoriteCount(post.getId());
   }
 
   @Transactional(readOnly = true)

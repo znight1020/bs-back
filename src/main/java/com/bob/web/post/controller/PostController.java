@@ -3,6 +3,7 @@ package com.bob.web.post.controller;
 import static com.bob.web.common.symbol.ResponseSymbol.CREATED;
 import static com.bob.web.common.symbol.ResponseSymbol.OK;
 import static com.bob.web.post.request.ReadPostDetailRequest.toQuery;
+import static com.bob.web.post.request.RegisterPostFavoriteRequest.toCommand;
 
 import com.bob.domain.post.service.PostService;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
@@ -42,6 +43,16 @@ public class PostController {
       @AuthenticationId UUID memberId
   ) {
     postService.createPostProcess(request.toCommand(memberId));
+    return new CommonResponse<>(true, CREATED);
+  }
+
+  @PostMapping("/{postId}/favorite")
+  @ResponseStatus(HttpStatus.CREATED)
+  public CommonResponse<ResponseSymbol> handleRegisterFavoritePost(
+      @PathVariable Long postId,
+      @AuthenticationId UUID memberId
+  ) {
+    postService.registerPostFavoriteProcess(toCommand(memberId, postId));
     return new CommonResponse<>(true, CREATED);
   }
 
