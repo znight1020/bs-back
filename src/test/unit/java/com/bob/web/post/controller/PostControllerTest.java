@@ -80,6 +80,22 @@ class PostControllerTest {
   }
 
   @Test
+  @DisplayName("게시글 좋아요 API 호출 테스트")
+  void 게시글_좋아요_API를_호출할_수_있다() throws Exception {
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+
+    // when & then
+    mvc.perform(post("/posts/{postId}/favorite", postId)
+            .requestAttr("memberId", memberId))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.result").value("CREATED"));
+
+    verify(postService, times(1)).registerPostFavoriteProcess(any());
+  }
+
+  @Test
   @DisplayName("게시글 목록 필터 조회 API 호출 테스트")
   void 게시글_목록_필터_조회_API를_호출할_수_있다() throws Exception {
     // given
