@@ -19,6 +19,7 @@ import static com.bob.support.fixture.domain.MemberFixture.defaultMember;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileQuery;
 import static com.bob.support.fixture.query.MemberQueryFixture.defaultReadProfileWithPostsQuery;
 import static com.bob.support.fixture.response.MemberProfileImageUrlResponseFixture.mockPresignedUrlResponse;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_FAVORITE_RESPONSE;
 import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_POSTS_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -190,6 +191,27 @@ class MemberServiceTest {
         .containsExactly("객체지향의 사실과 오해", "오브젝트");
 
     then(postSearcher).should(times(1)).readMemberPostSummary(query.memberId(), query.pageable());
+  }
+
+  @DisplayName("내가 좋아요한 게시글 목록 조회 테스트")
+  @Test
+  void 좋아요한_게시글_목록을_조회할_수_있다() {
+    // given
+    Member member = defaultIdMember();
+    Pageable pageable = PageRequest.of(0, 10);
+    ReadMemberPostsQuery query = new ReadMemberPostsQuery(member.getId(), pageable);
+    given(postSearcher.readMemberFavoritePostsSummary(query.memberId(), query.pageable())).willReturn(DEFAULT_FAVORITE_RESPONSE());
+
+    // when
+    MemberPostsResponse response = memberService.readMemberFavoritePosts(query);
+
+    // then
+    assertThat(response.getTotalCount()).isEqualTo(2);
+    assertThat(response.getPosts())
+        .extracting(MemberPostSummary::postTitle)
+        .containsExactly("객체지향의 사실과 오해", "오브젝트");
+
+    then(postSearcher).should(times(1)).readMemberFavoritePostsSummary(query.memberId(), query.pageable());
   }
 
   @Test

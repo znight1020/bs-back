@@ -17,6 +17,8 @@ import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
 import static com.bob.support.fixture.domain.PostFixture.defaultIdPost;
 import static com.bob.support.fixture.domain.PostFixture.defaultPost;
 import static com.bob.support.fixture.query.PostQueryFixture.defaultReadFilteredPostsQuery;
+import static com.bob.support.fixture.query.PostQueryFixture.defaultReadMemberFavoritePostsQuery;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_FAVORITE_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -37,8 +39,10 @@ import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.post.service.reader.PostReader;
 import com.bob.global.exception.exceptions.ApplicationException;
@@ -241,6 +245,22 @@ class PostServiceTest {
     then(postRepository).should(times(1)).countFilteredPosts(query);
   }
 
+  @Test
+  @DisplayName("좋아요한 게시글 목록 조회 테스트")
+  void 좋아요한_게시글_목록을_조회할_수_있다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    ReadMemberFavoritePostsQuery query = defaultReadMemberFavoritePostsQuery(memberId);
+    given(postFavoriteService.readMemberFavoritePosts(memberId, pageable)).willReturn(DEFAULT_FAVORITE_RESPONSE());
+
+    // when
+    PostFavoritesResponse response = postService.readMemberFavoritePostsProcess(query, pageable);
+
+    // then
+    assertThat(response.totalCount()).isEqualTo(2L);
+    then(postFavoriteService).should(times(1)).readMemberFavoritePosts(query.memberId(), pageable);
+  }
+
   @DisplayName("게시글 상세 조회 - 작성자 본인")
   @Test
   void 게시글_작성자와_조회자가_같다면_isOwner는_true이다() {
@@ -258,6 +278,7 @@ class PostServiceTest {
     // then
     assertThat(response.isOwner()).isTrue();
     then(postRepository).should(times(1)).increaseViewCount(post.getId());
+    then(postFavoriteService).should(times(1)).isFavorite(member.getId(), post.getId());
   }
 
   @DisplayName("게시글 상세 조회 - 작성자 본인 X")
@@ -278,6 +299,7 @@ class PostServiceTest {
     // then
     assertThat(response.isOwner()).isFalse();
     then(postRepository).should(times(1)).increaseViewCount(post.getId());
+    then(postFavoriteService).should(times(1)).isFavorite(otherUser.getId(), post.getId());
   }
 
   @DisplayName("게시글 수정 - 성공 테스트")

@@ -2,6 +2,8 @@ package com.bob.domain.post.service;
 
 import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
+import static com.bob.support.fixture.domain.PostFavoriteFixture.DEFAULT_MOCK_POST_FAVORITES;
+import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_FAVORITE_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +16,7 @@ import com.bob.domain.member.entity.Member;
 import com.bob.domain.post.entity.Post;
 import com.bob.domain.post.entity.PostFavorite;
 import com.bob.domain.post.repository.PostFavoriteRepository;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.reader.PostFavoriteReader;
 import com.bob.global.exception.exceptions.ApplicationException;
 import java.util.UUID;
@@ -24,6 +27,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PostFavoriteService 테스트")
@@ -40,6 +45,8 @@ class PostFavoriteServiceTest {
 
   @Mock
   private Post post;
+
+  private Pageable pageable = PageRequest.of(0, 12);
 
   @Test
   @DisplayName("게시글 즐겨찾기 등록 - 성공 테스트")
@@ -124,5 +131,24 @@ class PostFavoriteServiceTest {
 
     // then
     assertThat(result).isFalse();
+  }
+
+  @Test
+  @DisplayName("좋아요 한 게시글 목록 조회")
+  void 사용자의_즐겨찾기_게시글_목록을_조회할_수_있다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    given(postFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId, pageable)).willReturn(DEFAULT_MOCK_POST_FAVORITES());
+    given(postFavoriteRepository.countByMemberId(memberId)).willReturn((long) DEFAULT_MOCK_POST_FAVORITES().size());
+
+    // when
+    PostFavoritesResponse response = postFavoriteService.readMemberFavoritePosts(memberId, pageable);
+
+    // then
+    assertThat(response.totalCount()).isEqualTo(2L);
+    assertThat(response.postFavorites()).hasSize(2);
+
+    then(postFavoriteRepository).should().findByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+    then(postFavoriteRepository).should().countByMemberId(memberId);
   }
 }
