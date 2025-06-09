@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.google.cloud.tools.jib' version '3.4.5'
     id 'jacoco'
 }
 
@@ -81,6 +82,65 @@ configurations {
     unitTestAnnotationProcessor.extendsFrom annotationProcessor
     integrationTestImplementation.extendsFrom testImplementation, implementation
     integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+}
+
+def envFile = rootProject.file(".env")
+if (envFile.exists()) {
+    envFile.readLines()
+        .findAll { it && it.contains("=") }
+        .each { line ->
+            def (key, value) = line.split("=")
+            if (key == "USERNAME") {
+                System.setProperty("jib.from.auth.username", value)
+                System.setProperty("jib.to.auth.username", value)
+            }
+            if (key == "PASSWORD") {
+                System.setProperty("jib.from.auth.password", value)
+                System.setProperty("jib.to.auth.password", value)
+            }
+        }
+}
+
+jib {
+    from {
+        // image = 'container-registry.oracle.com/java/openjdk:17'
+        image = 'eclipse-temurin:17-jre'
+        auth {
+            username = System.getProperty("jib.from.auth.username")
+            password = System.getProperty("jib.from.auth.password")
+        }
+    }
+
+    to {
+        image = 'leehyeonsoo/bserver'
+        tags = [
+                // 운영, 개발 API 서버 태그 분기
+                project.findProperty("jibProfile") == "dev"
+                        ? "bserver-dev"
+                        : "bserver-prod"
+        ]
+
+        // DockerHub 인증
+        def user = System.getProperty("jib.to.auth.username")
+        def pass = System.getProperty("jib.to.auth.password")
+        if (user != null && pass != null) {
+            auth {
+                username = user
+                password = pass
+            }
+        }
+    }
+
+    container {
+        ports = ['8080']
+        jvmFlags = [
+                "-Dspring.profiles.active=" +
+                        (project.findProperty("jibProfile") == "dev"
+                                ? "dev,secret"
+                                : "prod,secret")
+        ]
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+    }
 }
 
 sourceSets {
