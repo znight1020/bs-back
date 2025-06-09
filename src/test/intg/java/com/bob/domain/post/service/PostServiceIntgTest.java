@@ -38,8 +38,10 @@ import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostSummary;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.global.exception.exceptions.ApplicationException;
@@ -146,6 +148,38 @@ class PostServiceIntgTest extends TestContainerSupport {
     assertThatThrownBy(() -> postService.createPostProcess(command))
         .isInstanceOf(ApplicationException.class)
         .hasMessage(NOT_VERIFIED_MEMBER.getMessage());
+  }
+
+  @DisplayName("사용자 즐겨찾기 게시글 조회 테스트 - 성공 테스트")
+  @Test
+  void 회원이_좋아요한_게시글을_조회할_수_있다() {
+    // given
+    UUID memberId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0");
+    ReadMemberFavoritePostsQuery query = ReadMemberFavoritePostsQuery.of(memberId);
+
+    // when
+    PostFavoritesResponse response = postService.readMemberFavoritePostsProcess(query, pageable);
+
+    // then
+    assertThat(response.totalCount()).isEqualTo(2);
+    assertThat(response.postFavorites())
+        .extracting(PostSummary::postTitle)
+        .containsExactlyInAnyOrder("자바의 정석", "토비의 스프링");
+  }
+
+  @DisplayName("사용자 즐겨찾기 게시글 조회 테스트 - 성공 테스트(결과없음)")
+  @Test
+  void 회원이_좋아요한_게시글이_없는_경우_빈_리스트를_반환한다() {
+    // given
+    UUID memberId = UUID.fromString("0197365f-8074-7d24-a332-0c5f1dbe9c59");
+    ReadMemberFavoritePostsQuery query = ReadMemberFavoritePostsQuery.of(memberId);
+
+    // when
+    PostFavoritesResponse response = postService.readMemberFavoritePostsProcess(query, pageable);
+
+    // then
+    assertThat(response.totalCount()).isEqualTo(0);
+    assertThat(response.postFavorites()).hasSize(0);
   }
 
   @Test
