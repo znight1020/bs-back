@@ -20,6 +20,8 @@ import com.bob.domain.member.service.dto.command.ChangePasswordCommand;
 import com.bob.domain.member.service.dto.command.CreateMemberCommand;
 import com.bob.domain.member.service.dto.command.IssuePasswordCommand;
 import com.bob.domain.member.service.MemberService;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -114,6 +116,27 @@ class MemberControllerTest {
         .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
 
     verify(memberService, times(1)).readMemberPostsProcess(any());
+  }
+
+
+  @Test
+  @DisplayName("좋아요한 게시글 목록 조회 API 호출 테스트")
+  void 좋아요한_게시글_목록을_조회한다() throws Exception {
+    // given
+    given(memberService.readMemberFavoritePosts(any())).willReturn(DEFAULT_MEMBER_POSTS_RESPONSE);
+
+    // when & then
+    mvc.perform(get("/members/me/favorites")
+            .param("page", "0")
+            .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.totalCount").value(2))
+        .andExpect(jsonPath("$.posts[0].postId").value(1))
+        .andExpect(jsonPath("$.posts[0].postTitle").value("객체지향의 사실과 오해"))
+        .andExpect(jsonPath("$.posts[1].postId").value(2))
+        .andExpect(jsonPath("$.posts[1].postTitle").value("오브젝트"));
+
+    verify(memberService, times(1)).readMemberFavoritePosts(any());
   }
 
   @Test

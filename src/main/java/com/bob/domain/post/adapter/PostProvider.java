@@ -3,6 +3,8 @@ package com.bob.domain.post.adapter;
 import com.bob.domain.member.service.port.PostSearcher;
 import com.bob.domain.post.service.PostService;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
+import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +20,10 @@ public class PostProvider implements PostSearcher {
   @Override
   public PostsResponse readMemberPostSummary(UUID memberId, Pageable pageable) {
     return postService.readFilteredPostsProcess(ReadFilteredPostsQuery.of(memberId), pageable);
+  }
+
+  @Override
+  public PostFavoritesResponse readMemberFavoritePostsSummary(UUID memberId, Pageable pageable) {
+    return postService.readMemberFavoritePostsProcess(ReadMemberFavoritePostsQuery.of(memberId), pageable);
   }
 }

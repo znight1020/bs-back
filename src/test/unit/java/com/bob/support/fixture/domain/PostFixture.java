@@ -26,6 +26,21 @@ public class PostFixture {
         .build();
   }
 
+  public static Post defaultIdPost(Book book, Member seller, Category category) {
+    return Post.builder()
+        .id(1L)
+        .book(book)
+        .seller(seller)
+        .category(category)
+        .bookStatus(BookStatus.BEST)
+        .postStatus(PostStatus.READY)
+        .sellPrice(30000)
+        .description("Description")
+        .registrationAreaId(seller.getActivityArea().getId().getEmdAreaId())
+        .thumbnailUrl("https://image/1.png")
+        .build();
+  }
+
   public static List<Post> DEFAULT_MOCK_POSTS() {
     return List.of(
         Post.builder()

@@ -59,11 +59,11 @@ CREATE TABLE IF NOT EXISTS posts (
 -- ========================
 -- ⭐ LIKE_POSTS TABLE
 -- ========================
-CREATE TABLE IF NOT EXISTS like_posts (
+CREATE TABLE IF NOT EXISTS post_favorites (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id BINARY(16) NOT NULL,
     post_id BIGINT NOT NULL,
-    liked_at DATETIME,
+    created_at DATETIME,
     FOREIGN KEY (member_id) REFERENCES members(id),
     FOREIGN KEY (post_id) REFERENCES posts(id)
 );
@@ -276,7 +276,10 @@ UPDATE emd_areas SET geom = ST_GeomFromText('POLYGON ((37.7410557 127.0741107, 3
 -- 더미 데이터
 -- ========================
 INSERT INTO members (id, email, password, nickname) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 'postReader@test.com', '{bcrypt}$2a$10$e9yC6oOgw6QJA/XalvPlcOUkjTfuqfqxRH1TECCdUrgNHGiB/RoCa', 'PostReader');
+INSERT INTO members (id, email, password, nickname) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-0c5f1dbe9c59'), 'otherReader@test.com', '{bcrypt}$2a$10$e9yC6oOgw6QJA/XalvPlcOUkjTfuqfqxRH1TECCdUrgNHGiB/RoCa', 'otherReader');
+
 INSERT INTO activity_areas (member_id, emd_area_id, authentication_at) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 213, CURDATE());
+
 INSERT INTO books (isbn13, title, author, description, price_standard, cover, pub_date) VALUES
 ('9788994492032', '자바의 정석', '남궁성', '자바 기초 입문서', 15000, 'https://cover/1.png', '2020-01-01'),
 ('9788960777330', '자바 ORM 표준 JPA 프로그래밍', '김영한', 'JPA 표준 가이드', 18000, 'https://cover/2.png', '2021-06-01'),
@@ -284,6 +287,7 @@ INSERT INTO books (isbn13, title, author, description, price_standard, cover, pu
 ('9788966261208', '오브젝트', '조영호', '객체지향 설계 입문', 25000, 'https://cover/4.png', '2021-05-15'),
 ('9788999999001', '싸다구 책1', '김저렴', '저렴한 책1', 3000, 'https://cover/5.png', '2019-01-01'),
 ('9788999999002', '싸다구 책2', '박할인', '저렴한 책2', 4000, 'https://cover/6.png', '2018-12-01');
+
 INSERT INTO posts (book_id, seller_id, category_id, book_status, post_status, sell_price, description, registration_area_id, thumbnail_url, created_at) VALUES
 (1, UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, 'BEST', 'READY', 10000, '자바 기초를 다룬 책입니다.', 213, 'https://image/1.png', now()),
 (2, UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, 'HIGH', 'READY', 12000, 'JPA 핵심 이론', 785, 'https://image/2.png', now()),
@@ -300,3 +304,7 @@ INSERT INTO posts (book_id, seller_id, category_id, book_status, post_status, se
 (1, UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, 'BEST', 'READY', 10000, '오래된 게시글', 213, 'https://image/old.png', '2023-01-01 10:00:00'),
 (2, UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, 'HIGH', 'READY', 12000, '중간 게시글', 213, 'https://image/mid.png', '2023-06-01 10:00:00'),
 (3, UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, 'LOW', 'READY', 14000, '최신 게시글', 213, 'https://image/new.png', '2024-01-01 10:00:00');
+
+INSERT INTO post_favorites (member_id, post_id, created_at) VALUES
+(UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 1, NOW()),
+(UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 3, NOW());

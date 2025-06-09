@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -77,6 +78,39 @@ class PostControllerTest {
         .andExpect(status().isCreated());
 
     verify(postService, times(1)).createPostProcess(any());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 API 호출 테스트")
+  void 게시글_좋아요_API를_호출할_수_있다() throws Exception {
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+
+    // when & then
+    mvc.perform(post("/posts/{postId}/favorite", postId)
+            .requestAttr("memberId", memberId))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.result").value("CREATED"));
+
+    verify(postService, times(1)).registerPostFavoriteProcess(any());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 해제 API 호출 테스트")
+  void 게시글_좋아요_해제_API를_호출할_수_있다() throws Exception {
+    // given
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+
+    // when & then
+    mvc.perform(delete("/posts/{postId}/favorite", postId)
+            .requestAttr("memberId", memberId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.result").value("DELETED"));
+
+    verify(postService, times(1)).unregisterPostFavoriteProcess(any());
   }
 
   @Test

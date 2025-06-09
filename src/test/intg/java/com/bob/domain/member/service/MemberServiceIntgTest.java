@@ -30,10 +30,12 @@ import com.bob.domain.member.service.dto.query.ReadProfileWithPostsQuery;
 import com.bob.domain.member.service.dto.response.MemberProfileImageUrlResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileResponse;
 import com.bob.domain.member.service.dto.response.MemberProfileWithPostsResponse;
+import com.bob.domain.member.service.dto.response.internal.MemberPostsResponse;
 import com.bob.domain.member.service.port.ImageStorageAccessor;
 import com.bob.domain.member.service.port.MailService;
 import com.bob.domain.member.service.port.MailVerificationStore;
 import com.bob.domain.member.service.port.PostSearcher;
+import com.bob.domain.post.service.dto.query.ReadMemberPostsQuery;
 import com.bob.global.exception.exceptions.ApplicationException;
 import com.bob.global.exception.response.ApplicationError;
 import com.bob.support.TestContainerSupport;
@@ -44,6 +46,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,6 +166,23 @@ class MemberServiceIntgTest extends TestContainerSupport {
     assertThat(response.getMemberPosts().getTotalCount()).isEqualTo(15);
     assertThat(response.getMemberPosts().getPosts().get(0).postTitle()).isEqualTo("자바의 정석");
     assertThat(response.getMemberPosts().getPosts().get(1).postTitle()).isEqualTo("자바 ORM 표준 JPA 프로그래밍");
+  }
+
+  @Test
+  @DisplayName("사용자의 좋아요한 게시글 목록 조회 - 성공 테스트")
+  void 회원은_좋아요한_게시글_목록을_조회할_수_있다() {
+    // given
+    UUID memberId = UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0");
+    Pageable pageable = PageRequest.of(0, 12);
+    ReadMemberPostsQuery query = new ReadMemberPostsQuery(memberId, pageable);
+
+    // when
+    MemberPostsResponse response = memberService.readMemberFavoritePosts(query);
+
+    // then
+    assertThat(response.getTotalCount()).isEqualTo(2);
+    assertThat(response.getPosts().get(0).postTitle()).isEqualTo("자바의 정석"); // 1번 게시글
+    assertThat(response.getPosts().get(1).postTitle()).isEqualTo("토비의 스프링"); // 3번 게시글
   }
 
   @Test

@@ -88,6 +88,11 @@ public class MemberService {
   }
 
   @Transactional(readOnly = true)
+  public MemberPostsResponse readMemberFavoritePosts(ReadMemberPostsQuery query) {
+    return MemberPostsResponse.from(postSearcher.readMemberFavoritePostsSummary(query.memberId(), query.pageable()));
+  }
+
+  @Transactional(readOnly = true)
   public MemberProfileWithPostsResponse readProfileByIdWithPostsProcess(ReadProfileWithPostsQuery query) {
     Member member = memberReader.readMemberById(query.memberId());
     MemberProfileResponse profile = MemberProfileResponse.of(member);

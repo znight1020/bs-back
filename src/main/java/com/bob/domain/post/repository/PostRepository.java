@@ -16,4 +16,12 @@ public interface PostRepository extends CrudRepository<Post, Long>, CustomPostRe
   @Modifying
   @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
   void increaseViewCount(@Param("postId") Long postId);
+
+  @Modifying
+  @Query("UPDATE Post p SET p.scrapCount = p.scrapCount + 1 WHERE p.id = :postId")
+  void increaseFavoriteCount(@Param("postId") Long postId);
+
+  @Modifying
+  @Query("UPDATE Post p SET p.scrapCount = p.scrapCount - 1 WHERE p.id = :postId AND p.scrapCount > 0")
+  void decreaseFavoriteCount(@Param("postId") Long postId);
 }

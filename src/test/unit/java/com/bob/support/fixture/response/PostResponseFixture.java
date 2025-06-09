@@ -6,6 +6,7 @@ import com.bob.domain.post.entity.status.BookStatus;
 import com.bob.domain.post.service.dto.response.PostDetailResponse;
 import com.bob.domain.post.service.dto.response.PostDetailResponse.BookInfo;
 import com.bob.domain.post.service.dto.response.PostDetailResponse.WriterInfo;
+import com.bob.domain.post.service.dto.response.PostFavoritesResponse;
 import com.bob.domain.post.service.dto.response.PostSummary;
 import com.bob.domain.post.service.dto.response.PostsResponse;
 import com.bob.domain.trade.entity.status.TradeStatus;
@@ -70,5 +71,9 @@ public class PostResponseFixture {
 
   public static PostsResponse DEFAULT_POSTS_RESPONSE() {
     return PostsResponse.of(2L, DEFAULT_MOCK_POSTS());
+  }
+
+  public static PostFavoritesResponse DEFAULT_FAVORITE_RESPONSE() {
+    return new PostFavoritesResponse(2L, DEFAULT_POST_SUMMARY());
   }
 }
