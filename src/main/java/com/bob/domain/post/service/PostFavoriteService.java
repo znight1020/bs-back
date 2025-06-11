@@ -35,14 +35,14 @@ public class PostFavoriteService {
     postFavoriteRepository.delete(favorite);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public boolean isFavorite(UUID memberId, Long postId) {
     return postFavoriteRepository.existsByMemberIdAndPostId(memberId, postId);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public PostFavoritesResponse readMemberFavoritePosts(UUID memberId, Pageable pageable) {
-    List<PostFavorite> postFavorites = postFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+    List<PostFavorite> postFavorites = postFavoriteReader.readFavoritePostsByMemberId(memberId, pageable);
     Long totalCount = postFavoriteRepository.countByMemberId(memberId);
     return PostFavoritesResponse.of(totalCount, postFavorites);
   }
