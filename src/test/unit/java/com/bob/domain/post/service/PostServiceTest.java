@@ -38,6 +38,7 @@ import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
+import com.bob.domain.post.service.dto.command.RemovePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -338,5 +339,50 @@ class PostServiceTest {
         .hasMessage(ApplicationError.NOT_POST_OWNER.getMessage());
 
     then(postReader).should().readPostById(post.getId());
+  }
+
+  @DisplayName("게시글 삭제 - 성공 테스트 (작성자 본인)")
+  @Test
+  void 게시글_작성자는_게시글을_삭제할_수_있다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    Member writer = customIdMember(memberId);
+    writer.updateActivityArea(defaultActivityArea());
+    Post post = defaultPost(defaultBook(), writer, defaultCategory());
+
+    RemovePostCommand command = new RemovePostCommand(memberId, post.getId());
+    given(postReader.readPostById(command.postId())).willReturn(post);
+
+    // when
+    postService.removePostProcess(command);
+
+    // then
+    then(postReader).should(times(1)).readPostById(post.getId());
+    then(postFavoriteService).should(times(1)).removePostFavoriteProcess(post.getId());
+    then(postRepository).should(times(1)).deleteById(post.getId());
+  }
+
+  @DisplayName("게시글 삭제 - 실패 테스트 (작성자 X)")
+  @Test
+  void 작성자가_아니면_게시글을_삭제할_수_없다() {
+    // given
+    UUID memberId = UUID.randomUUID();
+    UUID otherMemberId = UUID.randomUUID();
+    Member writer = customIdMember(otherMemberId);
+    writer.updateActivityArea(defaultActivityArea());
+    Post post = defaultPost(defaultBook(), writer, defaultCategory());
+
+    RemovePostCommand command = new RemovePostCommand(memberId, post.getId());
+
+    given(postReader.readPostById(command.postId())).willReturn(post);
+
+    // when & then
+    assertThatThrownBy(() -> postService.removePostProcess(command))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessage(ApplicationError.NOT_POST_OWNER.getMessage());
+
+    then(postReader).should(times(1)).readPostById(post.getId());
+    then(postFavoriteService).shouldHaveNoInteractions();
+    then(postRepository).shouldHaveNoInteractions();
   }
 }

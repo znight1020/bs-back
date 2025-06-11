@@ -150,4 +150,17 @@ class PostFavoriteServiceTest {
     then(postFavoriteReader).should().readFavoritePostsByMemberId(memberId, pageable);
     then(postFavoriteRepository).should().countByMemberId(memberId);
   }
+
+  @Test
+  @DisplayName("게시글 삭제 시 - 해당 게시글의 모든 좋아요를 삭제한다")
+  void 게시글을_삭제하면_해당_게시글의_좋아요가_모두_삭제된다() {
+    // given
+    Long postId = 1L;
+
+    // when
+    postFavoriteService.removePostFavoriteProcess(postId);
+
+    // then
+    then(postFavoriteRepository).should(times(1)).deleteAllByPostId(postId);
+  }
 }
