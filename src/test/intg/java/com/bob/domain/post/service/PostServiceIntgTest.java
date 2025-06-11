@@ -37,6 +37,7 @@ import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
+import com.bob.domain.post.service.dto.command.RemovePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -437,6 +438,55 @@ class PostServiceIntgTest extends TestContainerSupport {
         .isInstanceOf(ApplicationException.class)
         .hasMessageContaining(NOT_POST_OWNER.getMessage());
   }
+
+  @Test
+  @DisplayName("게시글 삭제 - 작성자 본인이 삭제하면 게시글과 좋아요가 모두 삭제된다")
+  void 작성자_본인이_게시글을_삭제하면_게시글과_좋아요가_모두_삭제된다() {
+    // given
+    Member writer = memberRepository.findById(UUID.fromString("0197365f-8074-7d24-a332-0c5f1dbe9c59")).get();
+    Member other = memberRepository.findById(UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0")).get();
+
+    postService.createPostProcess(defaultCreatePostCommand(writer.getId(), defaultCategory().getId()));
+    Post post = postRepository.findAllBySellerId(writer.getId()).get(0);
+    postService.registerPostFavoriteProcess(new RegisterPostFavoriteCommand(writer.getId(), post.getId()));
+    postService.registerPostFavoriteProcess(new RegisterPostFavoriteCommand(other.getId(), post.getId()));
+
+    // when
+    postService.removePostProcess(new RemovePostCommand(writer.getId(), post.getId()));
+
+    // then
+    Optional<Post> deletedPost = postRepository.findById(post.getId());
+    Optional<PostFavorite> writerFavorite = postFavoriteRepository.findByMemberIdAndPostId(writer.getId(), post.getId());
+    Optional<PostFavorite> otherFavorite = postFavoriteRepository.findByMemberIdAndPostId(other.getId(), post.getId());
+
+    assertThat(deletedPost).isEmpty();
+    assertThat(writerFavorite).isEmpty();
+    assertThat(otherFavorite).isEmpty();
+  }
+
+  @Test
+  @DisplayName("게시글 삭제 - 작성자가 아닌 사용자가 삭제 시도하면 예외가 발생한다")
+  void 작성자가_아닌_사용자가_게시글을_삭제하려고_하면_예외가_발생한다() {
+    // given
+    Member writer = memberRepository.findById(UUID.fromString("0197365f-8074-7d24-a332-0c5f1dbe9c59")).get();
+    Member other = memberRepository.findById(UUID.fromString("0197365f-8074-7d24-a332-95c9ebd1f5c0")).get();
+
+    postService.createPostProcess(defaultCreatePostCommand(writer.getId(), defaultCategory().getId()));
+    Post post = postRepository.findAllBySellerId(writer.getId()).get(0);
+    postService.registerPostFavoriteProcess(new RegisterPostFavoriteCommand(writer.getId(), post.getId()));
+    postService.registerPostFavoriteProcess(new RegisterPostFavoriteCommand(other.getId(), post.getId()));
+
+    // when & then
+    assertThatThrownBy(() -> postService.removePostProcess(new RemovePostCommand(other.getId(), post.getId())))
+        .isInstanceOf(ApplicationException.class)
+        .hasMessageContaining(NOT_POST_OWNER.getMessage());
+
+    // 삭제되지 않음
+    assertThat(postRepository.findById(post.getId())).isPresent();
+    assertThat(postFavoriteRepository.findAll())
+        .anyMatch(fav -> fav.getPost().getId().equals(post.getId()));
+  }
+
 
   private void clearPersistContext() {
     em.flush();
