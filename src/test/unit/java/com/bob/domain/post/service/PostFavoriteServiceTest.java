@@ -3,7 +3,6 @@ package com.bob.domain.post.service;
 import static com.bob.global.exception.response.ApplicationError.ALREADY_POST_FAVORITE;
 import static com.bob.support.fixture.domain.MemberFixture.defaultIdMember;
 import static com.bob.support.fixture.domain.PostFavoriteFixture.DEFAULT_MOCK_POST_FAVORITES;
-import static com.bob.support.fixture.response.PostResponseFixture.DEFAULT_FAVORITE_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -138,7 +137,7 @@ class PostFavoriteServiceTest {
   void 사용자의_즐겨찾기_게시글_목록을_조회할_수_있다() {
     // given
     UUID memberId = UUID.randomUUID();
-    given(postFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId, pageable)).willReturn(DEFAULT_MOCK_POST_FAVORITES());
+    given(postFavoriteReader.readFavoritePostsByMemberId(memberId, pageable)).willReturn(DEFAULT_MOCK_POST_FAVORITES());
     given(postFavoriteRepository.countByMemberId(memberId)).willReturn((long) DEFAULT_MOCK_POST_FAVORITES().size());
 
     // when
@@ -148,7 +147,20 @@ class PostFavoriteServiceTest {
     assertThat(response.totalCount()).isEqualTo(2L);
     assertThat(response.postFavorites()).hasSize(2);
 
-    then(postFavoriteRepository).should().findByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+    then(postFavoriteReader).should().readFavoritePostsByMemberId(memberId, pageable);
     then(postFavoriteRepository).should().countByMemberId(memberId);
+  }
+
+  @Test
+  @DisplayName("게시글 삭제 시 - 해당 게시글의 모든 좋아요를 삭제한다")
+  void 게시글을_삭제하면_해당_게시글의_좋아요가_모두_삭제된다() {
+    // given
+    Long postId = 1L;
+
+    // when
+    postFavoriteService.removePostFavoriteProcess(postId);
+
+    // then
+    then(postFavoriteRepository).should(times(1)).deleteAllByPostId(postId);
   }
 }

@@ -279,6 +279,7 @@ INSERT INTO members (id, email, password, nickname) VALUES (UUID_TO_BIN('0197365
 INSERT INTO members (id, email, password, nickname) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-0c5f1dbe9c59'), 'otherReader@test.com', '{bcrypt}$2a$10$e9yC6oOgw6QJA/XalvPlcOUkjTfuqfqxRH1TECCdUrgNHGiB/RoCa', 'otherReader');
 
 INSERT INTO activity_areas (member_id, emd_area_id, authentication_at) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-95c9ebd1f5c0'), 213, CURDATE());
+INSERT INTO activity_areas (member_id, emd_area_id, authentication_at) VALUES (UUID_TO_BIN('0197365f-8074-7d24-a332-0c5f1dbe9c59'), 213, CURDATE());
 
 INSERT INTO books (isbn13, title, author, description, price_standard, cover, pub_date) VALUES
 ('9788994492032', '자바의 정석', '남궁성', '자바 기초 입문서', 15000, 'https://cover/1.png', '2020-01-01'),

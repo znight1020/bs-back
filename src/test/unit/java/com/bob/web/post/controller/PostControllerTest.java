@@ -199,4 +199,21 @@ class PostControllerTest {
 
     verify(postService, times(1)).changePostProcess(any());
   }
+
+  @Test
+  @DisplayName("게시글 삭제 API 호출 테스트")
+  void 게시글_삭제_API를_호출할_수_있다() throws Exception {
+    // given
+    Long postId = 1L;
+    UUID memberId = UUID.randomUUID();
+
+    // when & then
+    mvc.perform(delete("/posts/{postId}", postId)
+            .requestAttr("memberId", memberId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.result").value("DELETED"));
+
+    verify(postService, times(1)).removePostProcess(any());
+  }
 }
