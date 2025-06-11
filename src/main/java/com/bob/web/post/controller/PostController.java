@@ -15,6 +15,7 @@ import com.bob.web.common.symbol.ResponseSymbol;
 import com.bob.web.post.request.ChangePostRequest;
 import com.bob.web.post.request.CreatePostRequest;
 import com.bob.web.post.request.ReadFilteredPostsRequest;
+import com.bob.web.post.request.RemovePostRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -58,16 +59,6 @@ public class PostController {
     return new CommonResponse<>(true, CREATED);
   }
 
-  @DeleteMapping("/{postId}/favorite")
-  @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ResponseSymbol> handleUnregisterFavoritePost(
-      @PathVariable Long postId,
-      @AuthenticationId UUID memberId
-  ) {
-    postService.unregisterPostFavoriteProcess(toCommand(memberId, postId));
-    return new CommonResponse<>(true, DELETED);
-  }
-
   @GetMapping
   public ResponseEntity<PostsResponse> handleReadFilteredPosts(
       ReadFilteredPostsRequest request,
@@ -92,5 +83,23 @@ public class PostController {
   ) {
     postService.changePostProcess(request.toCommand(postId, memberId));
     return new CommonResponse<>(true, OK);
+  }
+
+  @DeleteMapping("/{postId}/favorite")
+  public CommonResponse<ResponseSymbol> handleUnregisterFavoritePost(
+      @PathVariable Long postId,
+      @AuthenticationId UUID memberId
+  ) {
+    postService.unregisterPostFavoriteProcess(toCommand(memberId, postId));
+    return new CommonResponse<>(true, DELETED);
+  }
+
+  @DeleteMapping("/{postId}")
+  public CommonResponse<ResponseSymbol> handleRemovePost(
+      @PathVariable Long postId,
+      @AuthenticationId UUID memberId
+  ) {
+    postService.removePostProcess(RemovePostRequest.toCommand(memberId, postId));
+    return new CommonResponse<>(true, DELETED);
   }
 }

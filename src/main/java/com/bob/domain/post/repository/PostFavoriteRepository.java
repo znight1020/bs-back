@@ -11,9 +11,11 @@ public interface PostFavoriteRepository extends CrudRepository<PostFavorite, Lon
 
   Optional<PostFavorite> findByMemberIdAndPostId(UUID memberId, Long postId);
 
-  Boolean existsByMemberIdAndPostId(UUID memberId, Long postId);
-
   List<PostFavorite> findByMemberIdOrderByCreatedAtDesc(UUID memberId, Pageable pageable);
 
   Long countByMemberId(UUID memberId);
+
+  Boolean existsByMemberIdAndPostId(UUID memberId, Long postId);
+
+  void deleteAllByPostId(Long postId);
 }

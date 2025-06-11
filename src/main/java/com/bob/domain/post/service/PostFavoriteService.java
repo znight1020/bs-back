@@ -46,4 +46,9 @@ public class PostFavoriteService {
     Long totalCount = postFavoriteRepository.countByMemberId(memberId);
     return PostFavoritesResponse.of(totalCount, postFavorites);
   }
+
+  @Transactional
+  public void removePostFavoriteProcess(Long postId) {
+    postFavoriteRepository.deleteAllByPostId(postId);
+  }
 }

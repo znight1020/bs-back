@@ -11,6 +11,7 @@ import com.bob.domain.post.repository.PostRepository;
 import com.bob.domain.post.service.dto.command.ChangePostCommand;
 import com.bob.domain.post.service.dto.command.CreatePostCommand;
 import com.bob.domain.post.service.dto.command.RegisterPostFavoriteCommand;
+import com.bob.domain.post.service.dto.command.RemovePostCommand;
 import com.bob.domain.post.service.dto.query.ReadFilteredPostsQuery;
 import com.bob.domain.post.service.dto.query.ReadMemberFavoritePostsQuery;
 import com.bob.domain.post.service.dto.query.ReadPostDetailQuery;
@@ -98,6 +99,14 @@ public class PostService {
     Post post = postReader.readPostById(command.postId());
     verifyPostOwner(command.memberId(), post.getSeller().getId());
     post.updateOptionalFields(command.sellPrice(), command.bookStatus(), command.description());
+  }
+
+  @Transactional
+  public void removePostProcess(RemovePostCommand command) {
+    Post post = postReader.readPostById(command.postId());
+    verifyPostOwner(command.memberId(), post.getSeller().getId());
+    postFavoriteService.removePostFavoriteProcess(post.getId());
+    postRepository.deleteById(post.getId());
   }
 
   private void verifyPostOwner(UUID requestMemberId, UUID postMemberId) {
