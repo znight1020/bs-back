@@ -29,19 +29,12 @@ public class ChatRoomMember {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "chat_room_id", nullable = false)
-  private ChatRoom chatRoom;
+  @Column(nullable = false)
+  private Long chatRoomId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
-  @Column(nullable = false)
-  private Boolean isExited;
-
   private LocalDateTime exitedAt;
-
-  @Column(nullable = false)
-  private Boolean status;
 }

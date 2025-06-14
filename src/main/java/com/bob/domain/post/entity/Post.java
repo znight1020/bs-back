@@ -80,9 +80,6 @@ public class Post extends BaseTime {
   @Builder.Default
   private Integer scrapCount = 0;
 
-  @OneToMany(mappedBy = "post")
-  private final List<Trade> trades = new ArrayList<>();
-
   public void updateOptionalFields(Integer sellPrice, String bookStatus, String description) {
     Optional.ofNullable(sellPrice).ifPresent(s -> this.sellPrice = s);
     Optional.ofNullable(bookStatus).ifPresent(b -> this.bookStatus = BookStatus.from(b));

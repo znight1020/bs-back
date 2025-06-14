@@ -1,20 +1,13 @@
 package com.bob.domain.chat.entity;
 
-import com.bob.domain.trade.entity.Trade;
 import com.bob.global.audit.BaseTime;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,19 +26,18 @@ public class ChatRoom extends BaseTime {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "trade_id", nullable = false)
-  private Trade trade;
+  @Column(nullable = false)
+  private Long postId;
+
+  @Column(nullable = false)
+  private Long tradeId;
 
   @Column(length = 100, nullable = false)
   private String titleSuffix;
 
   @Column(nullable = false)
-  private Boolean status;
+  private Boolean enableStatus;
 
   @Column(nullable = false)
   private LocalDateTime lastChatAt;
-
-  @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ChatRoomMember> members;
 }
