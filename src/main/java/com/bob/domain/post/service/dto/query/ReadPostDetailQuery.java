@@ -7,4 +7,7 @@ public record ReadPostDetailQuery(
     Long postId
 ) {
 
+  public static ReadPostDetailQuery of(UUID memberId, Long postId) {
+    return new ReadPostDetailQuery(memberId, postId);
+  }
 }
