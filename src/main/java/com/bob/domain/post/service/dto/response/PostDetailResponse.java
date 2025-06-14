@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record PostDetailResponse(
     Long postId,
+    UUID sellerId,
     Integer sellPrice,
     String bookStatus,
     String postStatus,
@@ -27,6 +28,7 @@ public record PostDetailResponse(
   public static PostDetailResponse of(Post post, boolean isFavorite, boolean isOwner, List<String> images) {
     return PostDetailResponse.builder()
         .postId(post.getId())
+        .sellerId(post.getSeller().getId())
         .sellPrice(post.getSellPrice())
         .bookStatus(post.getBookStatus().name())
         .postStatus(post.getPostStatus().getStatus())
