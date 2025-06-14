@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class PostProvider implements PostSearcher {
+public class PostAdapter implements PostSearcher {
 
   private final PostService postService;
 

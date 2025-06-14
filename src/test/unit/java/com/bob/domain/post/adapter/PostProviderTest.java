@@ -27,7 +27,7 @@ import org.springframework.data.domain.Pageable;
 class PostProviderTest {
 
   @InjectMocks
-  private PostProvider postProvider;
+  private PostAdapter postProvider;
 
   @Mock
   private PostService postService;
