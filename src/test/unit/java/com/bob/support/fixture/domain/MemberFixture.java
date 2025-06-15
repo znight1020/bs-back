@@ -11,6 +11,7 @@ import java.util.UUID;
 public class MemberFixture {
 
   public static final UUID MEMBER_ID = UUID.randomUUID();
+  public static final UUID OTHER_MEMBER_ID = UUID.randomUUID();
 
   public static Member defaultMember() {
     return Member.builder()

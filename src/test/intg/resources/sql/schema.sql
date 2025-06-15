@@ -131,11 +131,13 @@ CREATE TABLE IF NOT EXISTS activity_areas (
 CREATE TABLE IF NOT EXISTS trades (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT NOT NULL,
+    seller_id BINARY(16) NOT NULL,
     buyer_id BINARY(16) NOT NULL,
     trade_status ENUM('REQUESTED', 'CANCELED', 'COMPLETED') NOT NULL,
     updated_at DATETIME NOT NULL,
     created_at DATETIME,
     FOREIGN KEY (post_id) REFERENCES posts(id),
+    FOREIGN KEY (seller_id) REFERENCES members(id),
     FOREIGN KEY (buyer_id) REFERENCES members(id)
 );
 
@@ -144,12 +146,13 @@ CREATE TABLE IF NOT EXISTS trades (
 -- ========================
 CREATE TABLE IF NOT EXISTS chat_rooms (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT NOT NULL,
     trade_id BIGINT NOT NULL,
     title_suffix VARCHAR(100) NOT NULL,
+    enable_status BOOLEAN NOT NULL,
     last_chat_at DATETIME NOT NULL,
-    status BOOLEAN NOT NULL,
-    created_at DATETIME,
-    modified_at DATETIME,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES posts(id),
     FOREIGN KEY (trade_id) REFERENCES trades(id)
 );
 
@@ -164,7 +167,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     chat_message VARCHAR(500),
     chat_image_url VARCHAR(255),
     is_read BOOLEAN DEFAULT FALSE,
-    sent_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL,
     FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
     FOREIGN KEY (sender_id) REFERENCES members(id)
 );
@@ -176,9 +179,7 @@ CREATE TABLE IF NOT EXISTS chat_room_members (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     chat_room_id BIGINT NOT NULL,
     member_id BINARY(16) NOT NULL,
-    is_exited BOOLEAN NOT NULL,
     exited_at DATETIME,
-    status BOOLEAN NOT NULL,
     FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id),
     FOREIGN KEY (member_id) REFERENCES members(id)
 );
