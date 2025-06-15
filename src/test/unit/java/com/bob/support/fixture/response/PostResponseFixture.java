@@ -1,5 +1,6 @@
 package com.bob.support.fixture.response;
 
+import static com.bob.support.fixture.domain.MemberFixture.MEMBER_ID;
 import static com.bob.support.fixture.domain.PostFixture.DEFAULT_MOCK_POSTS;
 
 import com.bob.domain.post.entity.status.BookStatus;
@@ -39,6 +40,7 @@ public class PostResponseFixture {
   public static PostDetailResponse DEFAULT_POST_DETAIL_RESPONSE(Long postId) {
     return PostDetailResponse.builder()
         .postId(postId)
+        .sellerId(MEMBER_ID)
         .sellPrice(10000)
         .bookStatus("BEST")
         .postStatus("거래 대기")
